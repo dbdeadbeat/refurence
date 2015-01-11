@@ -1,0 +1,486 @@
+{% import "profiles/_content.html" as content %}
+
+<!-- BEGIN MACROS -->
+
+{% macro render_popover_imglink(imglink, number) %}
+&lt;ul class=&quot;list-group&quot;&gt;
+  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
+    &lt;div class=&quot;input-group&quot;&gt;
+      &lt;span class=&quot;input-group-addon&quot;&gt;icon&lt;/span&gt;
+      &lt;input type=&quot;text&quot; id=&quot;input_imglink_icon_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.img_url %}{{ imglink.img_url }}{% else %}url{% endif %}&quot;&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
+    &lt;div class=&quot;input-group&quot;&gt;
+      &lt;span class=&quot;input-group-addon&quot;&gt;link&lt;/span&gt;
+      &lt;input type=&quot;text&quot; id=&quot;input_imglink_href_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.link_url %}{{ imglink.link_url }}{% else %}url (optional){% endif %}&quot;&gt;
+      &lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
+    &lt;div class=&quot;btn-toolbar&quot; role=&quot;toolbar&quot; aria-label=&quot;...&quot;&gt;
+      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
+          &lt;button id=&quot;btn_imglink_submit_{{number}}&quot; class=&quot;btn btn-default btn-imglink-submit&quot; type=&quot;button&quot;&gt;submit&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
+          &lt;button id=&quot;btn_imglink_delete_{{number}}&quot; class=&quot;btn btn-default btn-imglink-delete&quot; type=&quot;button&quot;&gt;remove&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;   
+
+{% endmacro %}
+
+{% macro render_editable_imglink(link, number) %}
+  <div class="col-xs-12 imglink-container">
+    <button type="button" id="imglink_{{number}}" class="btn btn-xs btn-danger btn-editable-imglink"
+    data-toggle="popover" data-placement="right" data-container="body" data-html="true" data-content="{{render_popover_imglink(link, number)}}">
+    <!-- <a href="{{ link.link_url }}"> -->
+    <img class="centered imglink-img" src="{{ link.img_url }}"> </a>
+  </button>
+</div>
+<div class="col-xs-12 fill hr"></div>
+{% endmacro %}
+
+{% macro render_editablesidebar(sidebar) %}
+  {% for i in range(0, sidebar.img_links|length) %}
+    {{ render_editable_imglink(sidebar.img_links[i], i) }}
+  {% endfor %}
+{% endmacro %}
+
+{% macro render_avatarimg(header) %}
+{% if header.avatar_url %}
+<img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.avatar_url }}">
+{% else %}
+click to add avatar
+{% endif %}
+{% endmacro %}
+
+{% macro render_editableheader(header) %}
+<div class="row" id="header">
+    <div class="col-xs-9">
+    <h1 id="{{HEADER_TITLE}}" class="text-editable" contenteditable="true">{{ header.title }}</h1>
+    <h4 id="{{HEADER_BODY}}" class="text-editable" contenteditable="true">{{ header.body|nl2br }} </h4>
+    </div>
+    <div class="col-xs-3" id="avatar_container">
+      <button type="button" id="popover_change_avatar" class="btn btn-lg btn-danger" data-toggle="popover">
+          <div id="avatar">
+            {{ render_avatarimg(profile.header) }}
+          </div>
+      </button>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_editablenotes(notes) %}
+<p id="{{NOTES_BODY}}" class="text-editable" contenteditable="true">{{ notes.body }}</p>
+{% endmacro %}
+
+{% macro render_navtabs_description(description) %}
+<ul class="nav nav-pills">
+  {% for i in range(0, description.tables.keys()|length) %}
+    {% if i == 0 %} <li class="active desc_tab_li"> {% else %} <li class="desc_tab_li"> {% endif %}
+    <a href="#table_tab{{i}}" data-toggle="tab" contenteditable="true" class="desc_table_tab_name text-editable">{{ description.get_keys()[i] }}</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro render_table_description(description) %}
+{% for i in range(0, description.tables.keys()|length) %}
+  <div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="table_tab{{i}}">
+    <div class="table-responsive">
+        <table class="table table-condensed table-hover desc_table" id="table_{{i}}">
+          {% for row in description.get_tables()[i].rows %}
+            <tr>
+              {% for j in range(0,row.cells|length) %}
+              <td class="desc_cell {%if j == 0 and row.cells|length > 1 %}td-header-cell{% endif %}" contenteditable="true">{{ row.cells[j] }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </table>
+    </div>
+  </div>
+{% endfor %}
+{% endmacro %}
+
+{% macro render_editabledescription(description) %}
+<div class="input-group">
+    <span class="input-group-btn">
+      <div class="btn-group-vertical btn-group-xs" role="group" aria-label="...">
+        <button id="btn_desc_tbl_add" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
+        </button>
+        <button id="btn_desc_tbl_del" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-minus" aria=hidden="true"></span>
+        </button>
+      </div>
+    </span>
+    <div id="navtabs_description">
+      {{ render_navtabs_description(description) }}
+    </div>
+</div><!-- /input-group -->
+<div class="tab-content text" id="table_description">
+  {{ render_table_description(description) }}
+</div>
+{% endmacro %}
+
+{% macro render_navtabs_gallery(gallery) %}
+<ul class="nav nav-pills">
+  {% for i in range(0, gallery.tables.keys()|length) %}
+    {% if i == 0 %} <li class="active gallery_tab_li"> {% else %} <li class="gallery_tab_li"> {% endif %}
+    <a href="#gallery_tab{{i}}" data-toggle="tab" contenteditable="true" class="gallery_table_tab_name text-editable">{{ gallery.get_keys()[i] }}</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro render_gallery_table_links(table) %}
+{% for url in table.img_urls %}
+{% if table.is_removeable(url) %}
+<button type="button" class="btn btn-xs btn-danger btn_gallery_del_img">
+{% endif %}
+
+  <a href="{{ url }}" title="{{ url }}" data-gallery>
+    <img style="max-width:100%" src="{{ url }}"> 
+  </a>
+
+{% if table.is_removeable(url) %}
+<p> click to remove </p>
+</button>
+{% endif %}
+
+{% endfor %}
+{% for url in table.get_hosted_images() %}
+  <a href="{{ url }}" title="{{ url }}" data-gallery>
+    <img style="max-width:100%" src="{{ url }}"> 
+  </a>
+{% endfor %}
+{% endmacro%}
+
+{% macro render_table_gallery(gallery) %}
+{% for i in range(0, gallery.tables.keys()|length) %}
+<div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery_tab{{i}}">
+    <div class="col-xs-12">
+      <div id="links{{i}}" class="gallery-links">
+        {{ render_gallery_table_links(gallery.get_tables()[i]) }}
+      </div>
+    </div>
+</div>
+{% endfor %}
+{% endmacro %}
+
+{% macro render_editablegallery(gallery) %}
+<h4 id="{{GALLERY_TITLE}}" contenteditable="true" class="text-editable">{{gallery.title}}</h4>
+<div class="input-group">
+    <span class="input-group-btn">
+      <div class="btn-group-vertical btn-group-xs" role="group" aria-label="...">
+        <button id="btn_gallery_add" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
+        </button>
+        <button id="btn_gallery_del" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-minus" aria=hidden="true"></span>
+        </button>
+      </div>
+      <div class="btn-group-vertical btn-group-xs" role="group" aria-label="...">
+        <button id="btn_gallery_add_image" type="button" class="btn btn-danger" data-toggle="popover">
+            <span class="glyphicon glyphicon-picture" aria=hidden="true"></span>
+        </button>
+        <button id="btn_gallery_add_directory" type="button" class="btn btn-danger" data-toggle="popover">
+            <span class="glyphicon glyphicon-folder-open" aria=hidden="true"></span>
+        </button>
+      </div>
+    </span>
+    <div id="navtabs_gallery">
+      {{ render_navtabs_gallery(gallery) }}
+    </div>
+</div><!-- /input-group -->
+<div class="tab-content text" id="table_gallery">
+  {{ render_table_gallery(gallery) }}
+</div>
+{% endmacro %}
+
+{% macro render_popover_avatar_str(header) %}
+' \
+<div class="input-group"> \
+  <input type="text" class="form-control" id="input_avatar_url" placeholder="Avatar URL"> \
+  <span class="input-group-btn"> \
+    <button id="btn_submit_avatar_url" class="btn btn-default" type="button">Submit</button> \
+  </span> \
+</div> \
+'
+{% endmacro %}
+
+{% macro render_popover_gallery_add_image_str(gallery) %}
+' \
+<div class="input-group"> \
+  <input type="text" class="form-control" id="input_gallery_img" placeholder="Image URL"> \
+  <span class="input-group-btn"> \
+    <button id="btn_submit_gallery_img" class="btn btn-default" type="button">Submit</button> \
+  </span> \
+</div> \
+'
+{% endmacro %}
+
+{% macro render_popover_gallery_add_dir_str(gallery) %}
+' \
+<div class="input-group"> \
+  <input type="text" class="form-control" id="input_gallery_dir" placeholder="Directory URL"> \
+  <span class="input-group-btn"> \
+    <button id="btn_submit_gallery_dir" class="btn btn-default" type="button">Submit</button> \
+  </span> \
+</div> \
+'
+{% endmacro %}
+
+
+{% macro render_editablejs() %}
+<script type=text/javascript>
+  function br2nl(str) {
+      return str.replace(/<br>/mg,"\n");
+  }
+
+  function getDescriptionTable() {
+    var desc_tabs = document.querySelectorAll(".desc_table_tab_name");
+    var desc_tbls = document.querySelectorAll(".desc_table");
+    var out = {};
+    for (var idx = 0; idx < desc_tbls.length; idx++) {
+      var table = desc_tbls[idx];
+      var tab_name = desc_tabs[idx].text;
+      out[tab_name] = {'order': idx, 'rows' :[]};
+      for (var i = 0, row; row = table.rows[i]; i++) {
+        var row_list = [];
+         for (var j = 0, col; col = row.cells[j]; j++) {
+          row_list[row_list.length] = br2nl(col.innerHTML);
+         }  
+         out[tab_name]['rows'][out[tab_name]['rows'].length] = row_list;
+      }
+    }
+    return out;
+  }
+
+  function getActiveDescriptionTabName() {
+    return document.querySelector('.active.desc_tab_li').children[0].text;
+  }
+
+  function getGalleryTableTabs() {
+    var gallery_tabs = document.querySelectorAll(".gallery_table_tab_name");
+    var out = [];
+    for (var idx = 0; idx < gallery_tabs.length; idx++) {
+      out[idx] = gallery_tabs[idx].text;
+    }
+    return out;
+  }
+
+  function getActiveGalleryTabName() {
+    return document.querySelector('.active.gallery_tab_li').children[0].text;
+  }
+
+  function loadJS() {
+    $('button#popover_change_avatar').popover({
+        html: true,
+        title: 'Change Avatar',
+        placement: 'bottom',
+        container: 'body',
+        content: {{ render_popover_avatar_str(profile.header) }}
+    });
+    $('button#btn_gallery_add_image').popover({
+        html: true,
+        title: 'Add Image',
+        placement: 'top',
+        container: 'body',
+        content: {{ render_popover_gallery_add_image_str(profile.gallery) }}
+    });
+    $('button#btn_gallery_add_directory').popover({
+        html: true,
+        title: 'Set GoogleDrive/Dropbox Directory',
+        placement: 'bottom',
+        container: 'body',
+        content: {{ render_popover_gallery_add_dir_str(profile.gallery) }}
+    });
+
+    $('button#btn_sidebar_add_link').on('click', function() {
+        Sijax.request('add_imglink', [ {} ]);
+    });
+    $('button#btn_sidebar_del_link').on('click', function() {
+        Sijax.request('del_imglink', [ {} ]);
+    });
+    $('button#btn_desc_tbl_add').on('click', function() {
+        Sijax.request('add_desc_table', [ {
+            '{{DESC_TABLE}}'  : getDescriptionTable(),
+            } ]);
+    });
+    $('button#btn_desc_tbl_del').on('click', function() {
+        Sijax.request('del_desc_table', [ {
+            active : getActiveDescriptionTabName(),
+            '{{DESC_TABLE}}'  : getDescriptionTable(),
+        } ]);
+    });
+    $('button#btn_gallery_add').on('click', function() {
+        Sijax.request('add_gallery', [ {} ]);
+    });
+    $('button#btn_gallery_del').on('click', function() {
+        Sijax.request('del_gallery', [ {
+            active : getActiveGalleryTabName()
+        } ]);
+    });
+    $('body').on('click', '.btn_gallery_del_img', function() {
+        Sijax.request('gallery_del_image', [ {
+            active : getActiveGalleryTabName(),
+            url : this.children[0].href,
+          } ]);
+        return false;
+    });
+    $('body').on('click', '#btn_submit_avatar_url', function () {
+        var input = document.getElementById('input_avatar_url');
+        Sijax.request('update_avatar_url', [input.value]);
+        $('#popover_change_avatar').popover('hide');
+    });
+
+    $('body').on('click', '#btn_submit_gallery_img', function () {
+        Sijax.request('gallery_add_image', [{
+          'active':getActiveGalleryTabName(),
+          'url':document.getElementById('input_gallery_img').value,
+          }]);
+        $('#btn_gallery_add_image').popover('hide');
+    });
+    $('body').on('click', '#btn_submit_gallery_dir', function () {
+        Sijax.request('gallery_add_directory', [{
+          'active':getActiveGalleryTabName(),
+          'url':document.getElementById('input_gallery_dir').value,
+          }]);
+        $('#btn_gallery_add_directory').popover('hide');
+    });
+
+    $('#btn_saveprofile').bind('click', function() {
+        Sijax.request('save_profile', [
+          {
+            '{{HEADER_TITLE}}': br2nl($('#{{HEADER_TITLE}}').html()),
+            '{{HEADER_BODY}}' : br2nl($('#{{HEADER_BODY}}').html()),
+            '{{NOTES_TITLE}}'  : br2nl($('#{{NOTES_TITLE}}').html()),
+            '{{NOTES_BODY}}'  : br2nl($('#{{NOTES_BODY}}').html()),
+            '{{DESC_HEADER}}' : br2nl($('#{{DESC_HEADER}}').html()),
+            '{{DESC_TABLE}}'  : getDescriptionTable(),
+            '{{GALLERY_TITLE}}': br2nl($('#{{GALLERY_TITLE}}').html()),
+            '{{GALLERY_TABS}}': getGalleryTableTabs(),
+          }
+        ]);
+        return false;
+    });
+
+    // image link popovers
+    $('body').on('click', '.btn-editable-imglink', function (e) {
+        $(this).popover('show');
+    });
+
+    $('body').on('click', '.btn-imglink-submit', function (e) {
+        var toks = e.target.id.split('_');
+        var num = toks[toks.length-1];
+        $('#imglink_'+num).popover('hide');
+
+        var imgurl = document.getElementById('input_imglink_icon_'+num).value;
+        var href = document.getElementById('input_imglink_href_'+num).value;
+        Sijax.request('update_imglink', [{
+          'num': parseInt(num),
+          'imgurl' : imgurl,
+          'href' : href
+        }]);
+    });
+
+    $('body').on('click', '.btn-imglink-delete', function (e) {
+        var toks = e.target.id.split('_');
+        var num = toks[toks.length-1];
+        $('#imglink_'+num).popover('hide');
+        Sijax.request('del_imglink', [{
+          'num': parseInt(num)
+        }]);
+    });
+
+    $('body').on('keydown', '.desc_cell', function(e){
+      if (e.keyCode == 9) {
+        // tab
+
+        var tr = e.target.parentElement
+        if (tr.cells.length >= 5) {
+          return false;
+        }
+
+        var cell = e.target.parentNode.insertCell(-1);
+
+        if (tr.cells.length == 2) {
+          tr.cells[0].setAttribute('class', 'desc_cell td-header-cell');
+        }
+        cell.innerHTML = "enter text";
+        cell.setAttribute('contenteditable', 'true');
+        cell.setAttribute('class', 'desc_cell');
+      } else if (e.keyCode == 8) {
+        // backspace
+        if (e.target.innerHTML.length == 0) {
+          var isShift = window.event.shiftKey ? true : false;
+          if (!isShift)
+            return false;
+          var tr = e.target.parentElement
+          if (tr.parentElement.rows.length == 1 && tr.cells.length == 1) {
+            return false;
+          }
+          tr.deleteCell(e.target.cellIndex);
+          if (tr.cells.length == 0) {
+            tr.parentElement.deleteRow(tr.rowIndex);
+          } else if (tr.cells.length == 1) {
+            tr.cells[0].setAttribute('class', 'desc_cell');
+          }
+          return false;
+        }
+      }
+    });
+
+    var content_edited = false;
+    // enforce contenteditables use linebreaks instead of divs
+    $('body').on('keydown', '[contenteditable="true"]', function (e) {
+      content_edited = true;
+      // trap the return key being pressed
+      if (e.keyCode === 13) {
+        // disable enter in table cells & add new row
+        if ($(e.target).hasClass('desc_cell')) {
+            var tbl = e.target.parentNode.parentNode;
+            if (tbl.rows.length >= 10) {
+              return false;
+            }
+            var row = tbl.insertRow(-1);
+            var cell = row.insertCell(-1);
+            cell.innerHTML = "enter text";
+            cell.setAttribute('contenteditable', 'true');
+            cell.setAttribute('class', 'desc_cell');
+            return e.which != 13; 
+          } else if ($(e.target).hasClass('desc_table_tab_name')) {
+            return e.which != 13; 
+          }
+        // insert 2 br tags (if only one br tag is inserted the cursor won't go to the next line)
+        document.execCommand('insertHTML', false, '<br><br>');
+        // prevent the default behaviour of return key pressed
+        return false;
+      }
+  });
+
+    // hide popover if click elsewhere on page
+    $('body').on('click', function (e) {
+      $('[data-toggle="popover"]').each(function () {
+          if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+              $(this).popover('hide');
+          }
+          if (content_edited) {
+            content_edited = false;
+          }
+      });
+    });
+
+  }
+
+  $(function() {
+      loadJS();
+  });
+</script>
+
+{% endmacro %}
+<!-- END MACROS -->
+

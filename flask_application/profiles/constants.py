@@ -1,0 +1,23 @@
+profile_constants = \
+{
+'BKG_IMG'   :     'bkg_img',
+'BKG_COLOR' :     'bkg_color',
+'AVATAR_IMG' :    'avatar_img',
+'HEADER_TITLE' :  'header_title',
+'HEADER_BODY' :   'header_body',
+'NOTES_TITLE' :    'notes_title',
+'NOTES_BODY' :    'notes_body',
+'DESC_HEADER':    'desc_header',
+'DESC_TABLE' :    'desc_table',
+'GALLERY_TITLE' : 'gallery_title',
+'GALLERY_TABS' : 'gallery_tabs',
+'COLOR_MAIN' : 'color_main',
+'COLOR_INNER' : 'color_inner',
+'COLOR_HEADERS' : 'color_headers',
+'COLOR_LINKS' : 'color_links',
+'COLOR_TEXT' : 'color_text',
+'COLOR_TABS' : 'color_tabs',
+'FONT_HEADERS' : 'font_headers',
+'FONT_LINKS' : 'font_links',
+'FONT_TEXT' : 'font_text',
+}

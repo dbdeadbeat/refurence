@@ -1,0 +1,30 @@
+{% extends "guides/index.html" %}
+
+{% block content %}
+<div class="col-xs-12" style="text-align:center;">
+     <h1>{{guide.title}}</h1>
+</div>
+<div class="col-xs-12 fill hr"></div>
+<div class="col-xs-12">
+     <p style="text-align:center;" class="fill">{{guide.abstract}}</p>
+    <div class="col-xs-12 fill hr"></div>
+     <ul class="list-group">
+     {% for i in range(0,guide.steps|length) %}
+	  <li class="list-group-item fill" style="overflow:hidden;">
+	       <div class="col-xs-1">
+	       <span class="badge pull-left">{{i+1}}</span>
+	       </div>
+	       <div class="col-xs-11">
+		    <div class="jumbotron centered fill-transparent">
+		    <p>{{guide.steps[i].body}}</p>
+		    {% if guide.steps[i].img %}
+			 <a href="{{guide.steps[i].img}}"><img class="porthole" src="{{guide.steps[i].img}}" style="max-width:80%"></a>
+		    {% endif %}
+		    </div>
+	       </div>
+	  </li>
+     {% endfor %}
+     </ul>
+</div>
+{{ super() }}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "security/index.html" %}
+
+{% block title %}
+Thanks!
+{% endblock %}
+
+{% macro render_content() %}
+<div class="jumbotron centered fill">
+  <h2 style="color:white">thank you for registering!!</h2>
+	<p>:3</p>
+</div>
+{% endmacro %}
+
+{% block content %}
+<div class="container-fluid {% if request.MOBILE %}fill{% endif %}">
+    {% if request.MOBILE %}
+				{{ render_content() }}
+    {% else %}
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8">
+						{{ render_content() }}
+        </div>
+        <div class="col-xs-2"></div>
+    {% endif %}
+</div>
+{{ super() }}
+{% endblock %}

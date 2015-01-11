@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+Authentication
+{% endblock %}
+
+{% macro render_formcontent() %}
+{% block form_content %}
+{% endblock %}
+{% endmacro %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if request.MOBILE %}
+        {{ content }}
+        {{ render_formcontent() }}
+    {% else %}
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8">
+        {{ content }}
+        {{ render_formcontent() }}
+        </div>
+        <div class="col-xs-2"></div>
+    {% endif %}
+</div>
+
+{{ super() }}
+{% endblock %}

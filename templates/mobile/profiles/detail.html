@@ -1,0 +1,169 @@
+{% import "profiles/_content.html" as content with context %}
+{% extends "mobile/profiles/index.html" %}
+
+{% block title %}
+{{ profile.username }}
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/blueimp-gallery.min.css') }}">
+{{ content.render_header_inline_style(profile) }}
+{% endblock %}
+
+{% block topbar %}
+{% endblock %}
+
+{% block body_attribs %}
+style="background: url({{ profile.bkg_img }}) no-repeat center center fixed; background-size: cover;"
+{% endblock %}
+
+{% block page_header %}
+{% endblock %}
+
+{% block content %}
+{% if profile.sidebar.img_links %}
+{% endif %}
+<div class="container-fluid" id="maincontainer" style="padding:0px;">
+  {%- block header -%}
+      {% if profile.header.avatar_url %}
+      <div class="row">
+        <div class="col-xs-12 centered" id="avatar_container">
+          <img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ profile.header.avatar_url }}">
+        </div>
+      </div>
+      {% endif %}
+      <!-- <div class="row"> -->
+          <!-- <div class="col-xs-12 fill-transparent" style="height:50px;"> -->
+            <!-- <table> -->
+              <!-- {% for i in range(0, profile.sidebar.img_links|length) %} -->
+                <!-- {% if i == 0 or i == 5 %} -->
+                <!-- <tr> -->
+                <!-- {% endif %} -->
+
+                <!-- <td> -->
+                <!-- <a href="{{ profile.sidebar.img_links[i].link_url }}"> -->
+                    <!-- <img class="centered" style="max-height: 50px;" src="{{ profile.sidebar.img_links[i].img_url }}"> -->
+                <!-- </a> -->
+                <!-- </td> -->
+
+                <!-- {% if i == 4 or i == 10 %} -->
+                <!-- </tr> -->
+                <!-- {% endif %} -->
+              <!-- {% endfor %} -->
+            <!-- </table> -->
+          <!-- </div> -->
+        <!-- </div> -->
+        <!-- <div class="col-xs-12"> -->
+            <!-- <h1 class="text-editable">{{ profile.header.title }}</h1> -->
+            <!-- <h4 class="text-editable">{{ profile.header.body }} </h4> -->
+        <!-- </div> -->
+      <!-- </div> -->
+    </div>
+  {%- endblock -%}
+  <div class="col-xs-12 fill-solid rounded" id="inner_container">
+        <!-- notes -->
+        {%- block notes -%}
+        {% if profile.notes.is_renderable() %}
+          <h4 id="{{NOTES_TITLE}}" class="text-editable">{{profile.notes.title}}</h4>
+          <p class="text-editable">{{ profile.notes.body }}</p>
+        {% endif %}
+        {%- endblock -%}
+        <div class="col-xs-12 fill-transparent hr"></div>
+        <!-- END notes -->
+
+        <!-- description-->
+        {%- block description -%}
+        {% if profile.description.is_renderable() %}
+          {{ content.render_description(profile.description) }} 
+        {% endif %}
+        {%- endblock -%}
+        <div class="col-xs-12 fill-transparent hr"> </div>
+        <!-- END description-->
+
+        <!-- gallery -->
+        <div class="col-xs-12 fill-transparent hr"> </div>
+        <!-- END gallery -->
+        <div class="col-xs-12 rounded">
+          {%- block gallery -%}
+          {% if profile.gallery.is_renderable() %}
+            {{ content.render_gallery(profile.gallery) }}
+          {% endif %}
+          {%- endblock -%}
+        </div>
+    </div>
+  </div>
+  <div id="blueimp-gallery" class="blueimp-gallery">
+      <!-- The container for the modal slides -->
+      <div class="slides"></div>
+      <!-- Controls for the borderless lightbox -->
+      <h3 class="title"></h3>
+      <a class="prev">‹</a>
+      <a class="next">›</a>
+      <a class="close">×</a>
+      <a class="play-pause"></a>
+      <ol class="indicator"></ol>
+      <!-- The modal dialog, which will be used to wrap the lightbox content -->
+      <div class="modal fade">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <button type="button" class="close" aria-hidden="true">&times;</button>
+                      <h4 class="modal-title"></h4>
+                  </div>
+                  <div class="modal-body next"></div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-default pull-left prev">
+                          <i class="glyphicon glyphicon-chevron-left"></i>
+                          Previous
+                      </button>
+                      <button type="button" class="btn btn-primary next">
+                          Next
+                          <i class="glyphicon glyphicon-chevron-right"></i>
+                      </button>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+{%- block footer-%}
+<div class="row">
+    <div class="col-xs-10">
+        <p>&copy {{ profile.username }}</p>
+    </div>
+    <div class="col-xs-2">
+        {{ super() }} 
+    </div>
+</div>
+{% endblock %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: [
+      {% for key in profile.fonts.keys() %}
+        {% if profile.fonts[key]|length > 0 %}
+          '{{ profile.fonts[key] }}',
+        {% endif %}
+      {% endfor %}
+      ]
+    }
+  });
+</script>
+<script src={{ url_for('static', filename='js/blueimp-gallery.min.js') }} type="text/javascript"></script>
+<script>
+//document.getElementById('links').onclick = function (event) {
+$('.gallery-links').on('click', function (event) {
+event = event || window.event;
+var target = event.target || event.srcElement,
+    link = target.src ? target.parentNode : target,
+    options = {index: link, event: event},
+    links = this.getElementsByTagName('a');
+blueimp.Gallery(links, options);
+});
+</script>
+{% endblock %}

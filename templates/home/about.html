@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}
+About
+{% endblock %}
+
+{% macro render_content() %}
+<div class="jumbotron centered fill-transparent">
+  <h2 style="color:white">About</h2>
+  <div class="col-xs-12 fill" style="text-align:left">
+      <ul class="list-group">
+        <li class="list-group-item fill-transparent">
+        <p><strong>Refurence</strong> is a service for consolidating and displaying visual and text references to aid the art-making process</p>
+        </li>
+        <li class="list-group-item fill-transparent">
+        <p>This site in particular is intended as tool for use in the "Furry" fandom</p>
+        </li>
+        <li class="list-group-item fill-transparent">
+        <p>Make a fursona <strong>Refurence</strong> and send all relevant info to an artist with a single URL</p>
+        </li>
+      </ul>
+  </div>
+  <div class="col-xs-12 hr"></div>
+  <h2 style="color:white">Contributors</h2>
+  <div class="col-xs-12 fill" style="text-align:left">
+      <ul class="list-group">
+        <li class="list-group-item fill-low-opacity">
+            <span class="badge">
+                <img style="max-width:32px" src="https://0fc16b51807afd366d47010f72faa643b722b8cf.googledrive.com/host/0B_OR1VOUS7GiRmZ3ZHd3MVJ4MEk/img/avatar.png"> 
+            </span>
+            <p> deadbeat - code hyena, school boy bitch </p>
+        </li>
+        <li class="list-group-item fill-low-opacity">
+            <span class="badge">
+                <img style="max-width:32px" src="https://pbs.twimg.com/profile_images/417803077551271936/b_zsCbk7.png">
+            </span>
+            <p> Ruxley - the caribou guru</p>
+        </li>
+        <li class="list-group-item fill-low-opacity">
+            <span class="badge">
+                <img style="max-width:32px" src="http://d.facdn.net/art/therion87/1394692872/1394692872.therion87_scrypto_wolf_vector_icon_1200x1200.png">
+            </span>
+            <p> Seela - emotional support technician and a wolf</p>
+        </li>
+      </ul>
+  </div>
+</div>
+{% endmacro %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if request.MOBILE %}
+        {{ render_content() }}
+    {% else %}
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8">
+        {{ render_content() }}
+        </div>
+        <div class="col-xs-2"></div>
+    {% endif %}
+</div>
+{{ super() }}
+{% endblock %}

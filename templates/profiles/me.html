@@ -1,0 +1,11 @@
+{% extends "profiles/detail.html" %}
+
+{% block header%}
+<div class="col-xs-4">
+<a class="btn btn-dark btn-lg" type="button" href="{{ url_for('profiles.edit', slug=current_user.username) }}">
+<span class="glyphicon glyphicon-edit" aria=hidden="true"></span>
+Edit Profile
+</a>
+</div>
+{{ super() }}
+{% endblock %}

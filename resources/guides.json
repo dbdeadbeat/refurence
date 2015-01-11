@@ -1,0 +1,133 @@
+{
+		"guides" : [
+				{
+						"title" : "Setting up synced Dropbox Folders",
+						"abstract" : "This guide will walk you through setting up a shared folder in Dropbox and adding it to your refurence for syncing images",
+						"slug" : "dropbox",
+						"steps" : [
+								{
+										"body" : "Create a Dropbox account",
+										"img" : ""
+								},
+								{
+										"body" : "Create a folder to host your images",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/dropbox_create_folder.png"
+								},
+								{
+										"body" : "Put images in the folder and sync",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/dropbox_add_images.png"
+								},
+								{
+										"body" : "Get the folder URL and copy-it (Ctrl-C)",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/dropbox_share_link.png"
+								},
+								{
+										"body" : "Go to your refurence page and enter Edit mode",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/refurence_edit_mode.png"
+								},
+								{
+										"body" : "Select the gallery you want to display the images",
+										"img" : ""
+								},
+								{
+										"body" : "Click the 'folder' button and paste the previously copied URL into the text box.  Now click Submit",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/refurence_choose_gallery.png"
+								},
+								{
+										"body" : "Reload the page and your images will be show up in the gallery.  This will be refreshed everytime your refurence is viewed",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/refurence_sync_gallery.png"
+								},
+								{
+										"body" : "Now you can just copy images to you Dropbox folder and they will automatically sync to your refurence.  This makes it really handy to update your images :D",
+										"img" : ""
+								}
+						]
+				},
+				{
+						"title" : "Setting up synced GoogleDrive Folders",
+						"abstract" : "This guide will walk you through setting up a shared folder in GoogleDrive and adding it to your refurence for syncing images",
+						"slug" : "googledrive",
+						"steps" : [
+								{
+										"body" : "Create a GoogleDrive",
+										"img" : ""
+								},
+								{
+										"body" : "Create a folder to host your images",
+										"img" : "https://6a0813a501da84ff6f54102e5be714bb3d0b2e6f.googledrive.com/host/0B_OR1VOUS7GiX1g0MGhPd3I5R1E/gdrive_create_folder.png"
+								},
+								{
+										"body" : "Put images in the folder and sync",
+										"img" : "https://6a0813a501da84ff6f54102e5be714bb3d0b2e6f.googledrive.com/host/0B_OR1VOUS7GiX1g0MGhPd3I5R1E/gdrive_upload_image.png"
+								},
+								{
+										"body" : "Set the folder's sharing settings to Public: Everyone with a link can see",
+										"img" : "https://6a0813a501da84ff6f54102e5be714bb3d0b2e6f.googledrive.com/host/0B_OR1VOUS7GiX1g0MGhPd3I5R1E/gdrive_set_sharing.png"
+								},
+								{
+										"body" : "Open the hosted drive in a new tab/window",
+										"img" : "https://6a0813a501da84ff6f54102e5be714bb3d0b2e6f.googledrive.com/host/0B_OR1VOUS7GiX1g0MGhPd3I5R1E/gdrive_get_url.png"
+								},
+								{
+										"body" : "Get the folder URL and copy-it (Ctrl-C)",
+										"img" : "https://6a0813a501da84ff6f54102e5be714bb3d0b2e6f.googledrive.com/host/0B_OR1VOUS7GiX1g0MGhPd3I5R1E/gdrive_get_url2.png"
+								},
+								{
+										"body" : "Go to your refurence page and enter Edit mode",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/refurence_edit_mode.png"
+								},
+								{
+										"body" : "Select the gallery you want to display the images",
+										"img" : ""
+								},
+								{
+										"body" : "Click the 'folder' button and paste the previously copied URL into the text box.  Click Submit",
+										"img" : "https://6a0813a501da84ff6f54102e5be714bb3d0b2e6f.googledrive.com/host/0B_OR1VOUS7GiX1g0MGhPd3I5R1E/refurence_gdrive.png"
+								},
+								{
+										"body" : "Reload the page and your images will be show up in the gallery.  This will be refreshed everytime your refurence is viewed",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/refurence_sync_gallery.png"
+								},
+								{
+										"body" : "Now you can just copy images to you GoogleDrive folder and they will automatically sync to your refurence.  This makes it really handy to update your images :D",
+										"img" : ""
+								}
+						]
+				},
+				{
+						"title" : "Creating and Editing ImageLinks",
+						"abstract" : "This guide will show you how to create a cool-looking ImageLink for URLs to different sites, email, or general flair.  When an ImageLink is clicked in the browser it will open the URL it is pointing to.  In HTML it is an <a> element",
+						"slug" : "imagelink",
+						"steps" : [
+								{
+										"body" : "Go to your refurence page and enter Edit mode",
+										"img" : "https://216b9185df384f73bdbf1b23413a6d65c0566cf3.googledrive.com/host/0B_OR1VOUS7GiSVFZZ3JQZTEwTXc/refurence_edit_mode.png"
+								},
+								{
+										"body" : "Click the + icon to add an ImageLink",
+										"img" : "https://cbc9b1b3757c90e87141b0991caa008acc9ee9ef.googledrive.com/host/0B_OR1VOUS7GiOGJqQXItc2ZFZkk/refurence_add_imglink.png"
+								},
+								{
+										"body" : "An ImageLink is added",
+										"img" : "https://cbc9b1b3757c90e87141b0991caa008acc9ee9ef.googledrive.com/host/0B_OR1VOUS7GiOGJqQXItc2ZFZkk/refurence_imglink_added.png"
+								},
+								{
+										"body" : "Click the new ImageLink icon to edit it.  Change the icon by pasting a URL in the icon field and clicking submit",
+										"img" : "https://cbc9b1b3757c90e87141b0991caa008acc9ee9ef.googledrive.com/host/0B_OR1VOUS7GiOGJqQXItc2ZFZkk/refurence_imglink_edit_icon.png"
+								},
+								{
+										"body" : "You can edit the URL the ImageLink will open when clicked by pasting a URL into the link field and clicking submit",
+										"img" : "https://cbc9b1b3757c90e87141b0991caa008acc9ee9ef.googledrive.com/host/0B_OR1VOUS7GiOGJqQXItc2ZFZkk/refurence_imglink_edit_href.png"
+								},
+								{
+										"body" : "Here is the final product on the refurence.  When a user clicks the wolf icon, they will be redirected to Google",
+										"img" : "https://cbc9b1b3757c90e87141b0991caa008acc9ee9ef.googledrive.com/host/0B_OR1VOUS7GiOGJqQXItc2ZFZkk/refurence_imglink_done.png"
+								},
+								{
+										"body" : "If you want to remove an ImageLink, go to Edit mode press the ImageLink - button",
+										"img" : ""
+								}
+						]
+				}
+		]
+}

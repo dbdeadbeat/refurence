@@ -1,0 +1,410 @@
+{% import "profiles/_editable.html" as econtent with context %}
+{% extends "profiles/detail.html" %}
+
+{% block title %}
+{{ profile.username }}
+{% endblock %}
+
+{%- block styles-%}
+{{ super() }}
+<link href={{ url_for('static', filename='css/spectrum.css') }} rel='stylesheet' type="text/css">
+<link href={{ url_for('static', filename='css/fontselect.css') }} rel='stylesheet' type="text/css">
+{%- endblock -%}
+
+{% block sidebar %}
+<div class="col-xs-1 fill" id="sidebar_container" style="margin-right:10px;">
+  <div class="row">
+    <div id="sidebar">
+    {{ econtent.render_editablesidebar(profile.sidebar) }}
+    </div>
+    <div class="col-xs-12">
+        <div class="btn-group-vertical btn-group-xs centered" role="group" aria-label="...">
+          <button id="btn_sidebar_add_link" class="btn btn-default">
+              <span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
+          </button>
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block maincontainer %}
+<div class="col-xs-10 fill" id="maincontainer">
+{% endblock %}
+
+
+{%- block header -%}
+<div class="col-xs-12">
+<!-- Single button -->
+<div class="btn-toolbar" role="toolbar" aria-label="...">
+  <div class="btn-group btn-group-lg">
+    <button type="button" class="btn btn-dark btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+      <a><span class="glyphicon glyphicon-edit" aria=hidden="true"></span> Edit Style <span class="caret"></span></a>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li><a href="#" class="list-group-item" id="btn_change_bkg" data-toggle="modal" data-target="#modal_bkg" style="margin:0px">Change Background</a></li>
+        <li><a href="#" class="list-group-item" id="btn_change_colors" data-toggle="modal" data-target="#modal_colors" style="margin:0px">Change Colors</a></li>
+        <li><a href="#" class="list-group-item" id="btn_change_fonts" data-toggle="modal" data-target='#modal_fonts' style="margin:0px">Change Fonts</a></li>
+    </ul>
+  </div>
+  <div class="btn-group btn-group-lg">
+    <a id="btn_saveprofile" class="btn btn-dark" href="{{
+      url_for('profiles.detail', slug=current_user.username) }}"> <span class="glyphicon glyphicon-ok" aria=hidden="true"></span> Save</a>
+    <a class="btn btn-dark" href="{{ url_for('profiles.detail',
+      slug=current_user.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
+  </div>
+</div>
+{{ econtent.render_editableheader(profile.header) }}
+{%- endblock -%}
+
+{%- block notes -%}
+<h4 contenteditable="true" id="{{NOTES_TITLE}}">{{profile.notes.title}}</h4>
+{{ econtent.render_editablenotes(profile.notes) }}
+{%- endblock -%}
+
+{%- block description -%}
+<h4 contenteditable="true" id="{{DESC_HEADER}}">{{profile.description.title}}</h4>
+{{ econtent.render_editabledescription(profile.description) }} 
+{%- endblock -%}
+
+{%- block gallery -%}
+{{ econtent.render_editablegallery(profile.gallery) }}
+{%- endblock -%}
+
+{%- block footer-%}
+<footer>
+    <div class="row">
+        <div class="col-xs-12">
+            <p>&copy {{ profile.username }}</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+{%- block modals -%}
+<div class="modal fade modal-clear" id="modal_bkg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">change background</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <div class="input-group">
+              <span class="input-group-addon">background color</span>
+              <input type='text' class="basic" id="{{BKG_COLOR}}"/>
+            </div>
+          </li>
+          <li class="list-group-item">
+            <div class="input-group">
+              <span class="input-group-addon">background image</span>
+              <input type="text" class="form-control" id="input_bkg_url" placeholder="image url">
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+        <button type="button" class="btn btn-primary" id="btn_change_bkg_submit" data-dismiss="modal">ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade modal-clear" id="modal_colors" tabindex="-1" role="dialog" aria-labelledby="colorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="colorModalLabel">change colors</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item">
+          <div class="input-group">
+            <span class="input-group-addon">main</span>
+            <input type='text' class="basic" id="{{COLOR_MAIN}}"/>
+          </div>
+          </li>
+          <li class="list-group-item">
+          <div class="input-group">
+            <span class="input-group-addon">inner</span>
+            <input type='text' class="basic" id="{{COLOR_INNER}}"/>
+          </div>
+          </li>
+          <li class="list-group-item">
+          <div class="input-group">
+            <span class="input-group-addon">headers</span>
+            <input type='text' class="basic" id="{{COLOR_HEADERS}}"/>
+          </div>
+          </li>
+          <li class="list-group-item">
+          <div class="input-group">
+            <span class="input-group-addon">links</span>
+            <input type='text' class="basic" id="{{COLOR_LINKS}}"/>
+          </div>
+          </li>
+          <li class="list-group-item">
+          <div class="input-group">
+            <span class="input-group-addon">text</span>
+            <input type='text' class="basic" id="{{COLOR_TEXT}}"/>
+          </div>
+          </li>
+          <li class="list-group-item">
+          <div class="input-group">
+            <span class="input-group-addon">tabs</span>
+            <input type='text' class="basic" id="{{COLOR_TABS}}"/>
+          </div>
+          </li>
+        </div>
+        </ul>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+        <button type="button" class="btn btn-primary" id="btn_change_colors_submit" data-dismiss="modal">ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade modal-clear" id="modal_fonts" tabindex="-1" role="dialog" aria-labelledby="fontModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">close</span></button>
+        <h4 class="modal-title" id="fontModalLabel">change font</h4>
+      </div>
+      <div class="modal-body">
+        <table>
+          <tr>
+            <td> <span class="input-group-addon"><h4>header font</h4></span> </td>
+            <td> <input id="{{FONT_HEADERS}}" type="text" /> </td>
+          </tr>
+          <tr>
+            <td> <span class="input-group-addon">text font</span> </td>
+            <td> <input id="{{FONT_TEXT}}" type="text" /> </td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_header %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src={{url_for('static', filename="js/sijax/sijax.js") }}></script>
+<script type="text/javascript" src={{url_for('static', filename="js/spectrum.js") }}></script>
+<script type="text/javascript" src={{url_for('static', filename="js/jquery.fontselect.min.js") }}></script>
+<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
+<script type="text/javascript">
+{{ g.sijax.get_js()|safe }}
+
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
+<script>
+  WebFont.load({
+    google: {
+      families: [
+      {% for key in profile.fonts.keys() %}
+        {% if profile.fonts[key]|length > 0 %}
+          '{{ profile.fonts[key] }}',
+        {% endif %}
+      {% endfor %}
+      ]
+    }
+  });
+</script>
+<script type="text/javascript" src={{url_for('static', filename="js/sijax/sijax.js") }}></script>
+<script type="text/javascript" src={{url_for('static', filename="js/spectrum.js") }}></script>
+<script type="text/javascript" src={{url_for('static', filename="js/jquery.fontselect.min.js") }}></script>
+<script type="text/javascript">
+{{ g.sijax.get_js()|safe }}
+</script>
+<script type="text/javascript">
+function shadeColor(color, percent) {
+
+    var R = parseInt(color.substring(1,3),16);
+    var G = parseInt(color.substring(3,5),16);
+    var B = parseInt(color.substring(5,7),16);
+
+    R = parseInt(R * (100 + percent) / 100);
+    G = parseInt(G * (100 + percent) / 100);
+    B = parseInt(B * (100 + percent) / 100);
+
+    R = (R<255)?R:255;  
+    G = (G<255)?G:255;  
+    B = (B<255)?B:255;  
+
+    var RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+    var GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+    var BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+
+    return "#"+RR+GG+BB;
+}
+
+$(function() {
+    function set_color(id, color) {
+      if (id == '{{ BKG_COLOR }}') {
+        $('body').css("background", color);
+      } else if (id == '{{ COLOR_MAIN }}') {
+        $('#sidebar_container').css("background-color", color);
+        $('#maincontainer').css("background-color", color);
+      } else if (id == '{{ COLOR_INNER }}') {
+        $('#inner_container').css("background-color", color);
+      } else if (id == '{{ COLOR_HEADERS }}') {
+        document.getElementById('header_style').innerHTML = "h1, h2, h3, h4, h5 { color :" + color + "}";
+      } else if (id == '{{ COLOR_LINKS }}') {
+        document.getElementById('links_style').innerHTML = "a { color :" + color + "}";
+      } else if (id == '{{ COLOR_TEXT }}') {
+        document.getElementById('text_style').innerHTML = "p, td, tr { color :" + color + "}";
+      } else if (id == '{{ COLOR_TABS}}') {
+        document.getElementById('tabs_style').innerHTML = ".desc_table_tab_name { background-color :" + color + "}; .desc_table_tab_name { background-color :" + color + "; } .nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus { background-color :" + color + ";}";
+      }
+    }
+    $('#btn_change_bkg_submit').on('click', function() {
+        var input = document.getElementById('input_bkg_url');
+        Sijax.request('change_bkg', [ {
+            url : input.value,
+            color : $('#{{BKG_COLOR}}').spectrum('get').toRgbString()
+          } ]);
+    });
+    $('#{{ BKG_COLOR }}').spectrum({
+        change: function(color) {
+        this.changed = true;
+        Sijax.request('change_bkg', [ {
+          url : '',
+          color: color.toRgbString()
+          } ]);
+        },
+        color:'{{ profile.bkg_color }}',
+        move: function(color) {
+        set_color(this.id, color.toRgbString());
+        },
+        hide: function(color) {
+        if (!this.changed) {
+        this.color = '{{ profile.bkg_color }}';
+        set_color(this.id, this.color);
+        }
+      },
+    });
+
+    {% for key in profile.colors.keys() %}
+    $('#{{ key }}').spectrum({
+        showAlpha: true,
+        change: function(color) {
+        this.changed = true;
+        Sijax.request('change_color', [ {
+          'color': this.id,
+          'value': color.toRgbString(),
+          } ]);
+        },
+        color:'{{ profile.colors[key] }}',
+        move: function(color) {
+        set_color(this.id, color.toRgbString());
+        },
+        hide: function(color) {
+        if (!this.changed) {
+        this.color = '{{ profile.colors[key]}}';
+        set_color(this.id, this.color);
+        }
+      },
+    });
+    {% endfor %}
+    {% for key in profile.fonts.keys() %}
+    $('#{{ key }}').fontselect().change(function(){
+        var font = $(this).val().replace(/\+/g, ' ');
+        font = font.split(':');
+        if (this.id == '{{ FONT_HEADERS }}') {
+          document.getElementById('style_{{ key }}').innerHTML = "h1, h2, h3, h4, h5 { font-family :" + font[0] + "}";
+        } else if (this.id == '{{ FONT_TEXT }}') {
+          document.getElementById('style_{{ key }}').innerHTML = "p, td, tr { font-family :" + font[0] + "}";
+        }
+        Sijax.request('change_font', [ {
+          'font': '{{ key }}',
+          'value': font[0]
+          } ]);
+    });
+    {% endfor %}
+
+    $('[contenteditable]').on('paste', function (evt) {
+        if(evt.originalEvent.clipboardData || window.clipboardData)  {
+            evt.preventDefault();
+            //webkit (and bleeding edge Firefox)
+            var selection = window.getSelection ? window.getSelection() : document.selection;
+            var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+
+            //prepare new range selection
+
+      var startingCaretPosition = range.startOffset;
+
+    //place the pasted content at the cursor position within
+    //the div
+    var $target = $(evt.target);
+    var clipboard = evt.originalEvent.clipboardData ? evt.originalEvent.clipboardData.getData("text/plain") :
+      window.clipboardData.getData("Text");
+    var newText = $target.text().substring(0,range.startOffset) +
+    clipboard +
+    $target.text().substring(range.endOffset,$target.text().length);
+    $target.text(newText);
+
+    //create a new selection range so that the cursor is at the end
+    //of the newly pasted content
+    var targetNode = evt.target;
+    if(window.getSelection) { // webkit
+      if(evt.target.childNodes.length > 0) targetNode = evt.target.childNodes[0];
+      var newRange = document.createRange();
+      newRange.setStart(targetNode,startingCaretPosition+clipboard.length);
+      newRange.setEnd(targetNode,startingCaretPosition+clipboard.length);
+      if(selection.rangeCount > 0) selection.removeAllRanges();
+      selection.addRange(newRange);
+    } else { //IE
+      if(evt.target.childNodes.length > 0) targetNode = evt.target.childNodes[0];
+      
+      var newRange = document.selection.createRange();
+      newRange.moveToElementText(evt.target);
+      newRange.setStart(targetNode,startingCaretPosition+clipboard.length);
+      newRange.setEnd(targetNode,startingCaretPosition+clipboard.length);
+      newRange.select();
+    }
+        }
+    });
+    $('[contenteditable]').on('drop', function (evt) {
+        evt.preventDefault();
+        console.log(window.getSelection().getRangeAt(0));
+        var clipboard = evt.originalEvent.dataTransfer ? evt.originalEvent.dataTransfer.getData("text/plain") :
+            window.event.dataTransfer.getData("Text");
+
+        var range, caretPosition;
+        if (document.caretPositionFromPoint) { //w3
+            range = caretPositionFromPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
+            caretPosition = range.startOffset;
+        } else if (document.caretRangeFromPoint) { //webkit
+            range = document.caretRangeFromPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
+            caretPosition = range.startOffset;
+        } else if(evt.originalEvent.rangeOffset) { //Firefox
+            caretPosition = evt.originalEvent.rangeOffset;
+        } else { //IE
+            range = document.body.createTextRange();
+            range.moveToPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
+            range.select();
+            caretPosition = range.startOffset;
+        }
+        var $target = $(evt.target);
+        var newText = $target.text().substring(0,caretPosition) +
+            clipboard +
+            $target.text().substring(caretPosition,$target.text().length);
+        $target.text(newText);
+    });
+});
+</script>
+
+{{ econtent.render_editablejs() }}
+
+{% endblock %}

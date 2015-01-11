@@ -1,0 +1,21 @@
+{% extends "guides/index.html" %}
+
+{% block content %}
+<div class="col-xs-12 blurred-sm" style="text-align:center;">
+     <h1>refurence guides</h1>
+</div>
+<div class="col-xs-12">
+     <ul class="list-group">
+	  {% for guide in guides %}
+	  <li class="list-group-item fill" style="overflow:hidden;">
+	  <a href="{{ url_for('guides.detail', slug=guide.slug) }}">
+	       <h3>{{ guide.title}}</h3>
+	  </a>
+	 <div class="col-xs-12 fill hr"></div>
+	  <p style="text-align:center;"> {{ guide.abstract }} </p>
+	  </li>
+	  {% endfor %}
+     </ul>
+</div>
+{{ super() }}
+{% endblock %}
