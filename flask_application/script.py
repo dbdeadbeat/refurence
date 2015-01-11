@@ -24,7 +24,7 @@ class ResetDB(Command):
 class PopulateDB(Command):
     """Fills in predefined data to DB"""
     users = (
-                ('db', 'edeadbeat@gmail.com', 'password', ['user'], True),
+                ('user', 'user@user.com', 'password', ['user'], True),
             )
     def run(self, **kwargs):
         self.create_roles()
