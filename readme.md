@@ -1,22 +1,27 @@
-Refurence
+#Refurence
 =========================
 http://refurence.net
 
 This is the source code for the art reference website "refurence"
 
-TODO List
------------
-* Mobile profile editing
-* Better copy/paste in editing (parse out style/paste only plaintext)
-* Admin portion of site(?) - not sure if worth the effort
-* Better utilites for using images hosted on FA
-* Better testing
-* Add a contact info portion to site
-* Whatever is cool; do something cool
-* Have a bunch of fun :33333
 
-Installation
-------------
+
+##Setup
+
+###Prerequisites
+
+
+1. Python 2.7 with pip https://www.python.org/
+
+2. VirtualEnv and VirtualEnvWrapper http://docs.python-guide.org/en/latest/dev/virtualenvs/
+
+3. MongoDB http://www.mongodb.org/
+
+
+
+###Installation
+
+
 1. Download via git:
 
         git clone https://github.com/dbdeadbeat/refurence.git
@@ -25,24 +30,28 @@ Installation
 
         cd refurence
 
-2. Get VirtualEnv and VirtualEnvWrapper set up. See http://docs.python-guide.org/en/latest/dev/virtualenvs/
-	
 3. Create a virtualenvironment
 
         mkvirtualenv environment
 
-4. Install the required python dependancies:
+4. Install the required python dependencies:
 
         pip install -r requirements.txt
+
+5. Set up database
+
+    python manage.py populate_db
+    python manage.py populate_data
     
-5. Run a development server:
+6. Run a development server:
         
         python manage.py runserver
 
-Usage
------
 
-##Commands
+##Usage
+
+
+###Commands
 _Run these commands by using `python manage.py <command>`_
 
 
@@ -55,18 +64,31 @@ _Run these commands by using `python manage.py <command>`_
 * `run_tests` - Runs unittests using nose.
 * Commands included with Flask-Security can be found here: http://packages.python.org/Flask-Security/#flask-script-commands and by looking in `flask_application/script.py`
 
-##Templates
+###Templates
 All html templates are stored here in './templates'
 
-##Running Tests
+###Running Tests
 You can run the unittests either with `ENVIRONMENT=TESTING ./manage.py run_tests`, with `ENVIRONMENT=TESTING . /bin/run_tests.sh` or `ENVIRONMENT=TESTING nosetests`.
 
-##Static Content
+###Static Content
 All static content is stored here in './static'
 
-Credit
+
+##TODO List
+-----------
+* Mobile profile editing
+* Better copy/paste in editing (parse out style/paste only plaintext)
+* Admin portion of site(?) - not sure if worth the effort
+* Better utilites for using images hosted on FA
+* Better testing
+* Add a contact info portion to site
+* Whatever is cool; do something cool
+* Have a bunch of fun :33333
+
+
+##Credit
 ------
-####Required Python Projects:
+###Required Python Projects:
 
 * unittest2
 * Flask
@@ -81,10 +103,10 @@ Credit
 * Flask-Testing
 * python-memcached
 
-####Non-Python Projects:
+###Non-Python Projects:
 * Twitter Bootstrap
 
-####Contributing Projects:
+###Contributing Projects:
 * Flask-Security
 * https://github.com/mbr/flask-bootstrap
 
