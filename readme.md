@@ -1,5 +1,5 @@
 #Refurence
-=========================
+
 http://refurence.net - a website for furry character references 
 
 
@@ -9,12 +9,12 @@ http://refurence.net - a website for furry character references
 
 
 1. [Python 2.7](https://www.python.org/) with [pip](https://pip.pypa.io/en/latest/installing.html) 
-... Using the python3 will prevent the code from running. You can tell which version you're using with `python -V`
+..* Using the python3 will prevent the code from running. You can tell which version you're using with `python -V`
 
 2. [VirtualEnv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) and [VirtualEnvWrapper](http://virtualenvwrapper.readthedocs.org/en/latest/install.html) 
 
 3. [MongoDB](http://www.mongodb.org/)
-... You'll need to set up a database with an admin user for the app to connect to.
+..* You'll need to set up a database with an admin user for the app to connect to.
 
 
 ###Installation
@@ -76,7 +76,7 @@ All static content is stored here in './static'
 
 
 ##TODO List
------------
+
 * Mobile profile editing
 * Better copy/paste in editing (parse out style/paste only plaintext)
 * Admin portion of site(?) - not sure if worth the effort
@@ -88,7 +88,7 @@ All static content is stored here in './static'
 
 
 ##Credit
-------
+
 ###Required Python Projects:
 
 * unittest2
