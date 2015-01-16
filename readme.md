@@ -1,9 +1,6 @@
 #Refurence
 =========================
-http://refurence.net
-
-This is the source code for the art reference website "refurence"
-
+http://refurence.net - a website for furry character references 
 
 
 ##Setup
@@ -11,12 +8,13 @@ This is the source code for the art reference website "refurence"
 ###Prerequisites
 
 
-1. Python 2.7 with pip https://www.python.org/
+1. [Python 2.7](https://www.python.org/) with [pip](https://pip.pypa.io/en/latest/installing.html) 
+... Using the python3 will prevent the code from running. You can tell which version you're using with `python -V`
 
-2. VirtualEnv and VirtualEnvWrapper http://docs.python-guide.org/en/latest/dev/virtualenvs/
+2. [VirtualEnv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) and [VirtualEnvWrapper](http://virtualenvwrapper.readthedocs.org/en/latest/install.html) 
 
-3. MongoDB http://www.mongodb.org/
-
+3. [MongoDB](http://www.mongodb.org/)
+... You'll need to set up a database with an admin user for the app to connect to.
 
 
 ###Installation
@@ -38,18 +36,21 @@ This is the source code for the art reference website "refurence"
 
         pip install -r requirements.txt
 
-5. Set up database
+5. Enter config info in `flask_application/config.py`
 
-    python manage.py populate_db
-    python manage.py populate_data
+6. Set up database
+
+        python manage.py populate_db
+        python manage.py populate_data
     
-6. Run a development server:
+7. Run a development server:
         
         python manage.py runserver
 
 
-##Usage
+Assuming everything went smoothly, you should now be live on [http://localhost:5000/]
 
+##Usage
 
 ###Commands
 _Run these commands by using `python manage.py <command>`_
