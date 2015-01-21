@@ -1,22 +1,25 @@
-Refurence
-=========================
-http://refurence.net
+#Refurence
 
-This is the source code for the art reference website "refurence"
+http://refurence.net - a website for furry character references 
 
-TODO List
------------
-* Mobile profile editing
-* Better copy/paste in editing (parse out style/paste only plaintext)
-* Admin portion of site(?) - not sure if worth the effort
-* Better utilites for using images hosted on FA
-* Better testing
-* Add a contact info portion to site
-* Whatever is cool; do something cool
-* Have a bunch of fun :33333
 
-Installation
-------------
+##Setup
+
+###Prerequisites
+
+
+1. [Python 2.7](https://www.python.org/) with [pip](https://pip.pypa.io/en/latest/installing.html) 
+  * Using the python3 will prevent the code from running. You can tell which version you're using with `python -V`
+
+2. [VirtualEnv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) and [VirtualEnvWrapper](http://virtualenvwrapper.readthedocs.org/en/latest/install.html) 
+
+3. [MongoDB](http://www.mongodb.org/)
+  * You'll need to set up a database with an admin user for the app to connect to.
+
+
+###Installation
+
+
 1. Download via git:
 
         git clone https://github.com/dbdeadbeat/refurence.git
@@ -25,24 +28,31 @@ Installation
 
         cd refurence
 
-2. Get VirtualEnv and VirtualEnvWrapper set up. See http://docs.python-guide.org/en/latest/dev/virtualenvs/
-	
 3. Create a virtualenvironment
 
         mkvirtualenv environment
 
-4. Install the required python dependancies:
+4. Install the required python dependencies:
 
         pip install -r requirements.txt
+
+5. Enter config info in `flask_application/config.py`
+
+6. Set up database
+
+        python manage.py populate_db
+        python manage.py populate_data
     
-5. Run a development server:
+7. Run a development server:
         
         python manage.py runserver
 
-Usage
------
 
-##Commands
+Assuming everything went smoothly, you should now be live on [http://localhost:5000/]
+
+##Usage
+
+###Commands
 _Run these commands by using `python manage.py <command>`_
 
 
@@ -55,18 +65,31 @@ _Run these commands by using `python manage.py <command>`_
 * `run_tests` - Runs unittests using nose.
 * Commands included with Flask-Security can be found here: http://packages.python.org/Flask-Security/#flask-script-commands and by looking in `flask_application/script.py`
 
-##Templates
+###Templates
 All html templates are stored here in './templates'
 
-##Running Tests
+###Running Tests
 You can run the unittests either with `ENVIRONMENT=TESTING ./manage.py run_tests`, with `ENVIRONMENT=TESTING . /bin/run_tests.sh` or `ENVIRONMENT=TESTING nosetests`.
 
-##Static Content
+###Static Content
 All static content is stored here in './static'
 
-Credit
-------
-####Required Python Projects:
+
+##TODO List
+
+* Mobile profile editing
+* Better copy/paste in editing (parse out style/paste only plaintext)
+* Admin portion of site(?) - not sure if worth the effort
+* Better utilites for using images hosted on FA
+* Better testing
+* Add a contact info portion to site
+* Whatever is cool; do something cool
+* Have a bunch of fun :33333
+
+
+##Credit
+
+###Required Python Projects:
 
 * unittest2
 * Flask
@@ -81,10 +104,10 @@ Credit
 * Flask-Testing
 * python-memcached
 
-####Non-Python Projects:
+###Non-Python Projects:
 * Twitter Bootstrap
 
-####Contributing Projects:
+###Contributing Projects:
 * Flask-Security
 * https://github.com/mbr/flask-bootstrap
 
