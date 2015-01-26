@@ -4,11 +4,16 @@ body {
   padding-top: 50px; }
 
 #main-nav {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
   background-color: rgba(200, 200, 200, 0.75);
   font-family: "Cabin";
   font-size: 18px;
   border: none;
-  border-bottom: 1px solid #CCC; }
+  border-bottom: 1px solid #CCC;
+  border-radius: 0px; }
   #main-nav a {
     color: #000;
     font-weight: bold;
@@ -30,14 +35,37 @@ body {
 
 body {
   font-size: 14px;
-  /* font-family: 'Aldrich', sans-serif; */
-  font-weight: 200;
+  font-family: "Marmelad", "Merriweather", sans-serif;
   background: url("../img/bkg.jpg") no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  word-wrap: break-word; }
+  word-wrap: break-word;
+  padding-bottom: 30px; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Bitter";
+  color: #FFF; }
+
+a {
+  color: #5599FF; }
+  a:hover {
+    color: #CCCCCC; }
+
+label {
+  font-weight: normal; }
+
+.content-box {
+  margin-top: 30px;
+  background-color: rgba(68, 68, 78, 0.85);
+  border-radius: 3px;
+  color: #FFF;
+  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
+  font-weight: normal; }
+
+.form h1 {
+  margin-top: -30px; }
 
 div.content {
   padding-top: 0px; }
@@ -47,6 +75,10 @@ div#header {
 
 div.form {
   padding: 50px; }
+
+.form input[type="submit"] {
+  display: inline-block;
+  margin-top: 15px; }
 
 .navbar {
   height: 14px;
@@ -61,14 +93,8 @@ div.form {
   background: rbga(255, 0, 0, 0.3);
   color: white; }
 
-h1, h2, h3, h4, h5 {
-  color: #000000; }
-
 p, td, tr, li {
   color: lightgrey; }
-
-a {
-  color: #125273; }
 
 footer {
   padding: 0; }
@@ -297,9 +323,6 @@ img {
 #avatar_container {
   padding-left: 0px;
   padding-right: 0px; }
-
-label {
-  color: lightgrey; }
 
 .list-group-item {
   border: 0px;

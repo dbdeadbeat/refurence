@@ -5,9 +5,9 @@ About
 {% endblock %}
 
 {% macro render_content() %}
-<div class="jumbotron centered fill-transparent">
-  <h2 style="color:white">About</h2>
-  <div class="col-xs-12 fill" style="text-align:left">
+
+  <div class="col-xs-12 content-box">
+      <h2 class="text-center">About</h2>
       <ul class="list-group">
         <li class="list-group-item fill-transparent">
         <p><strong>Refurence</strong> is a service for consolidating and displaying visual and text references to aid the art-making process</p>
@@ -20,9 +20,10 @@ About
         </li>
       </ul>
   </div>
-  <div class="col-xs-12 hr"></div>
-  <h2 style="color:white">Contributors</h2>
-  <div class="col-xs-12 fill" style="text-align:left">
+
+
+  <div class="col-xs-12 content-box">
+      <h2 class="text-center">Contributors</h2>
       <ul class="list-group">
         <li class="list-group-item fill-low-opacity">
             <span class="badge">
@@ -46,6 +47,7 @@ About
   </div>
 </div>
 {% endmacro %}
+
 
 {% block content %}
 <div class="container-fluid">

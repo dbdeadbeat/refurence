@@ -4,12 +4,17 @@ body {
 }
 
 #main-nav  {
+	position: absolute;
+	top:0px;
+	left:0px;
+	right:0px;
 
 	background-color: rgba(200,200,200,.75);
 	font-family: "Cabin";
 	font-size: $font-medium;
 	border: none;
 	border-bottom: 1px solid #CCC;
+	border-radius: 0px;
 
 
 	a {

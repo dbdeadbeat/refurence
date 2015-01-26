@@ -7,16 +7,53 @@
 
 
 body {
-	font-size: 14px;
-    /* font-family: 'Aldrich', sans-serif; */
-    font-weight: 200;
+	font-size: $font-normal;
+    font-family: "Marmelad", "Merriweather", sans-serif;
+
     background: url('../img/bkg.jpg') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     word-wrap: break-word;
+	padding-bottom: 30px;
 }
+
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Bitter";
+	color: #FFF;
+}
+
+a {
+	color:#5599FF;
+	&:hover {
+		color: #CCCCCC;
+	}
+}
+
+label {
+	font-weight: normal;
+}
+
+
+.content-box {
+	margin-top:30px;
+	background-color: $box-bg;
+	border-radius: 3px;
+	color: #FFF;
+	box-shadow: inset 0px 0px 10px 0px rgba(0,0,0,.5), 1px 1px 5px 0px rgba(0,0,0,.5);
+	font-weight: normal;
+
+
+
+}
+
+
+.form h1 {
+	margin-top: -30px;
+}
+
 
 div.content {
   padding-top:0px;
@@ -27,6 +64,11 @@ div#header {
 
 div.form {
   padding: 50px;
+}
+
+.form input[type="submit"] {
+	display: inline-block;
+	margin-top: 15px;
 }
 
 .navbar {
@@ -48,17 +90,11 @@ max-width: 128px;
   color: white;
 }
 
-h1, h2, h3, h4, h5 {
-    color: #000000;
-}
 
 p, td, tr, li {
     color: lightgrey;
 }
 
-a {
-    color: $primary;
-}
 
 footer {
     padding: 0;
@@ -343,9 +379,6 @@ img {
   padding-right: 0px;
 }
 
-label {
-    color: lightgrey;
-}
 
 .list-group-item {
   border: 0px;
