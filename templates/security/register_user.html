@@ -8,10 +8,11 @@ Register
 
 {% block form_content %}
 <div class="col-xs-12 blurred-sm" style="text-align:center;">
-  <h1>register</h1>
+
 </div>
-<div class="fill form">
+<div class="content-box form">
 <form action="{{ url_for('security.register') }}" method="POST" name="register_user_form">
+    <h1 class="text-center">register</h1>
     {{ register_user_form.hidden_tag() }}
 
     {{ wtf.form_errors(register_user_form) }}
