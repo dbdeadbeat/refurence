@@ -82,18 +82,14 @@ class EditView(ProfileView):
 
     # common html update functions
     def sidebar_html_update(self, obj_response, profile):
-        sidebar_macro = get_template_attribute('profiles/_editable.html', 'render_editablesidebar')
-        sidebar_html = sidebar_macro(profile.sidebar)
+        sidebar_macro = get_template_attribute('profiles/_content.html', 'render_sidebar')
+        sidebar_html = sidebar_macro(profile.sidebar, True)
         obj_response.html("#sidebar", sidebar_html)
 
-    def desc_table_html_update(self, obj_response, profile):
-        navtabs_desc_macro = get_template_attribute('profiles/_editable.html', 'render_navtabs_description')
-        navtabs_desc_html = navtabs_desc_macro(profile.description)
-        obj_response.html('#navtabs_description', navtabs_desc_html)
-
-        desc_macro = get_template_attribute('profiles/_editable.html', 'render_table_description')
-        desc_html = desc_macro(profile.description)
-        obj_response.html('#table_description', desc_html)
+    def description_content_html_update(self, obj_response, profile):
+        desc_macro = get_template_attribute('profiles/_content.html', 'render_description_content')
+        desc_html = desc_macro(profile.description, True)
+        obj_response.html('#description-content', desc_html)
 
     def gallery_html_update(self, obj_response, profile):
         navtabs_desc_macro = get_template_attribute('profiles/_editable.html', 'render_navtabs_gallery')
@@ -117,15 +113,24 @@ class EditView(ProfileView):
         # profile_html = render_template('profiles/edit.html', profile=profile) 
         pass
 
+    def extract_desc_content(self, tables):
+        out = {}
+        for tab_name, tbl in tables.iteritems():
+            table = EditableTable()
+            table.order = tbl['order']
+            for r in tbl['rows']:
+                table.rows.append(EditableRow(cells=r))
+            out[tab_name] = table
+        return out
+
     def save_profile_handler(self, obj_response, content):
         profile                    = self.get_user_profile_edit()
         profile.header.title       = format_input(content[pc['HEADER_TITLE']])
         profile.header.body        = format_input(content[pc['HEADER_BODY']])
         profile.notes.title        = format_input(content[pc['NOTES_TITLE']])
         profile.notes.body         = format_input(content[pc['NOTES_BODY']])
-        profile.description.title  = format_input(content[pc['DESC_HEADER']])
-        profile.description.tables = extract_tables(content[pc['DESC_TABLE']])
-        profile.gallery.title      = format_input(content[pc['GALLERY_TITLE']])
+
+        profile.description.tables = self.extract_desc_content(content[pc["DESC_TABLE"]])
 
         tabs = [format_input(x) for x in content[pc['GALLERY_TABS']]]
         keys = profile.gallery.get_keys()
@@ -180,9 +185,9 @@ class EditView(ProfileView):
 
         profile = self.get_user_profile_edit()
         if href:
-            profile.sidebar.img_links[content['num']].link_url = href
+            profile.sidebar.img_links[num].link_url = href
         if imgurl:
-            profile.sidebar.img_links[content['num']].img_url = imgurl
+            profile.sidebar.img_links[num].img_url = imgurl
 
         self.save_user_profile_edit(profile)
         self.sidebar_html_update(obj_response, profile)
@@ -200,32 +205,39 @@ class EditView(ProfileView):
 
         profile.header.avatar_url = avatar_url if avatar_url else None
         self.save_user_profile_edit(profile)
-        avtimg_macro = get_template_attribute('profiles/_editable.html', 'render_avatarimg')
+        avtimg_macro = get_template_attribute('profiles/_content.html', 'render_avatarimg')
         avt_html = avtimg_macro(profile.header)
         obj_response.html("#avatar", avt_html)
 
-    def add_desc_table_handler(self, obj_response, content):
+    def add_desc_content_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         num_tabls = len(profile.description.tables)
 
+        print 'content', content
         if num_tabls >= 10:
             return
 
-        profile.description.tables = extract_tables(content[pc['DESC_TABLE']])
-
         attr_tabl = EditableTable()
         attr_tabl.rows.append(EditableRow(cells=['text here']))
+        name = 'Info' + str(num_tabls)
+        while name in profile.description.tables:
+            num_tabls += 1
+            name = 'Info' + str(num_tabls)
         attr_tabl.order = num_tabls
-        profile.description.tables['Attributes' + str(num_tabls)] = attr_tabl
+        profile.description.tables = self.extract_desc_content(content[pc["DESC_TABLE"]])
+        profile.description.add_table(name, attr_tabl)
         self.save_user_profile_edit(profile)
-        self.desc_table_html_update(obj_response, profile)
+        self.description_content_html_update(obj_response, profile)
 
-    def del_desc_table_handler(self, obj_response, content):
+    def del_desc_content_handler(self, obj_response, content):
+        idx = int(content['num'])
+        if idx < 0:
+            return
         profile = self.get_user_profile_edit()
-        profile.description.tables = extract_tables(content[pc['DESC_TABLE']])
-        profile.description.delete_table(content['active'])
+        profile.description.tables = self.extract_desc_content(content[pc["DESC_TABLE"]])
+        profile.description.delete_table_by_order(idx)
         self.save_user_profile_edit(profile)
-        self.desc_table_html_update(obj_response, profile)
+        self.description_content_html_update(obj_response, profile)
 
     def add_gallery_handler(self, obj_response, content):
 
@@ -297,8 +309,8 @@ class EditView(ProfileView):
         g.sijax.register_callback('add_imglink', self.add_imglink_handler)
         g.sijax.register_callback('update_imglink', self.update_imglink_handler)
         g.sijax.register_callback('del_imglink', self.del_imglink_handler)
-        g.sijax.register_callback('add_desc_table', self.add_desc_table_handler)
-        g.sijax.register_callback('del_desc_table', self.del_desc_table_handler)
+        g.sijax.register_callback('add_desc_table', self.add_desc_content_handler)
+        g.sijax.register_callback('del_desc_table', self.del_desc_content_handler)
         g.sijax.register_callback('add_gallery', self.add_gallery_handler)
         g.sijax.register_callback('del_gallery', self.del_gallery_handler)
         g.sijax.register_callback('gallery_add_image', self.gallery_add_image_handler)
@@ -313,17 +325,6 @@ class EditView(ProfileView):
 @profiles.context_processor
 def inject_constants():
     return pc
-
-# utility functions
-def extract_tables(desc_table):
-    tables = {}
-    for tab_name,tbl in desc_table.iteritems():
-        table = EditableTable();
-        table.order = tbl['order']
-        for r in tbl['rows']:
-            table.rows.append(EditableRow(cells=r))
-        tables[tab_name] = table
-    return tables
 
 def format_input(string):
     return convert_html_entities(sanitize_html(string))

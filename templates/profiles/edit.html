@@ -1,4 +1,5 @@
 {% import "profiles/_editable.html" as econtent with context %}
+{% import "profiles/_content.html" as content with context %}
 {% extends "profiles/detail.html" %}
 
 {% block title %}
@@ -13,10 +14,7 @@
 
 {% block sidebar %}
 <div class="col-xs-1 fill" id="sidebar_container" style="margin-right:10px;">
-  <div class="row">
-    <div id="sidebar">
-    {{ econtent.render_editablesidebar(profile.sidebar) }}
-    </div>
+    {{ content.render_sidebar(profile.sidebar, true) }}
     <div class="col-xs-12">
         <div class="btn-group-vertical btn-group-xs centered" role="group" aria-label="...">
           <button id="btn_sidebar_add_link" class="btn btn-default">
@@ -24,7 +22,6 @@
           </button>
         </div>
     </div>
-  </div>
 </div>
 {% endblock %}
 
@@ -35,7 +32,6 @@
 
 {%- block header -%}
 <div class="col-xs-12">
-<!-- Single button -->
 <div class="btn-toolbar" role="toolbar" aria-label="...">
   <div class="btn-group btn-group-lg">
     <button type="button" class="btn btn-dark btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -54,17 +50,16 @@
       slug=current_user.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
   </div>
 </div>
-{{ econtent.render_editableheader(profile.header) }}
+{{ content.render_header(profile.header, true) }}
 {%- endblock -%}
 
 {%- block notes -%}
-<h4 contenteditable="true" id="{{NOTES_TITLE}}">{{profile.notes.title}}</h4>
-{{ econtent.render_editablenotes(profile.notes) }}
+{{ content.render_notes(profile.notes, true) }}
 {%- endblock -%}
 
 {%- block description -%}
-<h4 contenteditable="true" id="{{DESC_HEADER}}">{{profile.description.title}}</h4>
-{{ econtent.render_editabledescription(profile.description) }} 
+{{ content.render_description(profile.description, true) }} 
+<div class="col-xs-12 fill-transparent hr"> </div>
 {%- endblock -%}
 
 {%- block gallery -%}
@@ -141,20 +136,8 @@
           </li>
           <li class="list-group-item">
           <div class="input-group">
-            <span class="input-group-addon">links</span>
-            <input type='text' class="basic" id="{{COLOR_LINKS}}"/>
-          </div>
-          </li>
-          <li class="list-group-item">
-          <div class="input-group">
             <span class="input-group-addon">text</span>
             <input type='text' class="basic" id="{{COLOR_TEXT}}"/>
-          </div>
-          </li>
-          <li class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">tabs</span>
-            <input type='text' class="basic" id="{{COLOR_TABS}}"/>
           </div>
           </li>
         </div>
@@ -253,19 +236,27 @@ $(function() {
     function set_color(id, color) {
       if (id == '{{ BKG_COLOR }}') {
         $('body').css("background", color);
+
       } else if (id == '{{ COLOR_MAIN }}') {
         $('#sidebar_container').css("background-color", color);
         $('#maincontainer').css("background-color", color);
+        $('.panel-heading').css("background-color", color);
+
       } else if (id == '{{ COLOR_INNER }}') {
-        $('#inner_container').css("background-color", color);
+        $('.panel').css("background-color", color);
+        $('.gallery-links').css("background-color", color);
+
       } else if (id == '{{ COLOR_HEADERS }}') {
         document.getElementById('header_style').innerHTML = "h1, h2, h3, h4, h5 { color :" + color + "}";
-      } else if (id == '{{ COLOR_LINKS }}') {
-        document.getElementById('links_style').innerHTML = "a { color :" + color + "}";
-      } else if (id == '{{ COLOR_TEXT }}') {
+        $('.panel-heading').css("color", color);
+        $('.gallery_tab_li').css("color", color);
+
+      }
+      else if (id == '{{ COLOR_TEXT }}') {
         document.getElementById('text_style').innerHTML = "p, td, tr { color :" + color + "}";
-      } else if (id == '{{ COLOR_TABS}}') {
-        document.getElementById('tabs_style').innerHTML = ".desc_table_tab_name { background-color :" + color + "}; .desc_table_tab_name { background-color :" + color + "; } .nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus { background-color :" + color + ";}";
+        $('.list-group-item').css("color", color);
+        $('.nav-pills>li').css("color", color);
+        $('.nav-pills>li.active').css("color", color);
       }
     }
     $('#btn_change_bkg_submit').on('click', function() {
@@ -323,8 +314,10 @@ $(function() {
         font = font.split(':');
         if (this.id == '{{ FONT_HEADERS }}') {
           document.getElementById('style_{{ key }}').innerHTML = "h1, h2, h3, h4, h5 { font-family :" + font[0] + "}";
+          $('.panel-heading').css("font-family", font[0]);
         } else if (this.id == '{{ FONT_TEXT }}') {
           document.getElementById('style_{{ key }}').innerHTML = "p, td, tr { font-family :" + font[0] + "}";
+          $('.panel-body').css("font-family", font[0]);
         }
         Sijax.request('change_font', [ {
           'font': '{{ key }}',
@@ -332,76 +325,6 @@ $(function() {
           } ]);
     });
     {% endfor %}
-
-    $('[contenteditable]').on('paste', function (evt) {
-        if(evt.originalEvent.clipboardData || window.clipboardData)  {
-            evt.preventDefault();
-            //webkit (and bleeding edge Firefox)
-            var selection = window.getSelection ? window.getSelection() : document.selection;
-            var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
-
-            //prepare new range selection
-
-      var startingCaretPosition = range.startOffset;
-
-    //place the pasted content at the cursor position within
-    //the div
-    var $target = $(evt.target);
-    var clipboard = evt.originalEvent.clipboardData ? evt.originalEvent.clipboardData.getData("text/plain") :
-      window.clipboardData.getData("Text");
-    var newText = $target.text().substring(0,range.startOffset) +
-    clipboard +
-    $target.text().substring(range.endOffset,$target.text().length);
-    $target.text(newText);
-
-    //create a new selection range so that the cursor is at the end
-    //of the newly pasted content
-    var targetNode = evt.target;
-    if(window.getSelection) { // webkit
-      if(evt.target.childNodes.length > 0) targetNode = evt.target.childNodes[0];
-      var newRange = document.createRange();
-      newRange.setStart(targetNode,startingCaretPosition+clipboard.length);
-      newRange.setEnd(targetNode,startingCaretPosition+clipboard.length);
-      if(selection.rangeCount > 0) selection.removeAllRanges();
-      selection.addRange(newRange);
-    } else { //IE
-      if(evt.target.childNodes.length > 0) targetNode = evt.target.childNodes[0];
-      
-      var newRange = document.selection.createRange();
-      newRange.moveToElementText(evt.target);
-      newRange.setStart(targetNode,startingCaretPosition+clipboard.length);
-      newRange.setEnd(targetNode,startingCaretPosition+clipboard.length);
-      newRange.select();
-    }
-        }
-    });
-    $('[contenteditable]').on('drop', function (evt) {
-        evt.preventDefault();
-        console.log(window.getSelection().getRangeAt(0));
-        var clipboard = evt.originalEvent.dataTransfer ? evt.originalEvent.dataTransfer.getData("text/plain") :
-            window.event.dataTransfer.getData("Text");
-
-        var range, caretPosition;
-        if (document.caretPositionFromPoint) { //w3
-            range = caretPositionFromPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
-            caretPosition = range.startOffset;
-        } else if (document.caretRangeFromPoint) { //webkit
-            range = document.caretRangeFromPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
-            caretPosition = range.startOffset;
-        } else if(evt.originalEvent.rangeOffset) { //Firefox
-            caretPosition = evt.originalEvent.rangeOffset;
-        } else { //IE
-            range = document.body.createTextRange();
-            range.moveToPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
-            range.select();
-            caretPosition = range.startOffset;
-        }
-        var $target = $(evt.target);
-        var newText = $target.text().substring(0,caretPosition) +
-            clipboard +
-            $target.text().substring(caretPosition,$target.text().length);
-        $target.text(newText);
-    });
 });
 </script>
 

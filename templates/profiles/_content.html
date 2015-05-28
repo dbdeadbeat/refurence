@@ -3,9 +3,15 @@
 h1, h2, h3, h4, h5 {
     color :  {{profile.colors[COLOR_HEADERS]}};
 }
+.panel-heading {
+    color :  {{profile.colors[COLOR_HEADERS]}};
+}
 </style>
 <style id="style_{{FONT_HEADERS}}">
 h1, h2, h3, h4, h5 {
+    font-family : {{profile.fonts[FONT_HEADERS]}};
+}
+.panel-heading {
     font-family : {{profile.fonts[FONT_HEADERS]}};
 }
 </style>
@@ -13,110 +19,176 @@ h1, h2, h3, h4, h5 {
 p, td, tr, li {
   color :  {{profile.colors[COLOR_TEXT]}};
 }
+.panel-body {
+  color :  {{profile.colors[COLOR_TEXT]}};
+}
 </style>
 <style id="style_{{FONT_TEXT}}">
 p, td, tr, li {
   font-family : {{profile.fonts[FONT_TEXT]}};
 }
+.panel-body {
+  font-family : {{profile.fonts[FONT_TEXT]}};
+}
 </style>
 <style id="links_style">
-a {
-  color :  {{profile.colors[COLOR_LINKS]}};
-}
+a { color :  {{profile.colors[COLOR_HEADERS]}}; }
 </style>
 <style id="tabs_style">
-.desc_table_tab_name {
-  background-color :  {{profile.colors[COLOR_TABS]}};
+.nav-pills>li {
+  background-color :  {{profile.colors[COLOR_MAIN]}};
+}
+.nav-pills>li>a {
+  color :  {{profile.colors[COLOR_HEADERS]}};
 }
 .nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
-  background-color :  {{profile.colors[COLOR_TABS]}};
+  background-color :  {{profile.colors[COLOR_HEADERS]}};
 }
 </style>
 <style>
 #maincontainer, #sidebar_container {
-  background-color :  {{profile.colors[COLOR_MAIN]}}
+  background-color :  {{profile.colors[COLOR_MAIN]}};
 }
 #inner_container {
-  background-color :  {{profile.colors[COLOR_INNER]}}
+  background-color :  transparent;
 }
-</style>
-<style>
-#maincontainer, #sidebar_container {
-  background-color :  {{profile.colors[COLOR_MAIN]}}
+.gallery-links {
+  background-color :  {{profile.colors[COLOR_INNER]}};
 }
-#inner_container {
-  background-color :  {{profile.colors[COLOR_INNER]}}
+.panel {
+  background-color :  {{profile.colors[COLOR_INNER]}};
+}
+.panel-heading {
+  background-color :  {{profile.colors[COLOR_MAIN]}};
 }
 </style>
 {% endmacro %}
 
-{% macro imglink(link) %}
-    <a href="{{ link.link_url }}">
+{% macro render_avatarimg(header) %}
+{% if header.avatar_url %}
+<img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.avatar_url }}">
+{% else %}
+click to add avatar
+{% endif %}
+{% endmacro %}
+
+{% macro imglink(link, number, editable) %}
+{% if not editable %} <a href="{{ link.link_url }}"> {% endif %}
     <div class="col-xs-12 imglink-container">
+        {% if editable %} <button type="button" id="imglink_{{number}}"
+            class="btn btn-xs btn-danger btn-editable-imglink"
+            data-toggle="popover" data-placement="right" data-container="body"
+            data-html="true" data-content="{{ render_popover_imglink(link, number)}}"> {% endif %}
         <img class="centered imglink-img" src="{{ link.img_url }}">
+        {% if editable %} </button> {% endif %}
     </div>
-  </a>
+{% if not editable %}</a>{% endif %}
+<div class="col-xs-12 fill hr"></div>
 {% endmacro %}
 
-{% macro render_sidebar(sidebar) -%}
-<div class="col-xs-1 fill" id="sidebar_container" style="margin-right:10px;">
-  <div class="row">
-  {% for i in range(0, sidebar.img_links|length) %}
-    {{ imglink(sidebar.img_links[i]) }}
-    {% if i != sidebar.img_links|length-1 %}
-    <div class="col-xs-12 fill hr"></div>
-    {% endif %}
-  {% endfor %}
+{% macro render_sidebar(sidebar, editable) -%}
+<div id="sidebar" style="margin-top: 30px;">
+    {% for i in range(0, sidebar.img_links|length) %}
+        {{ imglink(sidebar.img_links[i], i, editable) }}
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro render_header(header, editable) -%}
+<div class="col-xs-12" id="header">
+    <div class="col-xs-8">
+        <h1 id="{{HEADER_TITLE}}" class="text-editable" contenteditable="{{editable}}">{{ header.title }}</h1>
+        <h4 id="{{HEADER_BODY}}" class="text-editable" contenteditable="{{editable}}">{{ header.body }}</h4>
+    </div>
+    <div class="col-xs-4" id="avatar_container">
+        {% if editable %}
+            <button type="button" id="popover_change_avatar" class="btn btn-lg btn-danger" data-toggle="popover">
+                <div id="avatar">
+                    {{ render_avatarimg(header) }}
+                </div>
+            </button>
+        {% else %}
+            {% if header.avatar_url %}
+            <img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.avatar_url }}">
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_popover_imglink(imglink, number) %}
+&lt;ul class=&quot;list-group&quot;&gt;
+  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
+    &lt;div class=&quot;input-group&quot;&gt;
+      &lt;span class=&quot;input-group-addon&quot;&gt;icon&lt;/span&gt;
+      &lt;input type=&quot;text&quot; id=&quot;input_imglink_icon_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.img_url %}{{ imglink.img_url }}{% else %}url{% endif %}&quot;&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
+    &lt;div class=&quot;input-group&quot;&gt;
+      &lt;span class=&quot;input-group-addon&quot;&gt;link&lt;/span&gt;
+      &lt;input type=&quot;text&quot; id=&quot;input_imglink_href_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.link_url %}{{ imglink.link_url }}{% else %}url (optional){% endif %}&quot;&gt;
+      &lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
+    &lt;div class=&quot;btn-toolbar&quot; role=&quot;toolbar&quot; aria-label=&quot;...&quot;&gt;
+      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
+          &lt;button id=&quot;btn_imglink_submit_{{number}}&quot; class=&quot;btn btn-default btn-imglink-submit&quot; type=&quot;button&quot;&gt;submit&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
+          &lt;button id=&quot;btn_imglink_delete_{{number}}&quot; class=&quot;btn btn-default btn-imglink-delete&quot; type=&quot;button&quot;&gt;remove&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;   
+
+{% endmacro %}
+
+{% macro render_notes(notes, editable) %}
+<div class="panel">
+    <div class="panel-heading" id="{{NOTES_TITLE}}" contenteditable="{{editable}}">{{ profile.notes.title }}</div>
+    <div class="panel-body">
+        <p id="{{NOTES_BODY}}" class="text-editable" contenteditable="{{editable}}">{{ profile.notes.body }}</p>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro render_description_content(description, editable) %}
+{% for i in range(0, description.tables.keys()|length) %}
+<div class="panel description-content">
+  <!-- Default panel contents -->
+  <div class="panel-heading" contenteditable="{{editable}}">
+      {{ description.get_keys()[i] }}
+      {% if editable %}
+      <button class="btn-xs pull-right btn-delete-description"
+          id="btn-delete-description-{{i}}" type="button"
+          contenteditable="False"
+          onclick="Sijax.request('del_desc_table', [{num:{{i}} , 'desc_table': getDescriptionTable() }])">
+            <span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
+      </button>
+      {% endif %}
+  </div>
+  <div class="panel-body">
+    <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
   </div>
 </div>
-{% endmacro %}
-
-{% macro render_header(header) -%}
-<div class="row" id="header">
-    {% if header.avatar_url %}
-    <div class="col-xs-9">
-        <h1 class="text-editable">{{ header.title }}</h1>
-        <h4 class="text-editable">{{ header.body }} </h4>
-    </div>
-    <div class="col-xs-3" id="avatar_container">
-      <img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.avatar_url }}">
-    </div>
-    {% else %}
-    <div class="col-xs-12">
-        <h1 class="text-editable">{{ header.title }}</h1>
-        <h4 class="text-editable">{{ header.body }} </h4>
-    </div>
-    {% endif %}
-</div>
-{% endmacro %}
-
-{% macro render_description(description) -%}
-
-<h4 class="text-editable">{{description.title}}</h4>
-<ul class="nav nav-pills">
-  {% for i in range(0, description.tables.keys()|length) %}
-    {% if i == 0 %} <li class="active"> {% else %} <li> {% endif %}
-    <a href="#table{{i}}" data-toggle="tab" class="desc_table_tab_name text-editable">{{ description.get_keys()[i] }}</a>
-    </li>
-  {% endfor %}
-</ul>
-<div class="tab-content text">
-{% for i in range(0, description.tables.keys()|length) %}
-  <div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="table{{i}}">
-      <div class="table-responsive">
-        <table class="table table-condensed table-hover">
-          {% for row in description.get_tables()[i].rows %}
-            <tr>
-              {% for j in range(0,row.cells|length) %}
-              <td class="desc_cell {%if j == 0 and row.cells|length > 1 %}td-header-cell{% endif %}">{{ row.cells[j] }}</td>
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </table>
-      </div>
-    </div>
 {% endfor %}
+{% endmacro %}
+
+{% macro render_description(description, editable) -%}
+<div id="description-content">
+{{ render_description_content(description, editable) }}
 </div>
+{% if editable %}
+<div class="input-group text-center">
+    <span class="input-group-btn">
+        <button id="btn_desc_tbl_add" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria=hidden="true"> Add Another</span>
+        </button>
+    </span>
+</div><!-- /input-group -->
+{% endif %}
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
@@ -133,7 +205,6 @@ a {
 {% endmacro %}
 
 {% macro render_gallery(gallery) %}
-<h4> {{gallery.title}} </h4>
 <ul class="nav nav-pills">
   {% for i in range(0, gallery.tables.keys()|length) %}
     {% if i == 0 %} <li class="active"> {% else %} <li> {% endif %}

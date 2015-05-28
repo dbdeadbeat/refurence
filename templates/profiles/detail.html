@@ -27,11 +27,13 @@ style="background: {{ profile.bkg_color }}; background-size: cover;"
 
 {% block content %}
 <div class="container">
-<div class="row">
+  <div class="row">
     <!-- sidebar -->
     {%- block sidebar -%}
     {% if profile.sidebar.img_links %}
-    {{ content.render_sidebar(profile.sidebar) }}
+    <div class="col-xs-1 fill" id="sidebar_container" style="margin-right:10px; margin-top:30px;">
+      {{ content.render_sidebar(profile.sidebar, false) }}
+    </div>
     {% endif %}
     {%- endblock -%}
     <!-- END sidebar -->
@@ -39,114 +41,112 @@ style="background: {{ profile.bkg_color }}; background-size: cover;"
     <!-- main container -->
     {%- block maincontainer -%}
     {% if profile.sidebar.img_links %}
-        <div class="col-xs-10 content-box" id="maincontainer">
-    {% else %}
-        <div class="col-xs-12 content-box" id="maincontainer">
-    {% endif %}
-    {%- endblock -%}
+    <div class="col-xs-10 content-box" id="maincontainer">
+      {% else %}
+      <div class="col-xs-12 content-box" id="maincontainer">
+        {% endif %}
+        {%- endblock -%}
 
-    <!-- header -->
-    {%- block header -%}
-    {{ content.render_header(profile.header) }}
-    {%- endblock -%}
+        <!-- header -->
+        {%- block header -%}
+        {{ content.render_header(profile.header, false) }}
+        {%- endblock -%}
 
-    <div class="col-xs-12 fill-transparent hr"></div>
-    <!-- <div class="row"> -->
+        <div class="col-xs-12 fill-transparent hr"></div>
+        <!-- <div class="row"> -->
         <!-- <div class="col-xs-12 fill-transparent hr"> -->
         <!-- </div> -->
-    <!-- </div> -->
-    <!-- END header -->
+        <!-- </div> -->
+        <!-- END header -->
 
-    <!-- child container -->
-    <div class="col-xs-12 fill-solid rounded" id="inner_container">
+        <!-- child container -->
+        <div class="col-xs-12 fill-solid rounded" id="inner_container">
 
-        <!-- notes -->
-        {%- block notes -%}
-        {% if profile.notes.is_renderable() %}
-        <h4 id="{{NOTES_TITLE}}" class="text-editable">{{profile.notes.title}}</h4>
-        <p class="text-editable">{{ profile.notes.body }}</p>
-        <div class="col-xs-12 fill-transparent hr"></div>
-        {% endif %}
-        {%- endblock -%}
-        <!-- END notes -->
+          <!-- notes -->
+          {%- block notes -%}
+          {% if profile.notes.is_renderable() %}
+          {{ content.render_notes(profile.notes, false) }}
+          {% endif %}
+          {%- endblock -%}
+          <!-- END notes -->
 
-        <!-- description-->
-        {%- block description -%}
-        {% if profile.description.is_renderable() %}
-          {{ content.render_description(profile.description) }} 
+          <!-- description-->
+          {%- block description -%}
+          {% if profile.description.is_renderable() %}
+          {{ content.render_description(profile.description, false) }} 
+          {% endif %}
           <div class="col-xs-12 fill-transparent hr"> </div>
-        {% endif %}
-        {%- endblock -%}
-        <!-- END description-->
+          {%- endblock -%}
+          <!-- END description-->
 
-        <!-- gallery -->
-        {%- block gallery -%}
-        {% if profile.gallery.is_renderable() %}
+          <!-- gallery -->
+          {%- block gallery -%}
+          {% if profile.gallery.is_renderable() %}
           {{ content.render_gallery(profile.gallery) }}
           <div class="col-xs-12 fill-transparent hr"> </div>
-        {% endif %}
-        {%- endblock -%}
-        <!-- END gallery -->
+          {% endif %}
+          {%- endblock -%}
+          <!-- END gallery -->
 
-    </div>
-    <!-- END child container -->
-
-    {{ super() }}
-
-    <!-- blueimp -->
-    <div id="blueimp-gallery" class="blueimp-gallery">
-        <!-- The container for the modal slides -->
-        <div class="slides"></div>
-        <!-- Controls for the borderless lightbox -->
-        <h3 class="title"></h3>
-        <a class="prev">‹</a>
-        <a class="next">›</a>
-        <a class="close">×</a>
-        <a class="play-pause"></a>
-        <ol class="indicator"></ol>
-        <!-- The modal dialog, which will be used to wrap the lightbox content -->
-        <div class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title"></h4>
-                    </div>
-                    <div class="modal-body next"></div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default pull-left prev">
-                            <i class="glyphicon glyphicon-chevron-left"></i>
-                            Previous
-                        </button>
-                        <button type="button" class="btn btn-primary next">
-                            Next
-                            <i class="glyphicon glyphicon-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
+        <!-- END child container -->
+
+        {{ super() }}
+
+        <!-- blueimp -->
+        <div id="blueimp-gallery" class="blueimp-gallery">
+          <!-- The container for the modal slides -->
+          <div class="slides"></div>
+          <!-- Controls for the borderless lightbox -->
+          <h3 class="title"></h3>
+          <a class="prev">‹</a>
+          <a class="next">›</a>
+          <a class="close">×</a>
+          <a class="play-pause"></a>
+          <ol class="indicator"></ol>
+          <!-- The modal dialog, which will be used to wrap the lightbox content -->
+          <div class="modal fade">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body next"></div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default pull-left prev">
+                    <i class="glyphicon glyphicon-chevron-left"></i>
+                    Previous
+                  </button>
+                  <button type="button" class="btn btn-primary next">
+                    Next
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END blueimp -->
+      </div>
+      <!-- END main container -->
     </div>
-    <!-- END blueimp -->
-</div>
-<!-- END main container -->
-</div>
 
-{%- block modals -%}
-{% endblock %}
+    {%- block modals -%}
+    {% endblock %}
 
-</div>
-{%- block footer-%}
-<div class="row">
+  </div>
+  {%- block footer-%}
+  <div class="row">
     <div class="col-xs-10">
-        <p>&copy {{ profile.username }}</p>
+      <p>&copy {{ profile.username }}</p>
     </div>
     <div class="col-xs-2">
-        {{ super() }} 
+      {{ super() }} 
     </div>
-</div>
-{% endblock %}
-{% endblock %}
+  </div>
+  {% endblock %}
+  {% endblock %}
 
 {% block scripts %}
 {{ super() }}

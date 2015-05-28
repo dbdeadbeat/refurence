@@ -8,30 +8,35 @@ body {
   top: 0px;
   left: 0px;
   right: 0px;
-  background-color: rgba(200, 200, 200, 0.75);
+  background-color: rgba(20, 20, 20, 0.85);
   font-family: "Cabin";
   font-size: 18px;
   border: none;
-  border-bottom: 1px solid #CCC;
+  border-bottom: 0px solid #CCC;
   border-radius: 0px; }
-  #main-nav a {
-    color: #000;
-    font-weight: bold;
-    text-shadow: 0px 0px 6px #fff; }
-    #main-nav a:hover {
-      background-color: rgba(255, 255, 255, 0.25);
-      color: #0b3347;
-      text-shadow: none; }
-  #main-nav ul {
-    margin-left: 8px; }
-  #main-nav .navbar-logo {
-    font-family: "corben";
-    display: inline-block;
-    padding: 4px 0px;
-    text-decoration: none;
-    font-size: 24px; }
-    #main-nav .navbar-logo:hover {
-      background-color: inherit; }
+
+#main-nav a {
+color: gray;
+font-weight: bold;
+}
+
+#main-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #0b3347;
+  text-shadow: none; }
+
+#main-nav ul {
+margin-left: 8px; }
+
+#main-nav .navbar-logo {
+font-family: "corben";
+display: inline-block;
+padding: 4px 0px;
+text-decoration: none;
+font-size: 24px; }
+
+#main-nav .navbar-logo:hover {
+  background-color: inherit; }
 
 body {
   font-size: 14px;
@@ -63,6 +68,10 @@ label {
   color: #FFF;
   box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
   font-weight: normal; }
+
+.popover {
+  box-shadow: inset 0px 0px 20px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
+}
 
 .form h1 {
   margin-top: -30px; }
@@ -204,10 +213,15 @@ td {
   border-width: 5px;
   border-radius: 8px;
   border-color: #000;
-  box-shadow: 0 0 10px #bbb; }
+  /* box-shadow: 0 0 10px #bbb; */
+  box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+}
 
 .panel {
-  border: 0px solid #eee; }
+  border: 0px solid #eee;
+  margin-bottom: 10px;
+  box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+}
 
 .centered {
   display: block;
@@ -229,10 +243,6 @@ td {
   border-radius: 15px;
   padding-bottom: 25px; }
 
-#links {
-  text-align: center;
-  padding-bottom: 40px; }
-
 #links img {
   max-height: 150px;
   max-width: 150px;
@@ -244,11 +254,16 @@ input, textarea {
 
 .gallery-links {
   text-align: center;
-  padding-bottom: 40px; }
+  padding-bottom: 40px;
+  text-align: center;
+  padding: 40px;
+  box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+}
 
 .gallery-links img {
   max-height: 150px;
   max-width: 150px;
+  margin: 3px;
   overflow: hidden; }
 
 #maincontainer {
@@ -260,7 +275,6 @@ input, textarea {
   border-color: transparent;
   background: transparent;
   text-align: center;
-  color: lightblue;
   margin: 0px; }
 
 #sidebar-edit-list {
@@ -277,7 +291,9 @@ input, textarea {
   /* background-color: #d0e9c6; */ }
 
 img {
-  border-radius: 8px; }
+  border-radius: 8px;
+  box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+}
 
 .modal-clear .modal-backdrop {
   background: transparent; }
@@ -291,7 +307,8 @@ img {
 .btn-default {
   background: #a8a8b2;
   border-color: transparent;
-  border-radius: 8px; }
+  border-radius: 8px; 
+}
 
 .blurred {
   -webkit-filter: blur(4px);
@@ -326,11 +343,13 @@ img {
 
 .list-group-item {
   border: 0px;
-  margin: 20px;
+  margin: 10px 5px;
+  padding: 0px;
   background-color: inherit; }
 
 .nav-tabs {
-  border-bottom: 0px; }
+  border-bottom: 0px;
+}
 
 .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
   color: #fff;
@@ -341,7 +360,9 @@ img {
 .nav-pills > li {
   border-radius: 3px;
   background-color: rgba(66, 66, 66, 0.5);
-  margin-bottom: 0px; }
+  margin-bottom: 0px;
+  box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+}
 
 .btn-dark {
   border-radius: 3px;

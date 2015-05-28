@@ -16,6 +16,13 @@ class EditableTable(db.EmbeddedDocument):
     rows = db.ListField(db.EmbeddedDocumentField('EditableRow'))
     order = db.IntField(min_value=0, max_value=10)
 
+    def get_text(self):
+        out = ''
+        for r in self.rows:
+            for c in r.cells:
+                out += c
+        return out
+
 class ImageTable(db.EmbeddedDocument):
     img_dir = db.URLField()
     img_urls = db.ListField(db.URLField(max_length=1024))
@@ -27,8 +34,9 @@ class ImageTable(db.EmbeddedDocument):
         return False
 
     def get_hosted_images(self):
-        out = get_hosted_image_urls(self.img_dir)
-        return out
+        if not self.img_dir:
+            return []
+        return get_hosted_image_urls(self.img_dir)
 
 class StylableContent(db.EmbeddedDocument):
     meta = {
@@ -62,6 +70,13 @@ class TabbedContent(StylableContent):
     def get_tables(self):
         return sorted(self.tables.values(), key=lambda x: x.order)
 
+    def get_table_by_name(self, name):
+        if name in self.tables:
+            return self.tables[name]
+
+    def add_table(self, name, table):
+        self.tables[name] = table
+
     def delete_table(self, name):
         keys = self.get_keys()
         order_counter = 0
@@ -71,7 +86,16 @@ class TabbedContent(StylableContent):
             else:
                 order_counter += 1
                 self.tables[k].order = order_counter
-        pass
+
+    def delete_table_by_order(self, idx):
+        keys = self.get_keys()
+        order_counter = 0
+        for k in keys:
+            if order_counter == idx:
+                del self.tables[k]
+            else:
+                self.tables[k].order = order_counter
+            order_counter += 1
 
     def is_renderable(self):
         values = self.tables.values()

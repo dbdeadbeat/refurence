@@ -1,129 +1,6 @@
-{% import "profiles/_content.html" as content %}
+{% import "profiles/_content.html" as content with context %}
 
 <!-- BEGIN MACROS -->
-
-{% macro render_popover_imglink(imglink, number) %}
-&lt;ul class=&quot;list-group&quot;&gt;
-  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
-    &lt;div class=&quot;input-group&quot;&gt;
-      &lt;span class=&quot;input-group-addon&quot;&gt;icon&lt;/span&gt;
-      &lt;input type=&quot;text&quot; id=&quot;input_imglink_icon_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.img_url %}{{ imglink.img_url }}{% else %}url{% endif %}&quot;&gt;
-    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
-    &lt;div class=&quot;input-group&quot;&gt;
-      &lt;span class=&quot;input-group-addon&quot;&gt;link&lt;/span&gt;
-      &lt;input type=&quot;text&quot; id=&quot;input_imglink_href_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.link_url %}{{ imglink.link_url }}{% else %}url (optional){% endif %}&quot;&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
-    &lt;div class=&quot;btn-toolbar&quot; role=&quot;toolbar&quot; aria-label=&quot;...&quot;&gt;
-      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
-          &lt;button id=&quot;btn_imglink_submit_{{number}}&quot; class=&quot;btn btn-default btn-imglink-submit&quot; type=&quot;button&quot;&gt;submit&lt;/button&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
-          &lt;button id=&quot;btn_imglink_delete_{{number}}&quot; class=&quot;btn btn-default btn-imglink-delete&quot; type=&quot;button&quot;&gt;remove&lt;/button&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;   
-
-{% endmacro %}
-
-{% macro render_editable_imglink(link, number) %}
-  <div class="col-xs-12 imglink-container">
-    <button type="button" id="imglink_{{number}}" class="btn btn-xs btn-danger btn-editable-imglink"
-    data-toggle="popover" data-placement="right" data-container="body" data-html="true" data-content="{{render_popover_imglink(link, number)}}">
-    <!-- <a href="{{ link.link_url }}"> -->
-    <img class="centered imglink-img" src="{{ link.img_url }}"> </a>
-  </button>
-</div>
-<div class="col-xs-12 fill hr"></div>
-{% endmacro %}
-
-{% macro render_editablesidebar(sidebar) %}
-  {% for i in range(0, sidebar.img_links|length) %}
-    {{ render_editable_imglink(sidebar.img_links[i], i) }}
-  {% endfor %}
-{% endmacro %}
-
-{% macro render_avatarimg(header) %}
-{% if header.avatar_url %}
-<img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.avatar_url }}">
-{% else %}
-click to add avatar
-{% endif %}
-{% endmacro %}
-
-{% macro render_editableheader(header) %}
-<div class="row" id="header">
-    <div class="col-xs-9">
-    <h1 id="{{HEADER_TITLE}}" class="text-editable" contenteditable="true">{{ header.title }}</h1>
-    <h4 id="{{HEADER_BODY}}" class="text-editable" contenteditable="true">{{ header.body|nl2br }} </h4>
-    </div>
-    <div class="col-xs-3" id="avatar_container">
-      <button type="button" id="popover_change_avatar" class="btn btn-lg btn-danger" data-toggle="popover">
-          <div id="avatar">
-            {{ render_avatarimg(profile.header) }}
-          </div>
-      </button>
-    </div>
-</div>
-{% endmacro %}
-
-{% macro render_editablenotes(notes) %}
-<p id="{{NOTES_BODY}}" class="text-editable" contenteditable="true">{{ notes.body }}</p>
-{% endmacro %}
-
-{% macro render_navtabs_description(description) %}
-<ul class="nav nav-pills">
-  {% for i in range(0, description.tables.keys()|length) %}
-    {% if i == 0 %} <li class="active desc_tab_li"> {% else %} <li class="desc_tab_li"> {% endif %}
-    <a href="#table_tab{{i}}" data-toggle="tab" contenteditable="true" class="desc_table_tab_name text-editable">{{ description.get_keys()[i] }}</a>
-    </li>
-  {% endfor %}
-</ul>
-{% endmacro %}
-
-{% macro render_table_description(description) %}
-{% for i in range(0, description.tables.keys()|length) %}
-  <div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="table_tab{{i}}">
-    <div class="table-responsive">
-        <table class="table table-condensed table-hover desc_table" id="table_{{i}}">
-          {% for row in description.get_tables()[i].rows %}
-            <tr>
-              {% for j in range(0,row.cells|length) %}
-              <td class="desc_cell {%if j == 0 and row.cells|length > 1 %}td-header-cell{% endif %}" contenteditable="true">{{ row.cells[j] }}</td>
-              {% endfor %}
-            </tr>
-          {% endfor %}
-        </table>
-    </div>
-  </div>
-{% endfor %}
-{% endmacro %}
-
-{% macro render_editabledescription(description) %}
-<div class="input-group">
-    <span class="input-group-btn">
-      <div class="btn-group-vertical btn-group-xs" role="group" aria-label="...">
-        <button id="btn_desc_tbl_add" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
-        </button>
-        <button id="btn_desc_tbl_del" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-minus" aria=hidden="true"></span>
-        </button>
-      </div>
-    </span>
-    <div id="navtabs_description">
-      {{ render_navtabs_description(description) }}
-    </div>
-</div><!-- /input-group -->
-<div class="tab-content text" id="table_description">
-  {{ render_table_description(description) }}
-</div>
-{% endmacro %}
 
 {% macro render_navtabs_gallery(gallery) %}
 <ul class="nav nav-pills">
@@ -171,7 +48,6 @@ click to add avatar
 {% endmacro %}
 
 {% macro render_editablegallery(gallery) %}
-<h4 id="{{GALLERY_TITLE}}" contenteditable="true" class="text-editable">{{gallery.title}}</h4>
 <div class="input-group">
     <span class="input-group-btn">
       <div class="btn-group-vertical btn-group-xs" role="group" aria-label="...">
@@ -241,26 +117,16 @@ click to add avatar
   }
 
   function getDescriptionTable() {
-    var desc_tabs = document.querySelectorAll(".desc_table_tab_name");
-    var desc_tbls = document.querySelectorAll(".desc_table");
+    console.log("CC",c);
+    var content = $(".description-content");
     var out = {};
-    for (var idx = 0; idx < desc_tbls.length; idx++) {
-      var table = desc_tbls[idx];
-      var tab_name = desc_tabs[idx].text;
-      out[tab_name] = {'order': idx, 'rows' :[]};
-      for (var i = 0, row; row = table.rows[i]; i++) {
-        var row_list = [];
-         for (var j = 0, col; col = row.cells[j]; j++) {
-          row_list[row_list.length] = br2nl(col.innerHTML);
-         }  
-         out[tab_name]['rows'][out[tab_name]['rows'].length] = row_list;
-      }
+    for (var idx = 0; idx < content.length; idx++) {
+      var c = content[idx];
+      var header = $(c.children[0]).text().replace('\n','');
+      var body = br2nl($(c.children[1].children[0]).html());
+      out[header] = {'order': idx, 'rows': [[body]]};
     }
     return out;
-  }
-
-  function getActiveDescriptionTabName() {
-    return document.querySelector('.active.desc_tab_li').children[0].text;
   }
 
   function getGalleryTableTabs() {
@@ -310,12 +176,6 @@ click to add avatar
             '{{DESC_TABLE}}'  : getDescriptionTable(),
             } ]);
     });
-    $('button#btn_desc_tbl_del').on('click', function() {
-        Sijax.request('del_desc_table', [ {
-            active : getActiveDescriptionTabName(),
-            '{{DESC_TABLE}}'  : getDescriptionTable(),
-        } ]);
-    });
     $('button#btn_gallery_add').on('click', function() {
         Sijax.request('add_gallery', [ {} ]);
     });
@@ -353,15 +213,14 @@ click to add avatar
     });
 
     $('#btn_saveprofile').bind('click', function() {
+        console.log("SAVE");
         Sijax.request('save_profile', [
           {
             '{{HEADER_TITLE}}': br2nl($('#{{HEADER_TITLE}}').html()),
             '{{HEADER_BODY}}' : br2nl($('#{{HEADER_BODY}}').html()),
             '{{NOTES_TITLE}}'  : br2nl($('#{{NOTES_TITLE}}').html()),
             '{{NOTES_BODY}}'  : br2nl($('#{{NOTES_BODY}}').html()),
-            '{{DESC_HEADER}}' : br2nl($('#{{DESC_HEADER}}').html()),
             '{{DESC_TABLE}}'  : getDescriptionTable(),
-            '{{GALLERY_TITLE}}': br2nl($('#{{GALLERY_TITLE}}').html()),
             '{{GALLERY_TABS}}': getGalleryTableTabs(),
           }
         ]);
@@ -396,89 +255,114 @@ click to add avatar
         }]);
     });
 
-    $('body').on('keydown', '.desc_cell', function(e){
-      if (e.keyCode == 9) {
-        // tab
-
-        var tr = e.target.parentElement
-        if (tr.cells.length >= 5) {
-          return false;
-        }
-
-        var cell = e.target.parentNode.insertCell(-1);
-
-        if (tr.cells.length == 2) {
-          tr.cells[0].setAttribute('class', 'desc_cell td-header-cell');
-        }
-        cell.innerHTML = "enter text";
-        cell.setAttribute('contenteditable', 'true');
-        cell.setAttribute('class', 'desc_cell');
-      } else if (e.keyCode == 8) {
-        // backspace
-        if (e.target.innerHTML.length == 0) {
-          var isShift = window.event.shiftKey ? true : false;
-          if (!isShift)
-            return false;
-          var tr = e.target.parentElement
-          if (tr.parentElement.rows.length == 1 && tr.cells.length == 1) {
-            return false;
-          }
-          tr.deleteCell(e.target.cellIndex);
-          if (tr.cells.length == 0) {
-            tr.parentElement.deleteRow(tr.rowIndex);
-          } else if (tr.cells.length == 1) {
-            tr.cells[0].setAttribute('class', 'desc_cell');
-          }
-          return false;
-        }
+    var content_edited = false;
+    $('body').on('keydown', '[contenteditable="True"]', function (e) {
+      content_edited = true;
+      if (e.keyCode === 13) {
+        document.execCommand('insertHTML', false, '<br>');
+        return false;
       }
     });
 
-    var content_edited = false;
-    // enforce contenteditables use linebreaks instead of divs
-    $('body').on('keydown', '[contenteditable="true"]', function (e) {
-      content_edited = true;
-      // trap the return key being pressed
-      if (e.keyCode === 13) {
-        // disable enter in table cells & add new row
-        if ($(e.target).hasClass('desc_cell')) {
-            var tbl = e.target.parentNode.parentNode;
-            if (tbl.rows.length >= 10) {
-              return false;
-            }
-            var row = tbl.insertRow(-1);
-            var cell = row.insertCell(-1);
-            cell.innerHTML = "enter text";
-            cell.setAttribute('contenteditable', 'true');
-            cell.setAttribute('class', 'desc_cell');
-            return e.which != 13; 
-          } else if ($(e.target).hasClass('desc_table_tab_name')) {
-            return e.which != 13; 
+    $('a').on('paste', function (evt) {
+        var thisclass = $(this).attr("class");
+        if (thisclass == 'gallery_table_tab_name text-editable')
+          return false;
+    });
+
+    $('body').on('paste', '[contenteditable="True"]', function (evt) {
+        var thisclass = $(this).attr("class");
+        if (thisclass == 'panel-heading' || thisclass == 'btn' || thisclass == 'gallery_table_tab_name') {
+          return false;
+        }
+
+        if(evt.originalEvent.clipboardData || window.clipboardData)  {
+          evt.preventDefault();
+          //webkit (and bleeding edge Firefox)
+          var selection = window.getSelection ? window.getSelection() : document.selection;
+          var range = selection.getRangeAt ? selection.getRangeAt(0) : selection.createRange();
+
+          //prepare new range selection
+
+          var startingCaretPosition = range.startOffset;
+
+          //place the pasted content at the cursor position within
+          //the div
+          var $target = $(evt.target);
+          var clipboard = evt.originalEvent.clipboardData ? evt.originalEvent.clipboardData.getData("text/plain") :
+          window.clipboardData.getData("Text");
+          var newText = $target.text().substring(0,range.startOffset) +
+          clipboard +
+          $target.text().substring(range.endOffset,$target.text().length);
+          $target.text(newText);
+
+          //create a new selection range so that the cursor is at the end
+          //of the newly pasted content
+          var targetNode = evt.target;
+          if(window.getSelection) { // webkit
+            if(evt.target.childNodes.length > 0)
+              targetNode = evt.target.childNodes[0];
+            var newRange = document.createRange();
+            newRange.setStart(targetNode,startingCaretPosition+clipboard.length);
+            newRange.setEnd(targetNode,startingCaretPosition+clipboard.length);
+            if(selection.rangeCount > 0) selection.removeAllRanges();
+              selection.addRange(newRange);
+          } else { //IE
+            if(evt.target.childNodes.length > 0) targetNode = evt.target.childNodes[0];
+
+            var newRange = document.selection.createRange();
+            newRange.moveToElementText(evt.target);
+            newRange.setStart(targetNode,startingCaretPosition+clipboard.length);
+            newRange.setEnd(targetNode,startingCaretPosition+clipboard.length);
+            newRange.select();
           }
-        // insert 2 br tags (if only one br tag is inserted the cursor won't go to the next line)
-        document.execCommand('insertHTML', false, '<br><br>');
-        // prevent the default behaviour of return key pressed
-        return false;
-      }
-  });
+        }
+    });
+
+    $('body').on('drop', '[contenteditable="True"]', function (evt) {
+        evt.preventDefault();
+        console.log(window.getSelection().getRangeAt(0));
+        var clipboard = evt.originalEvent.dataTransfer ? evt.originalEvent.dataTransfer.getData("text/plain") :
+        window.event.dataTransfer.getData("Text");
+
+        var range, caretPosition;
+        if (document.caretPositionFromPoint) { //w3
+          range = caretPositionFromPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
+          caretPosition = range.startOffset;
+        } else if (document.caretRangeFromPoint) { //webkit
+          range = document.caretRangeFromPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
+          caretPosition = range.startOffset;
+        } else if(evt.originalEvent.rangeOffset) { //Firefox
+          caretPosition = evt.originalEvent.rangeOffset;
+        } else { //IE
+          range = document.body.createTextRange();
+          range.moveToPoint(evt.originalEvent.clientX, evt.originalEvent.clientY);
+          range.select();
+          caretPosition = range.startOffset;
+        }
+        var $target = $(evt.target);
+        var newText = $target.text().substring(0,caretPosition) + clipboard + $target.text().substring(caretPosition,$target.text().length);
+        $target.text(newText);
+    });
+
 
     // hide popover if click elsewhere on page
     $('body').on('click', function (e) {
-      $('[data-toggle="popover"]').each(function () {
+        $('[data-toggle="popover"]').each(function () {
           if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-              $(this).popover('hide');
+          $(this).popover('hide');
           }
           if (content_edited) {
-            content_edited = false;
+          content_edited = false;
           }
-      });
-    });
+          });
+        });
 
   }
 
-  $(function() {
-      loadJS();
-  });
+$(function() {
+    loadJS();
+    });
 </script>
 
 {% endmacro %}
