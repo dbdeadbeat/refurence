@@ -132,7 +132,10 @@ class EditView(ProfileView):
         profile.notes.title        = format_input(content[pc['NOTES_TITLE']])
         profile.notes.body         = format_input(content[pc['NOTES_BODY']])
 
+        desc_images = [tbl.images for tbl in profile.description.get_tables() ]
         profile.description.tables = self.extract_desc_content(content[pc["DESC_TABLE"]])
+        for tbl in profile.description.get_tables():
+            tbl.images = desc_images[tbl.order]
 
         tabs = [format_input(x) for x in content[pc['GALLERY_TABS']]]
         keys = profile.gallery.get_keys()
@@ -317,7 +320,6 @@ class EditView(ProfileView):
             return
 
         for f in content['files']:
-            # media = app.dropbox.client.media(f['path'])
             table.images.append(f['path'])
 
         self.save_user_profile_edit(profile)
