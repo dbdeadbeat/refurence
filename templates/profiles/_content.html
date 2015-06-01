@@ -156,7 +156,7 @@ click to add avatar
 
 {% macro render_description_content(description, editable) %}
 {% for i in range(0, description.tables.keys()|length) %}
-<div class="panel description-content">
+<div class="panel description-content" id="description-content-{{i}}">
   <!-- Default panel contents -->
   <div class="panel-heading" contenteditable="{{editable}}">
       {{ description.get_keys()[i] }}
@@ -172,6 +172,11 @@ click to add avatar
   <div class="panel-body">
     <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
   </div>
+  {% if editable %}
+  <div class="panel-footer description-drop" style="text-align:center;">
+      Drag and drop files here to upload
+  </div>
+  {% endif %}
 </div>
 {% endfor %}
 {% endmacro %}

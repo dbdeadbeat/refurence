@@ -1,0 +1,42 @@
+{% macro render_error(msg) %}
+<div class="alert alert-danger" role="alert">
+  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+  <span class="sr-only">Error:</span>
+  {{ msg }}
+</div>
+{% endmacro %}
+
+{% macro render_profile_list(profiles) %}
+{% if profiles|length > 0 %}
+<div class="list-group">
+{% for profile in profiles %}
+<li class="list-group-item controlpanel-list">
+  <div class="col-xs-10">
+  <div class="media">
+    <div class="media-left">
+      <a href="{{ url_for('profiles.detail', slug=profile.username) }}">
+        <img class="media-object" src="{{ profile.header.avatar_url }}" width="64px">
+      </a>
+    </div>
+    <div class="media-body">
+      <h4 class="media-heading">{{ profile.username }}</h4>
+      {{ profile.header.body }}
+    </div>
+  </div>
+  </div>
+  <div class="col-xs-2">
+      <div class="col-lg-2"></div>
+      <div class="col-lg-8">
+          <button class="btn btn-danger" type="button"
+            onclick="Sijax.request('delete_refurence', [{'name': '{{profile.username}}' }])">Delete</button>
+      </div>
+      <div class="col-lg-2"></div>
+  </div>
+</li>
+{% endfor %}
+</div>
+{% else %}
+<h4>You have no refurences</h4>
+<p>create one with the textbox below!!</p>
+{% endif %}
+{% endmacro %}

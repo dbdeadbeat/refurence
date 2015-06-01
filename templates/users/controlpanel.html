@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% import "users/_macros.html" as macros with context %}
+
+{% block title %}
+refurence
+{% endblock %}
+
+{% block js_header %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src={{url_for('static', filename="js/sijax/sijax.js") }}></script>
+<script type="text/javascript"> {{ g.sijax.get_js()|safe }} </script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    {%- block maincontainer -%}
+    <div class="col-xs-12 content-box" id="maincontainer">
+      
+      <div class="col-xs-12" id="error-msg"></div>
+
+      <div class="col-xs-12">
+        <h3> Control Panel </h3>
+      </div>
+      <div class="col-xs-12 fill hr"></div>
+
+      <div class="col-xs-12" id="profile-list">
+        {{ macros.render_profile_list(profiles) }}
+      </div>
+
+      <div class="col-xs-12 fill hr"></div>
+
+      <div class="col-lg-2"></div>
+      <div class="col-lg-8">
+      <div class="input-group">
+        <input id="input-create-refurence" type="text" class="form-control" placeholder="Enter name of new refurence...">
+        <span class="input-group-btn">
+          <button id="btn-create-refurence" class="btn btn-default" type="button">Create!</button>
+        </span>
+      </div>
+      <div class="col-lg-2"></div>
+    </div>
+    {% endblock %}
+
+    {%- block modals -%}
+    {% endblock %}
+
+  </div>
+  {%- block footer-%}
+  {% endblock %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
+<script type=text/javascript>
+function loadJS() {
+    $('button#btn-create-refurence').on('click', function() {
+        console.log("CREATE REF");
+        var profile_input = $('#input-create-refurence');
+        Sijax.request('create_new_refurence', [ {'name': profile_input.val()} ]);
+        profile_input.val('');
+        return false;
+    });
+}
+$(function() {
+  loadJS();
+});
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@ from flask.ext.security import UserMixin, RoleMixin, user_registered
 
 from flask_application.models import db, FlaskDocument
 from flask_application import app
-from flask import current_app, redirect
+from flask import redirect
 
 from flask_application.profiles.models import Profile
 
@@ -19,9 +19,11 @@ class User(FlaskDocument, UserMixin):
     active = db.BooleanField(default=True)
     confirmed_at = db.DateTimeField()
     roles = db.ListField(db.ReferenceField(Role), default=[])
+    profiles = db.ListField(db.ReferenceField(Profile))
 
     def _initialize(self):
         pass
+
 
 @user_registered.connect_via(app)
 def user_registered_sighandler(app, user, confirm_token):

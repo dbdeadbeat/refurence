@@ -3,7 +3,7 @@ import imp
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from flask import Flask, send_from_directory
+from flask import Flask, jsonify, request
 
 FLASK_APP_DIR = os.path.dirname(os.path.abspath(__file__))
 print 'app dir', FLASK_APP_DIR
@@ -85,6 +85,12 @@ from flask.ext.wtf import RecaptchaField
 from wtforms import TextField
 from wtforms.validators import Required, ValidationError
 
+# Dropbox
+from flask.ext.dropbox import Dropbox, DropboxBlueprint
+app.dropbox = Dropbox(app)
+app.dropbox.register_blueprint(url_prefix='/dropbox')
+
+
 class ExtendedRegisterForm(RegisterForm):
   recaptcha = RecaptchaField()
 
@@ -152,3 +158,13 @@ scan_and_import('filters')
 @app.route('/')
 def index():
     return self.render('home/index.html')
+
+@app.route('/site/upload-file', methods=["POST"])
+def upload_file():
+    if request.method == 'POST':
+        files = request.files.getlist('file[]')
+        for f in files:
+            filename = (f.filename)
+            file_size = 500
+            print 'file', f
+        return jsonify(name='gorb', size=500)

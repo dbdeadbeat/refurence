@@ -1,11 +1,8 @@
-from flask import Blueprint, request, redirect, render_template, url_for, g, session, jsonify, get_template_attribute
-from flask.views import MethodView
-import flask_sijax
+from flask import Blueprint, redirect, render_template, url_for, g, session, get_template_attribute, current_app
 
 from flask_application.controllers import TemplateView
 from flask_application.profiles.constants import profile_constants as pc
 from flask_application.profiles.models import *
-from flask.ext.security.core import current_user, AnonymousUser
 
 from flask_application.utils.html import convert_html_entities, sanitize_html
 
@@ -20,7 +17,8 @@ profiles = Blueprint('profiles', __name__)
 class ProfileView(TemplateView):
     def get(self, slug):
         profile = Profile.objects.get_or_404(username__iexact=slug)
-        if current_user.is_authenticated() and current_user.username == slug:
+        if current_app.dropbox.is_authenticated and \
+            current_app.dropbox.account_info['email'] == profile.owner_email:
             return render_template('profiles/me.html', profile=profile)
         else:
             return render_template('profiles/detail.html', profile=profile)
@@ -58,8 +56,9 @@ class ListView(TemplateView):
 
 class EditView(ProfileView):
     def get(self, slug):
-        if current_user.is_authenticated() and current_user.username == slug:
-            profile = Profile.objects.get_or_404(username__iexact=current_user.username)
+        profile = Profile.objects.get_or_404(username__iexact=slug)
+        if current_app.dropbox.is_authenticated and \
+            current_app.dropbox.account_info['email'] == profile.owner_email:
             session['temp_profile'] = deepcopy(profile)
             return render_template('profiles/edit.html', profile=profile) 
         else:
@@ -68,7 +67,10 @@ class EditView(ProfileView):
     def get_user_profile_edit(self):
         if 'temp_profile' in session:
           return Profile(**session['temp_profile'])
-        return Profile.objects.get_or_404(username=current_user.username)
+        username = ''
+        if current_app.dropbox.is_authenticated:
+            username = current_app.dropbox.account_info['email']
+        return Profile.objects.get_or_404(owner_email=username)
 
     def save_user_profile_edit(self, profile):
         if 'temp_profile' in session:
@@ -109,8 +111,6 @@ class EditView(ProfileView):
 
     # ajax request callbacks
     def discard_changes_handler(self, obj_response, content):
-        # profile = Profile.objects.get_or_404(username=current_user.username)
-        # profile_html = render_template('profiles/edit.html', profile=profile) 
         pass
 
     def extract_desc_content(self, tables):
@@ -137,7 +137,7 @@ class EditView(ProfileView):
         for idx in range(0, len(keys)):
           profile.gallery.tables[tabs[idx]] = profile.gallery.tables.pop(keys[idx])
 
-        master_profile = Profile.objects.get(username=current_user.username)
+        master_profile = Profile.objects.get(username=profile.username)
         profile.id = master_profile.id
         try:
             profile.save()
@@ -145,12 +145,12 @@ class EditView(ProfileView):
             obj_response.alert('bad input, cannot save')
             return
 
-        master_profile = Profile.objects.get(username=current_user.username)
+        master_profile = Profile.objects.get(username=profile.username)
         if not profile.bkg_img:
             master_profile.bkg_img = None
             master_profile.save()
 
-        obj_response.redirect(url_for('profiles.detail', slug=current_user.username))
+        obj_response.redirect(url_for('profiles.detail', slug=profile.username))
 
     def add_imglink_handler(self, obj_response, content):
 
@@ -303,6 +303,9 @@ class EditView(ProfileView):
         profile.fonts[content['font']] = content['value']
         self.save_user_profile_edit(profile)
 
+    def add_image_to_description_handler(self, obj_response, content):
+        profile = self.get_user_profile_edit()
+
     def register_sijax(self):
         g.sijax.register_callback('save_profile', self.save_profile_handler)
         g.sijax.register_callback('discard_changes', self.discard_changes_handler)
@@ -320,6 +323,10 @@ class EditView(ProfileView):
         g.sijax.register_callback('change_bkg', self.change_bkg_handler)
         g.sijax.register_callback('change_color', self.change_color_handler)
         g.sijax.register_callback('change_font', self.change_font_handler)
+        g.sijax.register_callback('add_image_to_description', self.add_image_to_description_handler)
+
+def format_input(string):
+    return convert_html_entities(sanitize_html(string))
 
 # puts Profile constants into template rendering context
 @profiles.context_processor

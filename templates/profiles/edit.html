@@ -45,9 +45,9 @@
   </div>
   <div class="btn-group btn-group-lg">
     <a id="btn_saveprofile" class="btn btn-dark" href="{{
-      url_for('profiles.detail', slug=current_user.username) }}"> <span class="glyphicon glyphicon-ok" aria=hidden="true"></span> Save</a>
+      url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-ok" aria=hidden="true"></span> Save</a>
     <a class="btn btn-dark" href="{{ url_for('profiles.detail',
-      slug=current_user.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
+      slug=profile.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
   </div>
 </div>
 {{ content.render_header(profile.header, true) }}
@@ -206,6 +206,7 @@
 </script>
 <script type="text/javascript" src={{url_for('static', filename="js/sijax/sijax.js") }}></script>
 <script type="text/javascript" src={{url_for('static', filename="js/spectrum.js") }}></script>
+<script type="text/javascript" src={{url_for('static', filename="js/dropzone.js") }}></script>
 <script type="text/javascript" src={{url_for('static', filename="js/jquery.fontselect.min.js") }}></script>
 <script type="text/javascript">
 {{ g.sijax.get_js()|safe }}

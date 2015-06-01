@@ -28,6 +28,12 @@ class Config(object):
         self.MAIL_USERNAME = 'refurence@gmail.com'
         self.MAIL_PASSWORD = os.getenv('GMAIL_PASSWD')
 
+        # Dropbox setup
+        self.DROPBOX_KEY = os.getenv('DROPBOX_KEY')
+        self.DROPBOX_SECRET = os.getenv('DROPBOX_SECRET')
+        self.DROPBOX_ACCESS_TYPE = 'app_folder'
+        self.DROPBOX_LOGIN_REDIRECT = '/controlpanel/'
+
         # Flask-Security setup
         self.SECURITY_EMAIL_SENDER = 'Refurence-PasswordReset < refurence@gmail.com >'
         self.SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Refurence Password Reset Instructions"

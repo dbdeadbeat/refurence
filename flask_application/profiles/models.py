@@ -1,4 +1,4 @@
-from flask import url_for
+from flask import url_for, current_app
 from flask_application.models import db, FlaskDocument
 from flask_application.profiles.constants import profile_constants as pc
 from flask_application.utils.imagehosting import get_hosted_image_urls
@@ -112,6 +112,7 @@ class GalleryContent(TabbedContent):
     tables = db.MapField(db.EmbeddedDocumentField('ImageTable'))
 
 class Profile(FlaskDocument):
+    owner_email = db.StringField()
     username    = db.StringField(required=True)
     bkg_img     = db.URLField(max_length=16384)
     bkg_color   = db.StringField(max_length=256)
@@ -187,44 +188,12 @@ class Profile(FlaskDocument):
 
         profile.notes.title = "Important Notes"
         profile.notes.body = \
-    "Add important notes, details, info, and other stuff for the artist to see here\n\
-    * please send an email to me@me.com\n\
-    * the best color reference is the 'color_reference.png' file in the gallery\n\
-    * etc.."
+        "Add important notes, details, info, and other stuff for the artist to see here\n\
+        * please send an email to me@me.com\n\
+        * the best color reference is the 'color_reference.png' file in the gallery\n\
+        * etc.."
+
         count = 0
-        attr_tabl = EditableTable()
-        attr_rows = [
-                EditableRow(cells=[
-                    'please click through the tabs for a short tutorial!'
-                    ]),
-                ]
-        attr_tabl.rows += attr_rows
-        attr_tabl.order = count; count+=1
-        profile.description.tables['Table'] = attr_tabl
-
-        attr_tabl = EditableTable()
-        attr_rows = [
-                EditableRow(cells=[
-                    'add a row',
-                    'click the table and press enter to add a new row'
-                    ]),
-                EditableRow(cells=[
-                    'add a column',
-                    'while editing a cell, press tab to add a new column'
-                    ]),
-                EditableRow(cells=[
-                    'delete a cell',
-                    'delete all text from a cell and then press "Shift+Backspace" to delete the entire cell'
-                    ]),
-                EditableRow(cells=[
-                    'add/delete a tab',
-                    'press the "+/-" icons to add a new tab'
-                    ]),
-                ]
-        attr_tabl.rows += attr_rows
-        attr_tabl.order = count; count+=1
-        profile.description.tables['Editing Tables'] = attr_tabl
-
         attr_tabl = EditableTable()
         attr_rows = [
                 EditableRow(cells=[
@@ -308,3 +277,24 @@ class Profile(FlaskDocument):
         profile.save()
 
         return profile
+
+    @staticmethod
+    def is_name_taken(name):
+        try:
+            p = Profile.objects.get(username=name)
+            if p:
+                return True
+            return False
+        except Exception as e:
+            return False
+
+    @staticmethod
+    def is_name_valid(name):
+        for rule in current_app.url_map.iter_rules():
+            str_rule = str(rule)
+            str_rule = str_rule[1:len(str_rule)]
+            if str_rule.startswith(name):
+                return False
+        if Profile.is_name_taken(name):
+            return False
+        return True
