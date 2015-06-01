@@ -171,10 +171,13 @@ click to add avatar
   </div>
   <div class="panel-body">
     <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
+    {% for img in description.get_tables()[i].get_image_links() %}
+        <img style="max-width:100%" src="{{ img }}"> 
+    {% endfor %}
   </div>
   {% if editable %}
-  <div class="panel-footer description-drop" style="text-align:center;">
-      Drag and drop files here to upload
+  <div class="panel-footer description-drop" style="text-align:center;" id="description-drop-{{i}}">
+      Drag & drop files here to upload
   </div>
   {% endif %}
 </div>

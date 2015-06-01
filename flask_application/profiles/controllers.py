@@ -1,10 +1,12 @@
-from flask import Blueprint, redirect, render_template, url_for, g, session, get_template_attribute, current_app
+from flask import Blueprint, redirect, render_template, url_for, g, session, \
+    get_template_attribute, current_app, request, make_response, jsonify
+from werkzeug import secure_filename
 
 from flask_application.controllers import TemplateView
 from flask_application.profiles.constants import profile_constants as pc
 from flask_application.profiles.models import *
-
 from flask_application.utils.html import convert_html_entities, sanitize_html
+from flask_application import app
 
 from flask.ext.mobility.decorators import mobilized
 
@@ -116,7 +118,7 @@ class EditView(ProfileView):
     def extract_desc_content(self, tables):
         out = {}
         for tab_name, tbl in tables.iteritems():
-            table = EditableTable()
+            table = EditableImageTable()
             table.order = tbl['order']
             for r in tbl['rows']:
                 table.rows.append(EditableRow(cells=r))
@@ -217,7 +219,7 @@ class EditView(ProfileView):
         if num_tabls >= 10:
             return
 
-        attr_tabl = EditableTable()
+        attr_tabl = EditableImageTable()
         attr_tabl.rows.append(EditableRow(cells=['text here']))
         name = 'Info' + str(num_tabls)
         while name in profile.description.tables:
@@ -304,7 +306,22 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
 
     def add_image_to_description_handler(self, obj_response, content):
+        idx = int(content['num'])
+        if idx < 0:
+            return
+
         profile = self.get_user_profile_edit()
+        table = profile.description.get_tables()[idx]
+        
+        if not table:
+            return
+
+        for f in content['files']:
+            # media = app.dropbox.client.media(f['path'])
+            table.images.append(f['path'])
+
+        self.save_user_profile_edit(profile)
+        self.description_content_html_update(obj_response, profile)
 
     def register_sijax(self):
         g.sijax.register_callback('save_profile', self.save_profile_handler)
@@ -333,10 +350,26 @@ def format_input(string):
 def inject_constants():
     return pc
 
-def format_input(string):
-    return convert_html_entities(sanitize_html(string))
-
 # Register the urls
 profiles.add_url_rule('/<slug>/', view_func=ProfileView.as_view('detail'))
 profiles.add_url_rule('/<slug>/edit', view_func=EditView.as_view('edit'), methods=['GET', 'POST'])
 profiles.add_url_rule('/site/profiles/<slug>', view_func=ListView.as_view('list'))
+
+@app.route('/upload/', methods=('GET', 'POST'))
+def upload():
+    if not app.dropbox.is_authenticated:
+        response = make_response('fail')
+        response.mimetype = 'text/plain'
+        return response
+
+    if request.method == 'POST':
+        data = dict((key, request.files.getlist(key)) for key in request.files.keys())
+
+        out = []
+        for k, f in data.iteritems():
+            for file_obj in f:
+                if file_obj:
+                    client = app.dropbox.client
+                    filename = secure_filename(file_obj.filename)
+                    out.append(client.put_file('/' + filename, file_obj.read(), overwrite=True))
+        return jsonify(**{'files': out})

@@ -3,6 +3,8 @@ from flask_application.models import db, FlaskDocument
 from flask_application.profiles.constants import profile_constants as pc
 from flask_application.utils.imagehosting import get_hosted_image_urls
 
+from flask_application import app
+
 import copy
 
 class ImageLink(db.EmbeddedDocument):
@@ -13,6 +15,10 @@ class EditableRow(db.EmbeddedDocument):
     cells = db.ListField(db.StringField(max_length=1024))
 
 class EditableTable(db.EmbeddedDocument):
+    meta = {
+    'allow_inheritance': True,
+    }
+
     rows = db.ListField(db.EmbeddedDocumentField('EditableRow'))
     order = db.IntField(min_value=0, max_value=10)
 
@@ -21,6 +27,15 @@ class EditableTable(db.EmbeddedDocument):
         for r in self.rows:
             for c in r.cells:
                 out += c
+        return out
+
+class EditableImageTable(EditableTable):
+    images = db.ListField(db.StringField())
+
+    def get_image_links(self):
+        out = []
+        for img in self.images:
+            out.append(app.dropbox.client.media(img)['url'])
         return out
 
 class ImageTable(db.EmbeddedDocument):
@@ -105,7 +120,7 @@ class TabbedContent(StylableContent):
 
 class DescriptionContent(TabbedContent):
     title = db.StringField(max_length=128, default='Description')
-    tables = db.MapField(db.EmbeddedDocumentField('EditableTable'))
+    tables = db.MapField(db.EmbeddedDocumentField('EditableImageTable'))
 
 class GalleryContent(TabbedContent):
     title = db.StringField(max_length=128, default='Gallery')
@@ -194,7 +209,7 @@ class Profile(FlaskDocument):
         * etc.."
 
         count = 0
-        attr_tabl = EditableTable()
+        attr_tabl = EditableImageTable()
         attr_rows = [
                 EditableRow(cells=[
                     'add/delete a tab',
@@ -222,7 +237,7 @@ class Profile(FlaskDocument):
         attr_tabl.order = count; count+=1
         profile.description.tables['Editing Galleries'] = attr_tabl
 
-        attr_tabl = EditableTable()
+        attr_tabl = EditableImageTable()
         attr_rows = [
                 EditableRow(cells=[
                     'add/delete an imagelink',
@@ -241,7 +256,7 @@ class Profile(FlaskDocument):
         attr_tabl.order = count; count+=1
         profile.description.tables['Editing ImageLinks'] = attr_tabl
 
-        attr_tabl = EditableTable()
+        attr_tabl = EditableImageTable()
         attr_rows = [
                 EditableRow(cells=[
                     'change background',
