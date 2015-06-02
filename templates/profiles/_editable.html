@@ -4,16 +4,16 @@
 
 {% macro render_navtabs_gallery(gallery) %}
 <ul class="nav nav-pills">
-  {% for i in range(0, gallery.tables.keys()|length) %}
+  {% for i in range(0, gallery.get_tables()|length) %}
     {% if i == 0 %} <li class="active gallery_tab_li"> {% else %} <li class="gallery_tab_li"> {% endif %}
-    <a href="#gallery_tab{{i}}" data-toggle="tab" contenteditable="true" class="gallery_table_tab_name text-editable">{{ gallery.get_keys()[i] }}</a>
-    </li>
+    <a href="#gallery-tab-{{i}}" data-toggle="tab" contenteditable="true"
+        class="gallery_table_tab_name text-editable">{{ gallery.get_table_names()[i] }}</a> </li>
   {% endfor %}
 </ul>
 {% endmacro %}
 
 {% macro render_gallery_table_links(table) %}
-{% for url in table.img_urls %}
+{% for url in table.get_image_urls() %}
 {% if table.is_removeable(url) %}
 <button type="button" class="btn btn-xs btn-danger btn_gallery_del_img">
 {% endif %}
@@ -28,19 +28,15 @@
 {% endif %}
 
 {% endfor %}
-{% for url in table.get_hosted_images() %}
-  <a href="{{ url }}" title="{{ url }}" data-gallery>
-    <img style="max-width:100%" src="{{ url }}"> 
-  </a>
-{% endfor %}
 {% endmacro%}
 
 {% macro render_table_gallery(gallery) %}
-{% for i in range(0, gallery.tables.keys()|length) %}
-<div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery_tab{{i}}">
-    <div class="col-xs-12">
-      <div id="links{{i}}" class="gallery-links">
+{% for i in range(0, gallery.get_tables()|length) %}
+<div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery-tab-{{i}}">
+    <div class="col-xs-12 gallery-drop drop" id="gallery-drop-{{i}}">
+      <div id="links{{gallery.get_tables()[i].order}}" class="gallery-links">
         {{ render_gallery_table_links(gallery.get_tables()[i]) }}
+          <div class="dz-message">Drag and drop files to add</div>
       </div>
     </div>
 </div>
@@ -49,30 +45,22 @@
 
 {% macro render_editablegallery(gallery) %}
 <div class="input-group">
-    <span class="input-group-btn">
-      <div class="btn-group-vertical btn-group-xs" role="group" aria-label="...">
-        <button id="btn_gallery_add" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
-        </button>
-        <button id="btn_gallery_del" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-minus" aria=hidden="true"></span>
-        </button>
-      </div>
-      <div class="btn-group-vertical btn-group-xs" role="group" aria-label="...">
-        <button id="btn_gallery_add_image" type="button" class="btn btn-danger" data-toggle="popover">
-            <span class="glyphicon glyphicon-picture" aria=hidden="true"></span>
-        </button>
-        <button id="btn_gallery_add_directory" type="button" class="btn btn-danger" data-toggle="popover">
-            <span class="glyphicon glyphicon-folder-open" aria=hidden="true"></span>
-        </button>
-      </div>
-    </span>
     <div id="navtabs_gallery">
-      {{ render_navtabs_gallery(gallery) }}
+        {{ render_navtabs_gallery(gallery) }}
     </div>
 </div><!-- /input-group -->
 <div class="tab-content text" id="table_gallery">
-  {{ render_table_gallery(gallery) }}
+  {{ render_table_gallery(gallery)}}
+</div>
+<div class="text-center">
+    <div class="btn-group" role="group" aria-label="...">
+        <button id="btn_gallery_add" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria=hidden="true"> Add Another</span>
+        </button>
+        <button id="btn_gallery_del" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-minus" aria=hidden="true"> Delete Selected</span>
+        </button>
+    </div>
 </div>
 {% endmacro %}
 
@@ -82,28 +70,6 @@
   <input type="text" class="form-control" id="input_avatar_url" placeholder="Avatar URL"> \
   <span class="input-group-btn"> \
     <button id="btn_submit_avatar_url" class="btn btn-default" type="button">Submit</button> \
-  </span> \
-</div> \
-'
-{% endmacro %}
-
-{% macro render_popover_gallery_add_image_str(gallery) %}
-' \
-<div class="input-group"> \
-  <input type="text" class="form-control" id="input_gallery_img" placeholder="Image URL"> \
-  <span class="input-group-btn"> \
-    <button id="btn_submit_gallery_img" class="btn btn-default" type="button">Submit</button> \
-  </span> \
-</div> \
-'
-{% endmacro %}
-
-{% macro render_popover_gallery_add_dir_str(gallery) %}
-' \
-<div class="input-group"> \
-  <input type="text" class="form-control" id="input_gallery_dir" placeholder="Directory URL"> \
-  <span class="input-group-btn"> \
-    <button id="btn_submit_gallery_dir" class="btn btn-default" type="button">Submit</button> \
   </span> \
 </div> \
 '
@@ -141,6 +107,12 @@
     return document.querySelector('.active.gallery_tab_li').children[0].text;
   }
 
+  function getActiveGalleryNum () {
+    var sel = $('.active.tab-pane').attr('id');
+    var toks = sel.split('-');
+    return toks[toks.length-1];
+  }
+
   function createDescriptionDropZone(div_id) {
     var myDropzone = new Dropzone('#' + div_id, {
         url: "/upload/",
@@ -161,20 +133,20 @@
     myDropzone.on("success", function(file, response) {
         var toks = div_id.split('-');
         var num = toks[toks.length-1];
-        Sijax.request('add_image_to_description', [ {'num': num, 'files': response['files']} ]);
+        Sijax.request('add_image_to_description', [ {'num': num, 'files': response['files']} ], {'async': false});
     });
 
     myDropzone.on("complete", function(file) {
         myDropzone.removeAllFiles();
+        refreshDescriptionDropZones();
     });
 
-    myDropzone.options.previewTemplate = '\
-    <div class="dz-preview dz-file-preview">\
-      <img data-dz-thumbnail />\
-    </div>\
-    <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>\
-    <div class="dz-error-message"><span data-dz-errormessage></span></div>\
-    </div>';
+  }
+
+  function refreshDescriptionDropZones() {
+      var descriptionDrops = $('.description-drop');
+      for (var idx = 0; idx < descriptionDrops.length; idx++)
+          createDescriptionDropZone($(descriptionDrops[idx]).attr('id'));
   }
 
   function createGalleryDropZone(div_id) {
@@ -186,28 +158,44 @@
         addRemoveLinks: false, // add an <a class="dz-remove">Remove file</a> element to the file preview that will remove the file, and it will change to Cancel upload
         createImageThumbnails: true,
         maxThumbnailFilesize: 2, // in MB
-        thumbnailWidth: 300,
-        thumbnailHeight: 300,
+        thumbnailWidth: 128,
+        thumbnailHeight: 128,
         acceptedFiles: "image/png, image/jpeg, image/gif", //This is a comma separated list of mime types or file extensions.Eg.: image/*,application/pdf,.psd.
         autoProcessQueue: true, // When set to false you have to call myDropzone.processQueue() yourself in order to upload the dropped files. 
         forceFallback: false,
     });
 
     myDropzone.on("success", function(file, response) {
+        var toks = div_id.split('-');
+        var num = toks[toks.length-1];
+        myDropzone.removeFile(file);
+        Sijax.request('add_image_to_gallery', [{
+            'num': num,
+            'files': response['files']
+            }], {'async': false});
     });
 
     myDropzone.on("complete", function(file) {
         myDropzone.removeAllFiles();
+        refreshGalleryDropZones();
     });
 
     myDropzone.options.previewTemplate = '\
-    <div class="dz-preview dz-file-preview">\
-      <img data-dz-thumbnail />\
-    </div>\
-    <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>\
-    <div class="dz-error-message"><span data-dz-errormessage></span></div>\
-    </div>';
-  }
+        <div class="dz-preview dz-file-preview">\
+          <img data-dz-thumbnail />\
+        </div>\
+        <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>\
+        <div class="dz-error-message"><span data-dz-errormessage></span></div>\
+        </div>';
+    }
+
+    function refreshGalleryDropZones() {
+        var galleryDrops = $('.gallery-drop');
+        for (var idx = 0; idx < galleryDrops.length; idx++) {
+            console.log(galleryDrops[idx]);
+            createGalleryDropZone($(galleryDrops[idx]).attr('id'));
+        }
+    }
 
   function loadJS() {
     $('button#popover_change_avatar').popover({
@@ -217,21 +205,6 @@
         container: 'body',
         content: {{ render_popover_avatar_str(profile.header) }}
     });
-    $('button#btn_gallery_add_image').popover({
-        html: true,
-        title: 'Add Image',
-        placement: 'top',
-        container: 'body',
-        content: {{ render_popover_gallery_add_image_str(profile.gallery) }}
-    });
-    $('button#btn_gallery_add_directory').popover({
-        html: true,
-        title: 'Set GoogleDrive/Dropbox Directory',
-        placement: 'bottom',
-        container: 'body',
-        content: {{ render_popover_gallery_add_dir_str(profile.gallery) }}
-    });
-
     $('button#btn_sidebar_add_link').on('click', function() {
         Sijax.request('add_imglink', [ {} ]);
     });
@@ -243,23 +216,20 @@
             '{{DESC_TABLE}}'  : getDescriptionTable(),
             }], {'async' : false});
 
-        var descriptionDrops = $('.description-drop');
-        for (var idx = 0; idx < descriptionDrops.length; idx++)
-        {
-            createDescriptionDropZone($(descriptionDrops[idx]).attr('id'));
-        }
+        refreshDescriptionDropZones();
     });
     $('button#btn_gallery_add').on('click', function() {
-        Sijax.request('add_gallery', [ {} ]);
+        Sijax.request('add_gallery', [ {} ], {'async': false});
+        refreshGalleryDropZones();
     });
     $('button#btn_gallery_del').on('click', function() {
-        Sijax.request('del_gallery', [ {
-            active : getActiveGalleryTabName()
-        } ]);
+        Sijax.request('del_gallery', [ { active : getActiveGalleryNum() } ],
+            {'async': false});
+        refreshGalleryDropZones();
     });
     $('body').on('click', '.btn_gallery_del_img', function() {
         Sijax.request('gallery_del_image', [ {
-            active : getActiveGalleryTabName(),
+            active : getActiveGalleryNum(),
             url : this.children[0].href,
           } ]);
         return false;
@@ -268,21 +238,6 @@
         var input = document.getElementById('input_avatar_url');
         Sijax.request('update_avatar_url', [input.value]);
         $('#popover_change_avatar').popover('hide');
-    });
-
-    $('body').on('click', '#btn_submit_gallery_img', function () {
-        Sijax.request('gallery_add_image', [{
-          'active':getActiveGalleryTabName(),
-          'url':document.getElementById('input_gallery_img').value,
-          }]);
-        $('#btn_gallery_add_image').popover('hide');
-    });
-    $('body').on('click', '#btn_submit_gallery_dir', function () {
-        Sijax.request('gallery_add_directory', [{
-          'active':getActiveGalleryTabName(),
-          'url':document.getElementById('input_gallery_dir').value,
-          }]);
-        $('#btn_gallery_add_directory').popover('hide');
     });
 
     $('#btn_saveprofile').bind('click', function() {
@@ -296,6 +251,11 @@
             '{{GALLERY_TABS}}': getGalleryTableTabs(),
           }
         ]);
+        return false;
+    });
+
+    $('#btn_discard').bind('click', function() {
+        Sijax.request('discard_changes', [ { } ]);
         return false;
     });
 
@@ -405,11 +365,8 @@
 
     Dropzone.autoDiscover = false;
 
-    var descriptionDrops = $('.description-drop');
-    for (var idx = 0; idx < descriptionDrops.length; idx++)
-    {
-        createDescriptionDropZone($(descriptionDrops[idx]).attr('id'));
-    }
+    refreshDescriptionDropZones();
+    refreshGalleryDropZones();
   }
 
 $(function() {

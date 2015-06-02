@@ -46,8 +46,7 @@
   <div class="btn-group btn-group-lg">
     <a id="btn_saveprofile" class="btn btn-dark" href="{{
       url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-ok" aria=hidden="true"></span> Save</a>
-    <a class="btn btn-dark" href="{{ url_for('profiles.detail',
-      slug=profile.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
+    <a id="btn_discard" class="btn btn-dark" href="{{ url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
   </div>
 </div>
 {{ content.render_header(profile.header, true) }}

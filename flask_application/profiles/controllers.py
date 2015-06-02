@@ -96,24 +96,24 @@ class EditView(ProfileView):
         obj_response.html('#description-content', desc_html)
 
     def gallery_html_update(self, obj_response, profile):
-        navtabs_desc_macro = get_template_attribute('profiles/_editable.html', 'render_navtabs_gallery')
-        navtabs_desc_html = navtabs_desc_macro(profile.gallery)
-        obj_response.html('#navtabs_gallery', navtabs_desc_html)
+        navtabs_macro = get_template_attribute('profiles/_editable.html', 'render_navtabs_gallery')
+        navtabs_html = navtabs_macro(profile.gallery)
+        obj_response.html('#navtabs_gallery', navtabs_html)
 
         desc_macro = get_template_attribute('profiles/_editable.html', 'render_table_gallery')
         desc_html = desc_macro(profile.gallery)
         obj_response.html('#table_gallery', desc_html)
 
-    def gallery_links_html_update(self,  obj_response, profile, active):
+    def gallery_links_html_update(self,  obj_response, profile, table):
         links_macro = get_template_attribute('profiles/_editable.html', 'render_gallery_table_links')
-        links_html = links_macro(profile.gallery.tables[active])
-        element = '#links' + str(profile.gallery.get_keys().index(active))
+        links_html = links_macro(table)
+        element = '#links' + str(table.order)
         obj_response.html(element, links_html)
 
-
-    # ajax request callbacks
     def discard_changes_handler(self, obj_response, content):
-        pass
+        profile = self.get_user_profile_edit()
+        profile.dropbox_delete_unused_folders()
+        obj_response.redirect(url_for('profiles.detail', slug=profile.username))
 
     def extract_desc_content(self, tables):
         out = {}
@@ -125,6 +125,12 @@ class EditView(ProfileView):
             out[tab_name] = table
         return out
 
+    def update_description_content(self, profile, tables):
+        desc_images = [tbl.images for tbl in profile.description.get_tables()]
+        profile.description.tables = self.extract_desc_content(tables)
+        for tbl in profile.description.get_tables():
+            tbl.images = desc_images[tbl.order]
+
     def save_profile_handler(self, obj_response, content):
         profile                    = self.get_user_profile_edit()
         profile.header.title       = format_input(content[pc['HEADER_TITLE']])
@@ -132,15 +138,16 @@ class EditView(ProfileView):
         profile.notes.title        = format_input(content[pc['NOTES_TITLE']])
         profile.notes.body         = format_input(content[pc['NOTES_BODY']])
 
-        desc_images = [tbl.images for tbl in profile.description.get_tables() ]
-        profile.description.tables = self.extract_desc_content(content[pc["DESC_TABLE"]])
-        for tbl in profile.description.get_tables():
-            tbl.images = desc_images[tbl.order]
+        self.update_description_content(profile, content[pc['DESC_TABLE']])
 
         tabs = [format_input(x) for x in content[pc['GALLERY_TABS']]]
-        keys = profile.gallery.get_keys()
-        for idx in range(0, len(keys)):
-          profile.gallery.tables[tabs[idx]] = profile.gallery.tables.pop(keys[idx])
+        for idx in range(0, len(tabs)):
+            table = profile.gallery.tables[idx]
+            if table.name != tabs[idx]:
+                app.dropbox.client.file_move(profile.dropbox_root()+'/'+table.name,
+                        profile.dropbox_root()+'/'+tabs[idx])
+            table.name = tabs[idx]
+
 
         master_profile = Profile.objects.get(username=profile.username)
         profile.id = master_profile.id
@@ -154,6 +161,8 @@ class EditView(ProfileView):
         if not profile.bkg_img:
             master_profile.bkg_img = None
             master_profile.save()
+
+        profile.dropbox_delete_unused_folders()
 
         obj_response.redirect(url_for('profiles.detail', slug=profile.username))
 
@@ -218,7 +227,6 @@ class EditView(ProfileView):
         profile = self.get_user_profile_edit()
         num_tabls = len(profile.description.tables)
 
-        print 'content', content
         if num_tabls >= 10:
             return
 
@@ -229,7 +237,7 @@ class EditView(ProfileView):
             num_tabls += 1
             name = 'Info' + str(num_tabls)
         attr_tabl.order = num_tabls
-        profile.description.tables = self.extract_desc_content(content[pc["DESC_TABLE"]])
+        self.update_description_content(profile, content[pc['DESC_TABLE']])
         profile.description.add_table(name, attr_tabl)
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
@@ -239,51 +247,36 @@ class EditView(ProfileView):
         if idx < 0:
             return
         profile = self.get_user_profile_edit()
-        profile.description.tables = self.extract_desc_content(content[pc["DESC_TABLE"]])
+        self.update_description_content(profile, content[pc['DESC_TABLE']])
         profile.description.delete_table_by_order(idx)
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
 
     def add_gallery_handler(self, obj_response, content):
-
         profile = self.get_user_profile_edit()
-        num_gallerys = len(profile.gallery.tables) + 1
+        num_gallerys = len(profile.gallery.tables)
+
         if num_gallerys >= 10:
             return
 
         imgtable = ImageTable()
+        imgtable.name = 'Images' + str(num_gallerys)
         imgtable.order = num_gallerys
-        profile.gallery.tables['Images'+str(num_gallerys)] = imgtable
+        imgtable.dropbox_path = profile.dropbox_create_folder(imgtable.name)
+        profile.gallery.tables.append(imgtable)
+
         self.save_user_profile_edit(profile)
         self.gallery_html_update(obj_response, profile)
 
     def del_gallery_handler(self, obj_response, content):
+        idx = int(content['active'])
+        if idx < 0:
+            return
+
         profile = self.get_user_profile_edit()
-        profile.gallery.delete_table(content['active'])
+        del profile.gallery.tables[idx]
         self.save_user_profile_edit(profile)
         self.gallery_html_update(obj_response, profile)
-
-    def gallery_add_image_handler(self, obj_response, content):
-        profile = self.get_user_profile_edit()
-        profile.gallery.tables[content['active']].img_urls.append(content['url'])
-        self.save_user_profile_edit(profile)
-
-        self.gallery_links_html_update(obj_response, profile, content['active'])
-
-    def gallery_del_image_handler(self, obj_response, content):
-        profile = self.get_user_profile_edit()
-        if content['url'] in profile.gallery.tables[content['active']].img_urls:
-            profile.gallery.tables[content['active']].img_urls.remove(content['url'])
-        self.save_user_profile_edit(profile)
-
-        self.gallery_links_html_update(obj_response, profile, content['active'])
-
-    def gallery_add_directory_handler(self, obj_response, content):
-        profile = self.get_user_profile_edit()
-        profile.gallery.tables[content['active']].img_dir = content['url'] if content['url'] else None
-        self.save_user_profile_edit(profile)
-
-        self.gallery_links_html_update(obj_response, profile, content['active'])
 
     def change_bkg_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
@@ -319,11 +312,35 @@ class EditView(ProfileView):
         if not table:
             return
 
-        for f in content['files']:
-            table.images.append(f['path'])
+        # for f in content['files']:
+            # table.images.append(f['path'])
+        # table.images = [content['files'][0]['path']]
+
+        fpath = content['files'][0]['path']
+        md = app.dropbox.client.file_move(fpath, profile.dropbox_root()+'/'+fpath)
+        table.images = [md['path']]
 
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
+
+    def add_image_to_gallery_handler(self, obj_response, content):
+        idx = int(content['num'])
+        if idx < 0:
+            return
+
+        profile = self.get_user_profile_edit()
+        table = profile.gallery.get_tables()[idx]
+
+        if not table:
+            return
+
+        fdir = profile.dropbox_create_folder(table.name)
+        for f in content['files']:
+            md = app.dropbox.client.file_move(f['path'], fdir+'/'+f['path'])
+            table.img_urls.append(md['path'])
+
+        self.save_user_profile_edit(profile)
+        self.gallery_links_html_update(obj_response, profile, table)
 
     def register_sijax(self):
         g.sijax.register_callback('save_profile', self.save_profile_handler)
@@ -335,14 +352,12 @@ class EditView(ProfileView):
         g.sijax.register_callback('del_desc_table', self.del_desc_content_handler)
         g.sijax.register_callback('add_gallery', self.add_gallery_handler)
         g.sijax.register_callback('del_gallery', self.del_gallery_handler)
-        g.sijax.register_callback('gallery_add_image', self.gallery_add_image_handler)
-        g.sijax.register_callback('gallery_del_image', self.gallery_del_image_handler)
-        g.sijax.register_callback('gallery_add_directory', self.gallery_add_directory_handler)
         g.sijax.register_callback('update_avatar_url', self.update_avatar_url_handler)
         g.sijax.register_callback('change_bkg', self.change_bkg_handler)
         g.sijax.register_callback('change_color', self.change_color_handler)
         g.sijax.register_callback('change_font', self.change_font_handler)
         g.sijax.register_callback('add_image_to_description', self.add_image_to_description_handler)
+        g.sijax.register_callback('add_image_to_gallery', self.add_image_to_gallery_handler)
 
 def format_input(string):
     return convert_html_entities(sanitize_html(string))
@@ -351,6 +366,7 @@ def format_input(string):
 @profiles.context_processor
 def inject_constants():
     return pc
+
 
 # Register the urls
 profiles.add_url_rule('/<slug>/', view_func=ProfileView.as_view('detail'))

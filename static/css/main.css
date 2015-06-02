@@ -259,8 +259,6 @@ input, textarea {
 
 .gallery-links {
   text-align: center;
-  padding-bottom: 40px;
-  text-align: center;
   padding: 40px;
   box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
 }
@@ -382,4 +380,16 @@ img {
   margin: 20px;
 }
 
+.drop {
+  border: 2px dashed #0087F7;
+  border-radius: 5px;
+}
+
+.gallery-drop {
+  padding: 0px;
+}
+
+.dz-message {
+  padding: 20px;
+}
 /*# sourceMappingURL=main.css.map */

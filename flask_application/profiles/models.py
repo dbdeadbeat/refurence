@@ -39,9 +39,11 @@ class EditableImageTable(EditableTable):
         return out
 
 class ImageTable(db.EmbeddedDocument):
-    img_dir = db.URLField()
-    img_urls = db.ListField(db.URLField(max_length=1024))
-    order = db.IntField(min_value=0, max_value=10)
+    img_dir = db.StringField()
+    img_urls = db.ListField(db.StringField())
+    order = db.IntField(default=0, min_value=0, max_value=10)
+    name = db.StringField(default="Images")
+    dropbox_path = db.StringField()
 
     def is_removeable(self, img_url):
         if img_url in self.img_urls:
@@ -52,6 +54,16 @@ class ImageTable(db.EmbeddedDocument):
         if not self.img_dir:
             return []
         return get_hosted_image_urls(self.img_dir)
+
+    def get_image_urls(self):
+        out = self.get_hosted_images()
+        try:
+            dropbox_files = app.dropbox.client.metadata(self.dropbox_path)
+            for c in dropbox_files['contents']:
+                out.append(app.dropbox.client.media(c['path'])['url'])
+        except Exception:
+            pass
+        return out
 
 class StylableContent(db.EmbeddedDocument):
     meta = {
@@ -124,7 +136,16 @@ class DescriptionContent(TabbedContent):
 
 class GalleryContent(TabbedContent):
     title = db.StringField(max_length=128, default='Gallery')
-    tables = db.MapField(db.EmbeddedDocumentField('ImageTable'))
+    tables = db.ListField(db.EmbeddedDocumentField('ImageTable'))
+
+    def get_table_names(self):
+        return [tbl.name for tbl in self.tables]
+
+    def get_tables(self):
+        return self.tables
+
+    def is_renderable(self):
+        return len(self.tables)
 
 class Profile(FlaskDocument):
     owner_email = db.StringField()
@@ -153,9 +174,45 @@ class Profile(FlaskDocument):
                                             pc['FONT_TEXT'] :     '',
                                             });
 
-
     def get_absolute_url(self):
         return url_for('profile', kwargs={"slug": self.username})
+
+    def dropbox_create_folder(self, path):
+        fdir = self.dropbox_root()
+
+        # check if dir exists for profile
+        files = app.dropbox.client.metadata(fdir)['contents']
+        for f in files:
+            path_name = f['path'].split('/')[-1]
+            if path_name == path and f['is_dir']:
+                return f['path']
+        return app.dropbox.client.file_create_folder(fdir+'/'+path)['path']
+
+    def dropbox_delete_unused_folders(self):
+        root = self.dropbox_root()
+
+        files = app.dropbox.client.metadata(root)['contents']
+        gallery_names = self.gallery.get_table_names()
+        for f in files:
+            if f['is_dir']:
+                path_name = f['path'].split('/')[-1]
+                if path_name not in gallery_names:
+                    app.dropbox.client.file_delete(f['path'])
+
+    def dropbox_root(self):
+        files = app.dropbox.client.metadata('/')['contents']
+        fdir = None
+        for f in files:
+            path_name = f['path'][1:len(f['path'])]
+            if path_name == self.username:
+                return f['path']
+        if not fdir:
+            return app.dropbox.client.file_create_folder(self.username)['path']
+
+    def delete(self):
+        app.dropbox.client.file_delete(self.dropbox_root())
+        super(Profile, self).delete()
+
 
     def __unicode__(self):
         return self.username
@@ -185,6 +242,9 @@ class Profile(FlaskDocument):
         profile.header.title = profile.username + " refurence"
         profile.header.body = "name: " + profile.username +\
             "\nspecies: animal\n\npress the 'Edit Profile' to create your refurence!!\n"
+
+        for table in profile.gallery.get_tables():
+            table.dropbox_path = profile.dropbox_create_folder(table.name)
 
         return profile
 
@@ -276,16 +336,10 @@ class Profile(FlaskDocument):
         profile.description.tables['Editing Background/Colors/Fonts'] = attr_tabl
 
         img_tabl = ImageTable()
-        img_tabl.img_dir = 'https://c58b65acbb917e1704aef06a748b6ef69b07cb06.googledrive.com/host/0B_OR1VOUS7GiYktZN3IwOWtDVm8/'
-        img_tabl.img_urls = [
-                # 'https://f614374b2d1514e17ae9dc931cb83cc03518c9cf.googledrive.com/host/0B_OR1VOUS7GiSVZmNjVnMnFBdlk/ke1.jpg',
-                # 'https://f614374b2d1514e17ae9dc931cb83cc03518c9cf.googledrive.com/host/0B_OR1VOUS7GiSVZmNjVnMnFBdlk/ke2.jpg',
-                # 'https://f614374b2d1514e17ae9dc931cb83cc03518c9cf.googledrive.com/host/0B_OR1VOUS7GiSVZmNjVnMnFBdlk/ke3.jpg',
-                # url_for('static', filename='img/ke1.jpg', _external=True),
-                # url_for('static', filename='img/ke2.jpg', _external=True),
-                # url_for('static', filename='img/ke3.jpg', _external=True),
-            ]
-        profile.gallery.tables['Reference Images'] = img_tabl
+        img_tabl.img_dir = ''
+        img_tabl.img_urls = []
+        img_tabl.name = 'Reference Images'
+        profile.gallery.tables.append(img_tabl)
 
         profile.fonts[pc['FONT_HEADERS']] = 'Jura'
 

@@ -171,15 +171,18 @@ click to add avatar
   </div>
   <div class="panel-body">
     <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
+    <div class="col-xs-12 fill hr"></div>
+    <div class="col-xs-12 {% if editable %}description-drop drop" id="description-drop-{{i}}{% endif %}">
     {% for img in description.get_tables()[i].get_image_links() %}
-        <img style="max-width:100%" src="{{ img }}"> 
+        <p style="text-align:center"><img style="max-height:480px; max-width:640px;" src="{{ img }}"> </p>
     {% endfor %}
+    {% if editable %}
+      <div style="text-align:center;">
+          <div class="dz-message">Drag & drop file to add/change image</div>
+      </div>
+    {% endif %}
+    </div>
   </div>
-  {% if editable %}
-  <div class="panel-footer description-drop" style="text-align:center;" id="description-drop-{{i}}">
-      Drag & drop files here to upload
-  </div>
-  {% endif %}
 </div>
 {% endfor %}
 {% endmacro %}
@@ -200,12 +203,7 @@ click to add avatar
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
-{% for url in gallery.img_urls %}
-  <a href="{{ url }}" title="{{ url }}" data-gallery>
-    <img style="max-width:100%" src="{{ url }}"> 
-  </a>
-{% endfor %}
-{% for url in gallery.get_hosted_images() %}
+{% for url in gallery.get_image_urls()%}
   <a href="{{ url }}" title="{{ url }}" data-gallery>
     <img style="max-width:100%" src="{{ url }}"> 
   </a>
@@ -214,15 +212,15 @@ click to add avatar
 
 {% macro render_gallery(gallery) %}
 <ul class="nav nav-pills">
-  {% for i in range(0, gallery.tables.keys()|length) %}
+  {% for i in range(0, gallery.tables|length) %}
     {% if i == 0 %} <li class="active"> {% else %} <li> {% endif %}
-    <a href="#gallery_tab{{i}}" data-toggle="tab">{{ gallery.get_keys()[i] }}</a>
+    <a href="#gallery-tab-{{i}}" data-toggle="tab">{{ gallery.get_table_names()[i] }}</a>
     </li>
   {% endfor %}
 </ul>
 <div class="tab-content text">
-{% for i in range(0, gallery.tables.keys()|length) %}
-  <div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery_tab{{i}}">
+{% for i in range(0, gallery.tables|length) %}
+  <div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery-tab-{{i}}">
       <div class="col-xs-12">
         <div id="links" class="gallery-links">
           {{ render_links_gallery(gallery.get_tables()[i]) }}
