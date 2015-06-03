@@ -16,7 +16,7 @@ class EditableRow(db.EmbeddedDocument):
 
 class EditableTable(db.EmbeddedDocument):
     meta = {
-    'allow_inheritance': True,
+        'allow_inheritance': True,
     }
 
     rows = db.ListField(db.EmbeddedDocumentField('EditableRow'))
@@ -34,8 +34,13 @@ class EditableImageTable(EditableTable):
 
     def get_image_links(self):
         out = []
-        for img in self.images:
-            out.append(app.dropbox.client.media(img)['url'])
+        for idx, img in enumerate(self.images):
+            try:
+                out.append(app.dropbox.client.media(img)['url'])
+            except Exception:
+                self.images[idx] = ''
+                out.append('')
+                continue
         return out
 
 class ImageTable(db.EmbeddedDocument):
@@ -173,31 +178,11 @@ class Profile(FlaskDocument):
                                             pc['FONT_LINKS'] :     '',
                                             pc['FONT_TEXT'] :     '',
                                             });
+    dropbox_profile_images_dirname = '_profile_images'
 
-    def get_absolute_url(self):
-        return url_for('profile', kwargs={"slug": self.username})
-
-    def dropbox_create_folder(self, path):
-        fdir = self.dropbox_root()
-
-        # check if dir exists for profile
-        files = app.dropbox.client.metadata(fdir)['contents']
-        for f in files:
-            path_name = f['path'].split('/')[-1]
-            if path_name == path and f['is_dir']:
-                return f['path']
-        return app.dropbox.client.file_create_folder(fdir+'/'+path)['path']
-
-    def dropbox_delete_unused_folders(self):
-        root = self.dropbox_root()
-
-        files = app.dropbox.client.metadata(root)['contents']
-        gallery_names = self.gallery.get_table_names()
-        for f in files:
-            if f['is_dir']:
-                path_name = f['path'].split('/')[-1]
-                if path_name not in gallery_names:
-                    app.dropbox.client.file_delete(f['path'])
+    def delete(self):
+        app.dropbox.client.file_delete(self.dropbox_root())
+        super(Profile, self).delete()
 
     def dropbox_root(self):
         files = app.dropbox.client.metadata('/')['contents']
@@ -209,10 +194,57 @@ class Profile(FlaskDocument):
         if not fdir:
             return app.dropbox.client.file_create_folder(self.username)['path']
 
-    def delete(self):
-        app.dropbox.client.file_delete(self.dropbox_root())
-        super(Profile, self).delete()
+    def dropbox_cleanup(self):
+        self._dropbox_delete_unused_folders()
+        self._dropbox_delete_root_files()
 
+    def dropbox_create_folder(self, path):
+        fdir = self.dropbox_root()
+        files = app.dropbox.client.metadata(fdir)['contents']
+        for f in files:
+            path_name = f['path'].split('/')[-1]
+            if path_name == path and f['is_dir']:
+                return f['path']
+        return app.dropbox.client.file_create_folder(fdir+'/'+path)['path']
+
+    def dropbox_delete_file(self, path):
+        try:
+            app.dropbox.client.file_delete(path)
+        except Exception:
+            return
+
+    def dropbox_get_non_gallery_image_directory(self):
+        return self.dropbox_create_folder(Profile.dropbox_profile_images_dirname)
+
+    def dropbox_move_file(self, src, dst):
+        try:
+            return app.dropbox.client.file_move(src, dst)
+            # table.img_urls.append(md['path'])
+        except Exception as e:
+            if e.status == 403:
+                app.dropbox.client.file_delete(dst)
+                return app.dropbox.client.file_move(src, dst)
+
+    def get_absolute_url(self):
+        return url_for('profile', kwargs={"slug": self.username})
+
+    def _dropbox_delete_root_files(self):
+        files = app.dropbox.client.metadata('/')['contents']
+        for f in files:
+            print 'FILE', f
+            if not f['is_dir']:
+                app.dropbox.client.file_delete(f['path'])
+
+    def _dropbox_delete_unused_folders(self):
+        root = self.dropbox_root()
+        files = app.dropbox.client.metadata(root)['contents']
+        gallery_names = self.gallery.get_table_names()
+        for f in files:
+            if f['is_dir']:
+                path_name = f['path'].split('/')[-1]
+                if path_name not in gallery_names and \
+                        path_name != Profile.dropbox_profile_images_dirname:
+                    app.dropbox.client.file_delete(f['path'])
 
     def __unicode__(self):
         return self.username

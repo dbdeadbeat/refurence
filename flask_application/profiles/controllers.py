@@ -10,6 +10,7 @@ from flask_application import app
 
 from flask.ext.mobility.decorators import mobilized
 
+import os.path
 from copy import deepcopy
 from random import randint
 
@@ -112,7 +113,7 @@ class EditView(ProfileView):
 
     def discard_changes_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
-        profile.dropbox_delete_unused_folders()
+        profile.dropbox_cleanup()
         obj_response.redirect(url_for('profiles.detail', slug=profile.username))
 
     def extract_desc_content(self, tables):
@@ -141,12 +142,17 @@ class EditView(ProfileView):
         self.update_description_content(profile, content[pc['DESC_TABLE']])
 
         tabs = [format_input(x) for x in content[pc['GALLERY_TABS']]]
-        for idx in range(0, len(tabs)):
+        for idx, tab in enumerate(tabs):
             table = profile.gallery.tables[idx]
-            if table.name != tabs[idx]:
-                app.dropbox.client.file_move(profile.dropbox_root()+'/'+table.name,
-                        profile.dropbox_root()+'/'+tabs[idx])
-            table.name = tabs[idx]
+            if table.name != tab:
+                try:
+                    src = profile.dropbox_root() + '/' + table.name
+                    dst = profile.dropbox_root() + '/' + tab
+                    profile.dropbox_move_file(src, dst)
+                    table.dropbox_path = dst
+                except Exception as e:
+                    continue
+            table.name = tab
 
 
         master_profile = Profile.objects.get(username=profile.username)
@@ -162,7 +168,7 @@ class EditView(ProfileView):
             master_profile.bkg_img = None
             master_profile.save()
 
-        profile.dropbox_delete_unused_folders()
+        profile.dropbox_cleanup()
 
         obj_response.redirect(url_for('profiles.detail', slug=profile.username))
 
@@ -278,6 +284,21 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.gallery_html_update(obj_response, profile)
 
+    def gallery_del_image_handler(self, obj_response, content):
+        idx = int(content['active'])
+        if idx < 0:
+            return
+
+        profile = self.get_user_profile_edit()
+        table = profile.gallery.get_tables()[idx]
+        md = app.dropbox.client.metadata(table.dropbox_path)
+        filepath = os.path.basename(content['url'])
+        for img in md['contents']:
+            fname = os.path.basename(img['path'])
+            if fname == filepath:
+                profile.dropbox_delete_file(img['path'])
+        self.gallery_links_html_update(obj_response, profile, table)
+
     def change_bkg_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         profile.bkg_img = content['url'] if content['url'] else None
@@ -316,8 +337,11 @@ class EditView(ProfileView):
             # table.images.append(f['path'])
         # table.images = [content['files'][0]['path']]
 
-        fpath = content['files'][0]['path']
-        md = app.dropbox.client.file_move(fpath, profile.dropbox_root()+'/'+fpath)
+        src = content['files'][0]['path']
+        dst = profile.dropbox_get_non_gallery_image_directory() + '/' + content['files'][0]['path']
+        if len(table.images) > 0 and table.images[0]:
+            profile.dropbox_delete_file(table.images[0])
+        md = profile.dropbox_move_file(src, dst)
         table.images = [md['path']]
 
         self.save_user_profile_edit(profile)
@@ -336,8 +360,9 @@ class EditView(ProfileView):
 
         fdir = profile.dropbox_create_folder(table.name)
         for f in content['files']:
-            md = app.dropbox.client.file_move(f['path'], fdir+'/'+f['path'])
-            table.img_urls.append(md['path'])
+            src = f['path']
+            dst = fdir+'/'+f['path']
+            profile.dropbox_move_file(src, dst)
 
         self.save_user_profile_edit(profile)
         self.gallery_links_html_update(obj_response, profile, table)
@@ -358,6 +383,7 @@ class EditView(ProfileView):
         g.sijax.register_callback('change_font', self.change_font_handler)
         g.sijax.register_callback('add_image_to_description', self.add_image_to_description_handler)
         g.sijax.register_callback('add_image_to_gallery', self.add_image_to_gallery_handler)
+        g.sijax.register_callback('gallery_del_image', self.gallery_del_image_handler)
 
 def format_input(string):
     return convert_html_entities(sanitize_html(string))

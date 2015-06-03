@@ -172,14 +172,14 @@ click to add avatar
   <div class="panel-body">
     <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
     <div class="col-xs-12 fill hr"></div>
-    <div class="col-xs-12 {% if editable %}description-drop drop" id="description-drop-{{i}}{% endif %}">
+    <div class="col-xs-12">
     {% for img in description.get_tables()[i].get_image_links() %}
         <p style="text-align:center"><img style="max-height:480px; max-width:640px;" src="{{ img }}"> </p>
     {% endfor %}
     {% if editable %}
-      <div style="text-align:center;">
+    <div class="col-xs-12 dropzone description-drop" id="description-drop-{{i}}">
           <div class="dz-message">Drag & drop file to add/change image</div>
-      </div>
+    </div>
     {% endif %}
     </div>
   </div>

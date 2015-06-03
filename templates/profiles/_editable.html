@@ -14,30 +14,25 @@
 
 {% macro render_gallery_table_links(table) %}
 {% for url in table.get_image_urls() %}
-{% if table.is_removeable(url) %}
 <button type="button" class="btn btn-xs btn-danger btn_gallery_del_img">
-{% endif %}
 
   <a href="{{ url }}" title="{{ url }}" data-gallery>
     <img style="max-width:100%" src="{{ url }}"> 
   </a>
 
-{% if table.is_removeable(url) %}
 <p> click to remove </p>
 </button>
-{% endif %}
-
 {% endfor %}
 {% endmacro%}
 
 {% macro render_table_gallery(gallery) %}
 {% for i in range(0, gallery.get_tables()|length) %}
 <div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery-tab-{{i}}">
-    <div class="col-xs-12 gallery-drop drop" id="gallery-drop-{{i}}">
-      <div id="links{{gallery.get_tables()[i].order}}" class="gallery-links">
-        {{ render_gallery_table_links(gallery.get_tables()[i]) }}
-          <div class="dz-message">Drag and drop files to add</div>
-      </div>
+    <div id="links{{gallery.get_tables()[i].order}}" class="gallery-links">
+      {{ render_gallery_table_links(gallery.get_tables()[i]) }}
+    </div>
+    <div class="col-xs-12 dropzone gallery-drop" id="gallery-drop-{{i}}">
+        <div class="dz-message">Drag and drop files to add</div>
     </div>
 </div>
 {% endfor %}
@@ -158,44 +153,35 @@
         addRemoveLinks: false, // add an <a class="dz-remove">Remove file</a> element to the file preview that will remove the file, and it will change to Cancel upload
         createImageThumbnails: true,
         maxThumbnailFilesize: 2, // in MB
-        thumbnailWidth: 128,
-        thumbnailHeight: 128,
+        thumbnailWidth: 300,
+        thumbnailHeight: 300,
         acceptedFiles: "image/png, image/jpeg, image/gif", //This is a comma separated list of mime types or file extensions.Eg.: image/*,application/pdf,.psd.
         autoProcessQueue: true, // When set to false you have to call myDropzone.processQueue() yourself in order to upload the dropped files. 
         forceFallback: false,
     });
 
-    myDropzone.on("success", function(file, response) {
+    myDropzone.on("successmultiple", function(files, response) {
         var toks = div_id.split('-');
         var num = toks[toks.length-1];
-        myDropzone.removeFile(file);
+
+        for (var idx = 0; idx < files.length; idx++) {
+          myDropzone.removeFile(files[idx]);
+        }
+
         Sijax.request('add_image_to_gallery', [{
             'num': num,
             'files': response['files']
-            }], {'async': false});
+            }]
+        );
     });
+  }
 
-    myDropzone.on("complete", function(file) {
-        myDropzone.removeAllFiles();
-        refreshGalleryDropZones();
-    });
-
-    myDropzone.options.previewTemplate = '\
-        <div class="dz-preview dz-file-preview">\
-          <img data-dz-thumbnail />\
-        </div>\
-        <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>\
-        <div class="dz-error-message"><span data-dz-errormessage></span></div>\
-        </div>';
-    }
-
-    function refreshGalleryDropZones() {
-        var galleryDrops = $('.gallery-drop');
-        for (var idx = 0; idx < galleryDrops.length; idx++) {
-            console.log(galleryDrops[idx]);
-            createGalleryDropZone($(galleryDrops[idx]).attr('id'));
-        }
-    }
+  function refreshGalleryDropZones() {
+      var galleryDrops = $('.gallery-drop');
+      for (var idx = 0; idx < galleryDrops.length; idx++) {
+          createGalleryDropZone($(galleryDrops[idx]).attr('id'));
+      }
+  }
 
   function loadJS() {
     $('button#popover_change_avatar').popover({
@@ -214,7 +200,7 @@
     $('button#btn_desc_tbl_add').on('click', function() {
         Sijax.request('add_desc_table', [ {
             '{{DESC_TABLE}}'  : getDescriptionTable(),
-            }], {'async' : false});
+            }], {'async': false});
 
         refreshDescriptionDropZones();
     });
@@ -231,8 +217,8 @@
         Sijax.request('gallery_del_image', [ {
             active : getActiveGalleryNum(),
             url : this.children[0].href,
-          } ]);
-        return false;
+          }]
+        );
     });
     $('body').on('click', '#btn_submit_avatar_url', function () {
         var input = document.getElementById('input_avatar_url');

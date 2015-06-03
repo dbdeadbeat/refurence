@@ -219,7 +219,6 @@ td {
 
 .panel {
   border: 0px solid #eee;
-  margin-bottom: 10px;
   box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
 }
 
@@ -380,16 +379,23 @@ img {
   margin: 20px;
 }
 
-.drop {
-  border: 2px dashed #0087F7;
-  border-radius: 5px;
-}
-
-.gallery-drop {
+.dropzone {
+  background: rgba(66, 66, 66, 0.75);
+  border-radius: 15px;
+  border: 5px dashed rgba(0,0,0,0.3);
   padding: 0px;
 }
 
+.gallery-drop {
+  background: rgba(66, 66, 66, 1.00);
+  border-radius: 3px;
+}
+
 .dz-message {
+  color: cadetblue;
+  font-weight: bold;
   padding: 20px;
+  font-family: "Cabin";
+  font-size: 18px;
 }
 /*# sourceMappingURL=main.css.map */
