@@ -59,17 +59,13 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
   background-color :  {{profile.colors[COLOR_INNER]}};
 }
 .panel-heading {
-  background-color :  {{profile.colors[COLOR_MAIN]}};
+  background-color :  {{profile.colors[COLOR_INNER]}};
 }
 </style>
 {% endmacro %}
 
 {% macro render_avatarimg(header) %}
-{% if header.avatar_url %}
-<img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.avatar_url }}">
-{% else %}
-click to add avatar
-{% endif %}
+<img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.get_avatar_url() }}">
 {% endmacro %}
 
 {% macro imglink(link, number, editable) %}
@@ -102,15 +98,13 @@ click to add avatar
     </div>
     <div class="col-xs-4" id="avatar_container">
         {% if editable %}
-            <button type="button" id="popover_change_avatar" class="btn btn-lg btn-danger" data-toggle="popover">
+            <div class="col-xs-12 dropzone avatar-drop" id="avatar-drop">
                 <div id="avatar">
                     {{ render_avatarimg(header) }}
                 </div>
-            </button>
+            </div>
         {% else %}
-            {% if header.avatar_url %}
-            <img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.avatar_url }}">
-            {% endif %}
+            {{ render_avatarimg(header) }}
         {% endif %}
     </div>
 </div>
@@ -155,36 +149,87 @@ click to add avatar
 {% endmacro %}
 
 {% macro render_description_content(description, editable) %}
+{%if editable %}
 {% for i in range(0, description.tables.keys()|length) %}
 <div class="panel description-content" id="description-content-{{i}}">
-  <!-- Default panel contents -->
-  <div class="panel-heading" contenteditable="{{editable}}">
-      {{ description.get_keys()[i] }}
-      {% if editable %}
-      <button class="btn-xs pull-right btn-delete-description"
-          id="btn-delete-description-{{i}}" type="button"
-          contenteditable="False"
-          onclick="Sijax.request('del_desc_table', [{num:{{i}} , 'desc_table': getDescriptionTable() }])">
+    <div class="panel-heading" contenteditable="{{editable}}">
+        {{ description.get_keys()[i] }}
+        <button class="btn-xs pull-right btn-delete-description"
+            id="btn-delete-description-{{i}}" type="button"
+            contenteditable="False"
+            onclick="Sijax.request('del_desc_table', [{num:{{i}} , 'desc_table': getDescriptionTable() }], {'async': false}); refreshDescriptionDropZones();">
             <span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
-      </button>
-      {% endif %}
-  </div>
-  <div class="panel-body">
-    <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
-    <div class="col-xs-12 fill hr"></div>
-    <div class="col-xs-12">
-    {% for img in description.get_tables()[i].get_image_links() %}
-        <p style="text-align:center"><img style="max-height:480px; max-width:640px;" src="{{ img }}"> </p>
-    {% endfor %}
-    {% if editable %}
-    <div class="col-xs-12 dropzone description-drop" id="description-drop-{{i}}">
-          <div class="dz-message">Drag & drop file to add/change image</div>
+        </button>
     </div>
-    {% endif %}
+    <div class="panel-body">
+        {% if editable %}
+        <div class="col-xs-12 dropzone description-drop" id="description-drop-{{i}}">
+        {% else %}
+        <div class="col-xs-12">
+        {% endif %}
+
+            {% for img in description.get_tables()[i].get_image_links() %}
+            <p style="text-align:center"><img src="{{ img }}"> </p>
+            {% endfor %}
+
+            {% if editable %}
+            <div class="dz-message">Drag & drop file to add/change image</div>
+            {% endif %}
+
+        </div>
+        <div class="col-xs-12 fill hr"></div>
+        <div class="col-xs-12">
+            <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
+        </div>
     </div>
-  </div>
 </div>
 {% endfor %}
+{% else %}
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    {% for i in range(0, description.tables.keys()|length) %}
+    <div class="panel description-content" id="description-content-{{i}}">
+        <div class="panel-heading" contenteditable="{{editable}}" role="tab" id="heading{{i}}">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}" aria-expanded="true" aria-controls="collapse{{i}}">
+                    {{ description.get_keys()[i] }}
+                </a>
+            </h4>
+            {% if editable %}
+            <button class="btn-xs pull-right btn-delete-description"
+                id="btn-delete-description-{{i}}" type="button"
+                contenteditable="False"
+                onclick="Sijax.request('del_desc_table', [{num:{{i}} , 'desc_table': getDescriptionTable() }], {'async': false}); refreshDescriptionDropZones();">
+                <span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
+            </button>
+            {% endif %}
+        </div>
+        <div id="collapse{{i}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{i}}">
+            <div class="panel-body">
+                {% if editable %}
+                <div class="col-xs-12 dropzone description-drop" id="description-drop-{{i}}">
+                {% else %}
+                <div class="col-xs-12">
+                {% endif %}
+
+                    {% for img in description.get_tables()[i].get_image_links() %}
+                    <p style="text-align:center"><img src="{{ img }}"> </p>
+                    {% endfor %}
+
+                    {% if editable %}
+                    <div class="dz-message">Drag & drop file to add/change image</div>
+                    {% endif %}
+
+                </div>
+                <div class="col-xs-12 fill hr"></div>
+                <div class="col-xs-12">
+                    <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 {% endmacro %}
 
 {% macro render_description(description, editable) -%}
@@ -211,7 +256,8 @@ click to add avatar
 {% endmacro %}
 
 {% macro render_gallery(gallery) %}
-<ul class="nav nav-pills">
+<div class="col-xs-12">
+<ul class="nav nav-pills nav-justified">
   {% for i in range(0, gallery.tables|length) %}
     {% if i == 0 %} <li class="active"> {% else %} <li> {% endif %}
     <a href="#gallery-tab-{{i}}" data-toggle="tab">{{ gallery.get_table_names()[i] }}</a>
@@ -228,5 +274,6 @@ click to add avatar
       </div>
   </div>
 {% endfor %}
+</div>
 </div>
 {% endmacro %}

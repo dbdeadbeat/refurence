@@ -15,7 +15,7 @@
   <div class="media">
     <div class="media-left">
       <a href="{{ url_for('profiles.detail', slug=profile.username) }}">
-        <img class="media-object" src="{{ profile.header.avatar_url }}" width="64px">
+        <img class="media-object" src="{{ profile.header.get_avatar_url() }}" width="64px">
       </a>
     </div>
     <div class="media-body">

@@ -59,17 +59,6 @@
 </div>
 {% endmacro %}
 
-{% macro render_popover_avatar_str(header) %}
-' \
-<div class="input-group"> \
-  <input type="text" class="form-control" id="input_avatar_url" placeholder="Avatar URL"> \
-  <span class="input-group-btn"> \
-    <button id="btn_submit_avatar_url" class="btn btn-default" type="button">Submit</button> \
-  </span> \
-</div> \
-'
-{% endmacro %}
-
 
 {% macro render_editablejs() %}
 <script type=text/javascript>
@@ -82,8 +71,12 @@
     var out = {};
     for (var idx = 0; idx < content.length; idx++) {
       var c = content[idx];
-      var header = $(c.children[0]).text().replace('\n','');
-      var body = br2nl($(c.children[1].children[0]).html());
+      console.log('conent', $(c));
+      var header = $(c.children[0]).text();
+      header = br2nl(header);
+      var body = $($($(c.children[1]).children()[2]).children()[0]).text();
+      body = br2nl(body);
+      console.log(header, body);
       out[header] = {'order': idx, 'rows': [[body]]};
     }
     return out;
@@ -183,14 +176,66 @@
       }
   }
 
-  function loadJS() {
-    $('button#popover_change_avatar').popover({
-        html: true,
-        title: 'Change Avatar',
-        placement: 'bottom',
-        container: 'body',
-        content: {{ render_popover_avatar_str(profile.header) }}
+  function createAvatarDropZone(div_id) {
+    var myDropzone = new Dropzone('#' + div_id, {
+        url: "/upload/",
+        method: "POST",
+        paramName: "file",
+        uploadMultiple: false,
+        addRemoveLinks: false,
+        createImageThumbnails: true,
+        maxThumbnailFilesize: 2,
+        thumbnailWidth: 128,
+        thumbnailHeight: 128,
+        maxFiles: 1,
+        acceptedFiles: "image/png, image/jpeg, image/gif",
+        autoProcessQueue: true,
+        forceFallback: false,
     });
+
+    myDropzone.on("success", function(file, response) {
+        Sijax.request('update_avatar_url', [ { 
+            'files': response['files']
+          }
+        ]);
+    });
+
+    myDropzone.on("complete", function(file) {
+        myDropzone.removeAllFiles();
+    });
+
+  }
+
+  function createBkgDropZone(div_id) {
+    var myDropzone = new Dropzone('#' + div_id, {
+        url: "/upload/",
+        method: "POST",
+        paramName: "file",
+        uploadMultiple: false,
+        addRemoveLinks: false,
+        createImageThumbnails: true,
+        maxThumbnailFilesize: 2,
+        thumbnailWidth: 128,
+        thumbnailHeight: 128,
+        maxFiles: 1,
+        acceptedFiles: "image/png, image/jpeg, image/gif",
+        autoProcessQueue: true,
+        forceFallback: false,
+    });
+
+    myDropzone.on("success", function(file, response) {
+        Sijax.request('change_bkg_dropbox', [ {
+            'files': response['files']
+          } ]);
+    });
+
+    myDropzone.on("complete", function(file) {
+        myDropzone.removeAllFiles();
+    });
+
+  }
+
+  function loadJS() {
     $('button#btn_sidebar_add_link').on('click', function() {
         Sijax.request('add_imglink', [ {} ]);
     });
@@ -219,11 +264,6 @@
             url : this.children[0].href,
           }]
         );
-    });
-    $('body').on('click', '#btn_submit_avatar_url', function () {
-        var input = document.getElementById('input_avatar_url');
-        Sijax.request('update_avatar_url', [input.value]);
-        $('#popover_change_avatar').popover('hide');
     });
 
     $('#btn_saveprofile').bind('click', function() {
@@ -353,6 +393,8 @@
 
     refreshDescriptionDropZones();
     refreshGalleryDropZones();
+    createAvatarDropZone('avatar-drop');
+    createBkgDropZone('bkg-drop');
   }
 
 $(function() {

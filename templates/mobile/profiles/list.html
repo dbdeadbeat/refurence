@@ -14,9 +14,9 @@
     <ul class="list-group">
         {% for profile in profiles %}
           <li class="list-group-item fill" style="overflow:hidden; margin:2px">
-            {% if profile.header.avatar_url %}
+            {% if profile.header.get_avatar_url() %}
             <span class="badge">
-                <img style="max-width:64px" src="{{ profile.header.avatar_url }}"> 
+                <img style="max-width:64px" src="{{ profile.header.get_avatar_url() }}"> 
             </span>
             {% endif %}
             <a href="{{ url_for('profiles.detail', slug=profile.username) }}">

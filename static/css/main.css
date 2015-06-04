@@ -73,6 +73,10 @@ label {
   box-shadow: inset 0px 0px 20px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
 }
 
+.content-box-2 {
+  margin-top: 30px;
+}
+
 .form h1 {
   margin-top: -30px; }
 
@@ -271,7 +275,9 @@ input, textarea {
 #maincontainer {
   padding-bottom: 30px;
   padding-left: 30px;
-  padding-right: 30px; }
+  padding-right: 30px;
+  margin: 0px 10px 0px 10px;
+}
 
 .list-group-item-theme {
   border-color: transparent;
@@ -286,7 +292,10 @@ input, textarea {
   color: lightblue; }
 
 .text-editable {
-  white-space: pre-wrap; }
+  white-space: pre-wrap;
+  border-radius: 5px;
+  border: 2px dashed rgba(0,0,0,0.8);
+}
 
 .td-header-cell {
   width: 15%;
@@ -398,4 +407,37 @@ img {
   font-family: "Cabin";
   font-size: 18px;
 }
+
+.sp-replacer {
+  padding: 0px;
+  border: 0px;
+  background: transparent;
+}
+
+#avatar-drop > .dz-message {
+  padding: 0px;
+  margin: 0px;
+}
+
+.tool-panel {
+  padding: 0px 0px;
+  margin-bottom: 30px;
+  background: rgba(20, 20, 20, 0.85);
+  text-align: center;
+}
+
+.sp-preview {
+  min-width: 50px;
+  min-height: 50px;
+}
+
+p > img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.panel-group .panel-heading+.panel-collapse>.panel-body, .panel-group .panel-heading+.panel-collapse>.list-group {
+    border-top: 0px solid #ddd;
+}
+
 /*# sourceMappingURL=main.css.map */

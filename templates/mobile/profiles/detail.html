@@ -15,21 +15,21 @@
 {% endblock %}
 
 {% block body_attribs %}
-style="background: url({{ profile.bkg_img }}) no-repeat center center fixed; background-size: cover;"
+style="background: url({{ profile.get_background_url() }}) no-repeat center center fixed; background-size: cover;"
 {% endblock %}
 
-{% block page_header %}
-{% endblock %}
 
 {% block content %}
+{% block page_header %}
+{% endblock %}
 {% if profile.sidebar.img_links %}
 {% endif %}
 <div class="container-fluid" id="maincontainer" style="padding:0px;">
   {%- block header -%}
-      {% if profile.header.avatar_url %}
+      {% if profile.header.get_avatar_url() %}
       <div class="row">
         <div class="col-xs-12 centered" id="avatar_container">
-          <img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ profile.header.avatar_url }}">
+          <img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ profile.header.get_avatar_url() }}">
         </div>
       </div>
       {% endif %}

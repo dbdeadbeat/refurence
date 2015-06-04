@@ -85,6 +85,14 @@ class HeaderContent(StylableContent):
     title      = db.StringField(required=True, max_length=256, default='blarg!!')
     body       = db.StringField(max_length=16384, default="Add Text Here!")
     avatar_url = db.URLField(max_length=16384)
+    avatar_dropbox_path = db.StringField()
+
+    def get_avatar_url(self):
+        if self.avatar_dropbox_path:
+            return app.dropbox.client.media(self.avatar_dropbox_path)['url']
+        else:
+            return self.avatar_url
+
 
 class NotesContent(StylableContent):
     title = db.StringField(max_length=128, default='Important Notes')
@@ -179,6 +187,7 @@ class Profile(FlaskDocument):
                                             pc['FONT_TEXT'] :     '',
                                             });
     dropbox_profile_images_dirname = '_profile_images'
+    bkg_dropbox_path = db.StringField()
 
     def delete(self):
         app.dropbox.client.file_delete(self.dropbox_root())
@@ -227,6 +236,12 @@ class Profile(FlaskDocument):
 
     def get_absolute_url(self):
         return url_for('profile', kwargs={"slug": self.username})
+
+    def get_background_url(self):
+        if self.bkg_dropbox_path:
+            return app.dropbox.client.media(self.bkg_dropbox_path)['url']
+        else:
+            return self.bkg_img
 
     def _dropbox_delete_root_files(self):
         files = app.dropbox.client.metadata('/')['contents']

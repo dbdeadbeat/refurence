@@ -220,11 +220,19 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.sidebar_html_update(obj_response, profile)
 
-    def update_avatar_url_handler(self, obj_response, avatar_url):
+    def update_avatar_url_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
 
-        profile.header.avatar_url = avatar_url if avatar_url else None
+        src = content['files'][0]['path']
+        dst = profile.dropbox_get_non_gallery_image_directory() + '/' + content['files'][0]['path']
+
+        if profile.header.avatar_dropbox_path:
+            profile.dropbox_delete_file(profile.header.avatar_dropbox_path)
+        md = profile.dropbox_move_file(src, dst)
+        profile.header.avatar_dropbox_path = md['path']
+
         self.save_user_profile_edit(profile)
+
         avtimg_macro = get_template_attribute('profiles/_content.html', 'render_avatarimg')
         avt_html = avtimg_macro(profile.header)
         obj_response.html("#avatar", avt_html)
@@ -312,6 +320,25 @@ class EditView(ProfileView):
         obj_response.css('body', 'background', element)
         obj_response.css('body', 'background-size', 'cover')
 
+    def change_bkg_dropbox_handler(self, obj_response, content):
+        print 'here'
+        profile = self.get_user_profile_edit()
+
+        src = content['files'][0]['path']
+        dst = profile.dropbox_get_non_gallery_image_directory() + '/' + content['files'][0]['path']
+
+        if profile.bkg_dropbox_path:
+            profile.dropbox_delete_file(profile.bkg_dropbox_path)
+        md = profile.dropbox_move_file(src, dst)
+        profile.bkg_dropbox_path = md['path']
+
+        self.save_user_profile_edit(profile)
+
+        element = 'url(' + profile.get_background_url() + ') no-repeat center center fixed'
+
+        obj_response.css('body', 'background', element)
+        obj_response.css('body', 'background-size', 'cover')
+
     def change_color_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         profile.colors[content['color']] = content['value']
@@ -379,6 +406,7 @@ class EditView(ProfileView):
         g.sijax.register_callback('del_gallery', self.del_gallery_handler)
         g.sijax.register_callback('update_avatar_url', self.update_avatar_url_handler)
         g.sijax.register_callback('change_bkg', self.change_bkg_handler)
+        g.sijax.register_callback('change_bkg_dropbox', self.change_bkg_dropbox_handler)
         g.sijax.register_callback('change_color', self.change_color_handler)
         g.sijax.register_callback('change_font', self.change_font_handler)
         g.sijax.register_callback('add_image_to_description', self.add_image_to_description_handler)
