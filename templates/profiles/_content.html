@@ -65,18 +65,25 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {% endmacro %}
 
 {% macro render_avatarimg(header) %}
-<img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ header.get_avatar_url() }}">
+<!-- <img id="{{AVATAR_IMG}}" class="{% if header.avatar_is_circle %}img-circle{% endif %} avatar-img" src="{{ header.get_avatar_url() }}"> -->
+<img id="{{AVATAR_IMG}}" class="img-circle avatar-img" src="{{
+header.get_avatar_url() }}" width="200px" height="200px">
 {% endmacro %}
 
 {% macro imglink(link, number, editable) %}
 {% if not editable %} <a href="{{ link.link_url }}"> {% endif %}
     <div class="col-xs-12 imglink-container">
-        {% if editable %} <button type="button" id="imglink_{{number}}"
-            class="btn btn-xs btn-danger btn-editable-imglink"
-            data-toggle="popover" data-placement="right" data-container="body"
-            data-html="true" data-content="{{ render_popover_imglink(link, number)}}"> {% endif %}
-        <img class="centered imglink-img" src="{{ link.img_url }}">
-        {% if editable %} </button> {% endif %}
+        {% if editable %}
+        <button type="button" id="imglink_{{number}}" class="btn btn-xs btn-danger btn-editable-imglink" data-toggle="popover">
+            <div class="dropzone imglink-drop" id="imglink-drop-{{number}}">
+                <p style="text-align: center">
+        {% endif %}
+            <img class="centered imglink-img" src="{{ link.get_image_url() }}">
+        {% if editable %}
+                </p>
+            </div>
+        </button>
+        {% endif %}
     </div>
 {% if not editable %}</a>{% endif %}
 <div class="col-xs-12 fill hr"></div>
@@ -92,51 +99,26 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
 
 {% macro render_header(header, editable) -%}
 <div class="col-xs-12" id="header">
-    <div class="col-xs-8">
+    <div class="col-xs-9">
         <h1 id="{{HEADER_TITLE}}" class="text-editable" contenteditable="{{editable}}">{{ header.title }}</h1>
         <h4 id="{{HEADER_BODY}}" class="text-editable" contenteditable="{{editable}}">{{ header.body }}</h4>
     </div>
-    <div class="col-xs-4" id="avatar_container">
+    <div class="col-xs-3" id="avatar_container">
         {% if editable %}
             <div class="col-xs-12 dropzone avatar-drop" id="avatar-drop">
+                <p style="text-align: center">
                 <div id="avatar">
                     {{ render_avatarimg(header) }}
                 </div>
+                </p>
             </div>
         {% else %}
+            <p style="text-align: center">
             {{ render_avatarimg(header) }}
+            </p>
         {% endif %}
     </div>
 </div>
-{% endmacro %}
-
-{% macro render_popover_imglink(imglink, number) %}
-&lt;ul class=&quot;list-group&quot;&gt;
-  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
-    &lt;div class=&quot;input-group&quot;&gt;
-      &lt;span class=&quot;input-group-addon&quot;&gt;icon&lt;/span&gt;
-      &lt;input type=&quot;text&quot; id=&quot;input_imglink_icon_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.img_url %}{{ imglink.img_url }}{% else %}url{% endif %}&quot;&gt;
-    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
-    &lt;div class=&quot;input-group&quot;&gt;
-      &lt;span class=&quot;input-group-addon&quot;&gt;link&lt;/span&gt;
-      &lt;input type=&quot;text&quot; id=&quot;input_imglink_href_{{number}}&quot; class=&quot;form-control&quot; placeholder=&quot;{%if imglink.link_url %}{{ imglink.link_url }}{% else %}url (optional){% endif %}&quot;&gt;
-      &lt;/span&gt;
-    &lt;/div&gt;
-  &lt;/li&gt;
-  &lt;li class=&quot;list-group-item imglink-list&quot;&gt;
-    &lt;div class=&quot;btn-toolbar&quot; role=&quot;toolbar&quot; aria-label=&quot;...&quot;&gt;
-      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
-          &lt;button id=&quot;btn_imglink_submit_{{number}}&quot; class=&quot;btn btn-default btn-imglink-submit&quot; type=&quot;button&quot;&gt;submit&lt;/button&gt;
-      &lt;/div&gt;
-      &lt;div class=&quot;btn-group&quot; role=&quot;group&quot; aria-label=&quot;...&quot;&gt;
-          &lt;button id=&quot;btn_imglink_delete_{{number}}&quot; class=&quot;btn btn-default btn-imglink-delete&quot; type=&quot;button&quot;&gt;remove&lt;/button&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;   
-
 {% endmacro %}
 
 {% macro render_notes(notes, editable) %}
@@ -152,8 +134,8 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {%if editable %}
 {% for i in range(0, description.tables.keys()|length) %}
 <div class="panel description-content" id="description-content-{{i}}">
-    <div class="panel-heading" contenteditable="{{editable}}">
-        {{ description.get_keys()[i] }}
+    <div class="panel-heading" contenteditable="True">
+        <h4 id="description-title-{{i}}" class="description-title pull-left"> {{ description.get_keys()[i] }} </h4>
         <button class="btn-xs pull-right btn-delete-description"
             id="btn-delete-description-{{i}}" type="button"
             contenteditable="False"
@@ -162,24 +144,15 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
         </button>
     </div>
     <div class="panel-body">
-        {% if editable %}
         <div class="col-xs-12 dropzone description-drop" id="description-drop-{{i}}">
-        {% else %}
-        <div class="col-xs-12">
-        {% endif %}
-
             {% for img in description.get_tables()[i].get_image_links() %}
             <p style="text-align:center"><img src="{{ img }}"> </p>
             {% endfor %}
-
-            {% if editable %}
             <div class="dz-message">Drag & drop file to add/change image</div>
-            {% endif %}
-
         </div>
         <div class="col-xs-12 fill hr"></div>
         <div class="col-xs-12">
-            <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
+            <p id="description-body-{{i}}" class="description-body text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
         </div>
     </div>
 </div>
@@ -188,41 +161,27 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     {% for i in range(0, description.tables.keys()|length) %}
     <div class="panel description-content" id="description-content-{{i}}">
-        <div class="panel-heading" contenteditable="{{editable}}" role="tab" id="heading{{i}}">
+        <div class="panel-heading" role="tab" id="heading{{i}}">
             <h4 class="panel-title">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}" aria-expanded="true" aria-controls="collapse{{i}}">
                     {{ description.get_keys()[i] }}
                 </a>
             </h4>
-            {% if editable %}
-            <button class="btn-xs pull-right btn-delete-description"
-                id="btn-delete-description-{{i}}" type="button"
-                contenteditable="False"
-                onclick="Sijax.request('del_desc_table', [{num:{{i}} , 'desc_table': getDescriptionTable() }], {'async': false}); refreshDescriptionDropZones();">
-                <span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
-            </button>
-            {% endif %}
         </div>
         <div id="collapse{{i}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{i}}">
             <div class="panel-body">
-                {% if editable %}
-                <div class="col-xs-12 dropzone description-drop" id="description-drop-{{i}}">
-                {% else %}
-                <div class="col-xs-12">
-                {% endif %}
+                <div class="row">
+                    <div class="col-xs-8">
+                        {% for img in description.get_tables()[i].get_image_links() %}
+                        <p style="text-align:center"><img src="{{ img }}"> </p>
+                        {% endfor %}
 
-                    {% for img in description.get_tables()[i].get_image_links() %}
-                    <p style="text-align:center"><img src="{{ img }}"> </p>
-                    {% endfor %}
-
-                    {% if editable %}
-                    <div class="dz-message">Drag & drop file to add/change image</div>
+                    </div>
+                    {% if description.get_tables()[i].get_image_links() %}
                     {% endif %}
-
-                </div>
-                <div class="col-xs-12 fill hr"></div>
-                <div class="col-xs-12">
-                    <p class="text-editable" contenteditable="{{editable}}">{{ description.get_tables()[i].get_text() }}</p>
+                    <div class="col-xs-4">
+                        <p class="text-editable">{{ description.get_tables()[i].get_text() }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -237,27 +196,26 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {{ render_description_content(description, editable) }}
 </div>
 {% if editable %}
-<div class="input-group text-center">
-    <span class="input-group-btn">
-        <button id="btn_desc_tbl_add" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-plus" aria=hidden="true"> Add Another</span>
-        </button>
-    </span>
-</div><!-- /input-group -->
+<p style="text-align:center;">
+<button id="btn_desc_tbl_add" type="button" class="btn btn-default">
+    <span class="glyphicon glyphicon-plus" aria=hidden="true"> Add A Note</span>
+</button>
+</p>
 {% endif %}
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
 {% for url in gallery.get_image_urls()%}
-  <a href="{{ url }}" title="{{ url }}" data-gallery>
-    <img style="max-width:100%" src="{{ url }}"> 
-  </a>
+    <!-- <div class="item" style="background: url({{url}}) 50% 50% no-repeat; /* 50% 50% centers image in div */ background-size: cover;"> -->
+        <a href="{{ url }}" title="{{ url }}" data-gallery>
+            <img class="item" src="{{ url }}" alt="">
+        </a>
+  <!-- </div> -->
 {% endfor %}
 {% endmacro %}
 
 {% macro render_gallery(gallery) %}
-<div class="col-xs-12">
-<ul class="nav nav-pills nav-justified">
+<ul class="nav nav-pills">
   {% for i in range(0, gallery.tables|length) %}
     {% if i == 0 %} <li class="active"> {% else %} <li> {% endif %}
     <a href="#gallery-tab-{{i}}" data-toggle="tab">{{ gallery.get_table_names()[i] }}</a>
@@ -266,14 +224,92 @@ a { color :  {{profile.colors[COLOR_HEADERS]}}; }
 </ul>
 <div class="tab-content text">
 {% for i in range(0, gallery.tables|length) %}
-  <div class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery-tab-{{i}}">
-      <div class="col-xs-12">
-        <div id="links" class="gallery-links">
-          {{ render_links_gallery(gallery.get_tables()[i]) }}
+  <div role="tabpanel" class="tab-pane fade {% if i == 0 %}in active{% endif %}" id="gallery-tab-{{i}}">
+        <div class="row masonry-container gallery-links">
+            {{ render_links_gallery(gallery.get_tables()[i]) }}
         </div>
-      </div>
   </div>
 {% endfor %}
 </div>
+{% endmacro %}
+
+{% macro render_popovers(profile) %}
+{% for i in range(0, profile.sidebar.img_links|length) %}
+<div id="imglink-popover-content-{{i}}" style="display: none;">
+    <ul class="list-group">
+        <li class="list-group-item">
+            <h4>To Change Button Icon:</h4> drag and drop file onto picture
+        </li>
+        <div class="col-xs-12 fill hr"></div>
+        <li class="list-group-item">
+            <h4>To Change Button URL:</h4>
+        </li>
+        <li class="list-group-item imglink-list">
+        <div class="input-group">
+            <span class="input-group-addon">URL</span>
+            <input type="text" id="input-imglink-href-{{i}}"
+            class="form-control" placeholder="{%if
+            profile.sidebar.img_links[i].link_url %}{{ profile.sidebar.img_links[i].link_url }}{% else %}enter url here (optional){% endif %}">
+            </span>
+        </div>
+        </li>
+    </ul>   
+    <p style="text-align:center'">
+        <button id="btn_imglink_submit_{{number}}" class="btn btn-default
+            btn-imglink-submit" type="button"
+            onclick="Sijax.request('update_imglink', [{
+                'num': {{i}},
+                'href': $('#input-imglink-href-{{i}}').val()
+            }]);">submit</button>
+        <button id="btn-imglink-delete-{{i}}" class="btn btn-default btn-imglink-delete" type="button" 
+            onclick="Sijax.request('del_imglink', [{ 'num': {{i}} }]);">delete</button>
+    </p>
 </div>
+
+<div id="imglink-popover-title-{{i}}" style="display: none;">
+    <h4>Edit ImageLink</h4>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    $('#imglink_{{i}}').popover({
+        html : true, 
+        content: function() {
+            return $("#imglink-popover-content-{{i}}").html();
+        },
+        title: function() {
+            return $("#imglink-popover-title-{{i}}").html();
+        }
+    });
+
+    var myDropzone = new Dropzone('#imglink-drop-{{i}}', {
+        url: "/upload/",
+        method: "POST",
+        paramName: "file",
+        uploadMultiple: false,
+        addRemoveLinks: false,
+        createImageThumbnails: false,
+        maxThumbnailFilesize: 2,
+        maxFiles: 1,
+        acceptedFiles: "image/png, image/jpeg, image/gif",
+        autoProcessQueue: true,
+        forceFallback: false,
+        clickable: false,
+        dictDefaultMessage: '',
+        previewTemplate: '<div id="preview-template" style="display: none;"></div>'
+    });
+
+    myDropzone.on("success", function(file, response) {
+        Sijax.request('update_imglink_image', [{
+            'num' : {{i}},
+            'files': response['files']
+        }]);
+    });
+
+    myDropzone.on("complete", function(file) {
+        myDropzone.removeAllFiles();
+    });
+});
+</script>
+{% endfor %}
 {% endmacro %}

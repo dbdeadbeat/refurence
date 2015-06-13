@@ -6,8 +6,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from flask import Flask, jsonify, request, redirect
 
 FLASK_APP_DIR = os.path.dirname(os.path.abspath(__file__))
-print 'app dir', FLASK_APP_DIR
-
 
 app = Flask(
     __name__,
@@ -114,8 +112,8 @@ class ExtendedRegisterForm(RegisterForm):
 
 # Setup Flask-Security
 app.user_datastore = MongoEngineUserDatastore(app.db, User, Role)
-app.security = Security(app, app.user_datastore,
-        register_form=ExtendedRegisterForm)
+# app.security = Security(app, app.user_datastore,
+        # register_form=ExtendedRegisterForm)
 
 from flask_sijax import Sijax
 app.sijax = Sijax(app)
@@ -132,14 +130,14 @@ app.register_blueprint(public)
 from flask_application.users.controllers import users
 app.register_blueprint(users)
 
-from flask_application.admin.controllers import admin
-app.register_blueprint(admin)
+# from flask_application.admin.controllers import admin
+# app.register_blueprint(admin)
 
 from flask_application.profiles.controllers import profiles
 app.register_blueprint(profiles)
 
-from flask_application.guides.controllers import guides
-app.register_blueprint(guides)
+# from flask_application.guides.controllers import guides
+# app.register_blueprint(guides)
 
 
 def scan_and_import(name):

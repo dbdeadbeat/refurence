@@ -1,97 +1,162 @@
 from flask import url_for, current_app
 from flask_application.models import db, FlaskDocument
 from flask_application.profiles.constants import profile_constants as pc
+
 from flask_application.utils.imagehosting import get_hosted_image_urls
 
 from flask_application import app
 
 import copy
+import itertools
+
+
+class Path(db.EmbeddedDocument):
+    private_path = db.StringField(required=True)
+    public_path = db.StringField()
+    is_dir = db.BooleanField(default=False)
+    public_urls = db.ListField(db.StringField(default=''))
+
+    # TODO make shared
+    def get_all_files_as_urls(self):
+        # return self.public_urls
+        if self.public_path:
+            out = get_hosted_image_urls(self.public_path)
+            if len(out) == 0:
+                out = [self.public_path + '?raw=1']
+            return out
+        return []
+
+    def get_all_files_as_media(self):
+        dropbox_paths = Path._get_all_dropbox_paths(self.private_path)
+        return [app.dropbox.client.media(p['path'])['url'] for p in dropbox_paths]
+
+    def get_all_files_as_paths(self):
+        dropbox_paths = Path._get_all_dropbox_paths(self.private_path)
+        return [Path(private_path=p['path'], is_dir=p['is_dir']) for p in dropbox_paths]
+
+    def join(self, path):
+        return Path(private_path=self.private_path+'/'+path)
+
+    def basename(self):
+        return self.private_path.split('/')[-1]
+
+    def share(self):
+        self.public_path = str(app.dropbox.client.share(self.private_path, short_url=False)['url'])
+        if '?' in self.public_path:
+            self.public_path = self.public_path[0:self.public_path.index('?')]
+        self.public_urls = []
+        # paths = self.get_all_files_as_paths()
+        # for path in paths:
+            # dropbox_url = str(app.dropbox.client.share(path.private_path,
+                                                       # short_url=False)['url'])
+            # dropbox_url = dropbox_url[:-1]
+            # dropbox_url += '1'
+            # self.public_urls.append(dropbox_url)
+
+    @staticmethod
+    def _get_all_dropbox_paths(path):
+        out = []
+        dropbox_files = app.dropbox.client.metadata(path)
+        if dropbox_files['is_dir']:
+            for c in dropbox_files['contents']:
+                out.append(c)
+        else:
+            out.append(dropbox_files)
+        return out
+
 
 class ImageLink(db.EmbeddedDocument):
-    img_url = db.URLField(required=True)
-    link_url = db.StringField()
+    img_url = db.StringField(required=True)
+    link_url = db.StringField(default='#')
+    dropbox_path = db.EmbeddedDocumentField('Path')
 
-class EditableRow(db.EmbeddedDocument):
-    cells = db.ListField(db.StringField(max_length=1024))
+    def get_image_url(self):
+        if app.dropbox.is_authenticated:
+            if self.dropbox_path:
+                url = self.dropbox_path.get_all_files_as_media()
+                if len(url) > 0:
+                    return url[0]
+        return self.img_url
 
-class EditableTable(db.EmbeddedDocument):
-    meta = {
-        'allow_inheritance': True,
-    }
+    def share(self):
+        if not self.dropbox_path:
+            return
+        self.dropbox_path.share()
+        urls = self.dropbox_path.get_all_files_as_urls()
+        if len(urls) < 1:
+            return
+        self.img_url = urls[0]
 
-    rows = db.ListField(db.EmbeddedDocumentField('EditableRow'))
+
+class EditableImageTable(db.EmbeddedDocument):
+    images = db.ListField(db.EmbeddedDocumentField('Path'))
     order = db.IntField(min_value=0, max_value=10)
-
-    def get_text(self):
-        out = ''
-        for r in self.rows:
-            for c in r.cells:
-                out += c
-        return out
-
-class EditableImageTable(EditableTable):
-    images = db.ListField(db.StringField())
+    text = db.StringField()
 
     def get_image_links(self):
-        out = []
-        for idx, img in enumerate(self.images):
-            try:
-                out.append(app.dropbox.client.media(img)['url'])
-            except Exception:
-                self.images[idx] = ''
-                out.append('')
-                continue
-        return out
+        return list(itertools.chain(*[img_path.get_all_files_as_urls() for img_path in self.images]))
+
+    def share(self):
+        map(lambda x: x.share(), self.images)
+
+    def get_text(self):
+        return self.text
+
 
 class ImageTable(db.EmbeddedDocument):
-    img_dir = db.StringField()
-    img_urls = db.ListField(db.StringField())
+    image_urls = db.ListField(db.StringField())
     order = db.IntField(default=0, min_value=0, max_value=10)
     name = db.StringField(default="Images")
-    dropbox_path = db.StringField()
+    dropbox_path = db.EmbeddedDocumentField('Path')
 
     def is_removeable(self, img_url):
-        if img_url in self.img_urls:
-            return True
-        return False
-
-    def get_hosted_images(self):
-        if not self.img_dir:
-            return []
-        return get_hosted_image_urls(self.img_dir)
+        return True
 
     def get_image_urls(self):
-        out = self.get_hosted_images()
-        try:
-            dropbox_files = app.dropbox.client.metadata(self.dropbox_path)
-            for c in dropbox_files['contents']:
-                out.append(app.dropbox.client.media(c['path'])['url'])
-        except Exception:
-            pass
-        return out
+        # if app.dropbox.is_authenticated:
+            # return self.dropbox_path.get_all_files_as_media()
+        # else:
+            # return get_hosted_image_urls(self.dropbox_path.public_path)
+        return self.dropbox_path.get_all_files_as_urls()
+
+    def get_image_paths(self):
+        return self.dropbox_path.get_all_files_as_paths()
+
+    def share(self):
+        # self.image_urls = []
+        # for p in self.get_image_paths():
+            # p.share()
+            # self.image_urls += p.get_all_files_as_urls()
+        self.dropbox_path.share()
+
 
 class StylableContent(db.EmbeddedDocument):
     meta = {
-    'allow_inheritance': True,
+        'allow_inheritance': True,
     }
 
     def is_renderable(self):
         return True
 
+
 class SideBarContent(StylableContent):
     img_links = db.ListField(db.EmbeddedDocumentField('ImageLink'))
+
 
 class HeaderContent(StylableContent):
     title      = db.StringField(required=True, max_length=256, default='blarg!!')
     body       = db.StringField(max_length=16384, default="Add Text Here!")
     avatar_url = db.URLField(max_length=16384)
-    avatar_dropbox_path = db.StringField()
+    avatar_dropbox_path = db.EmbeddedDocumentField('Path')
+    avatar_is_circle = db.BooleanField(default=False)
 
     def get_avatar_url(self):
         if self.avatar_dropbox_path:
-            return app.dropbox.client.media(self.avatar_dropbox_path)['url']
-        else:
-            return self.avatar_url
+            url = self.avatar_dropbox_path.get_all_files_as_urls()
+            if len(url) > 0:
+                return url[0]
+        self.avatar_dropbox_path = None
+        return self.avatar_url
 
 
 class NotesContent(StylableContent):
@@ -102,6 +167,7 @@ class NotesContent(StylableContent):
         if self.title or self.body:
             return True
         return False
+
 
 class TabbedContent(StylableContent):
     def get_keys(self):
@@ -143,9 +209,14 @@ class TabbedContent(StylableContent):
             return False
         return True
 
+
 class DescriptionContent(TabbedContent):
     title = db.StringField(max_length=128, default='Description')
     tables = db.MapField(db.EmbeddedDocumentField('EditableImageTable'))
+
+    def share(self):
+        map(lambda x: x.share(), self.images)
+
 
 class GalleryContent(TabbedContent):
     title = db.StringField(max_length=128, default='Gallery')
@@ -160,7 +231,13 @@ class GalleryContent(TabbedContent):
     def is_renderable(self):
         return len(self.tables)
 
+
 class Profile(FlaskDocument):
+    meta = {
+        'allow_inheritance': True,
+        'indexes': ['username'],
+    }
+
     owner_email = db.StringField()
     username    = db.StringField(required=True)
     bkg_img     = db.URLField(max_length=16384)
@@ -187,87 +264,98 @@ class Profile(FlaskDocument):
                                             pc['FONT_TEXT'] :     '',
                                             });
     dropbox_profile_images_dirname = '_profile_images'
-    bkg_dropbox_path = db.StringField()
+    bkg_dropbox_path = db.EmbeddedDocumentField('Path')
 
     def delete(self):
-        app.dropbox.client.file_delete(self.dropbox_root())
+        app.dropbox.client.file_delete(self.dropbox_root().private_path)
         super(Profile, self).delete()
 
     def dropbox_root(self):
-        files = app.dropbox.client.metadata('/')['contents']
+        refurence_name = 'refurence_' + self.username
+        paths = Path(private_path='/').get_all_files_as_paths()
         fdir = None
-        for f in files:
-            path_name = f['path'][1:len(f['path'])]
-            if path_name == self.username:
-                return f['path']
+        for p in paths:
+            path_name = p.private_path[1:len(p.private_path)]
+            if path_name == refurence_name:
+                return p
         if not fdir:
-            return app.dropbox.client.file_create_folder(self.username)['path']
+            return Path(private_path=app.dropbox.client.file_create_folder(refurence_name)['path'])
 
     def dropbox_cleanup(self):
-        self._dropbox_delete_unused_folders()
         self._dropbox_delete_root_files()
+        self._dropbox_delete_unused_folders()
+        self._dropbox_delete_unused_images()
 
     def dropbox_create_folder(self, path):
-        fdir = self.dropbox_root()
-        files = app.dropbox.client.metadata(fdir)['contents']
-        for f in files:
-            path_name = f['path'].split('/')[-1]
-            if path_name == path and f['is_dir']:
-                return f['path']
-        return app.dropbox.client.file_create_folder(fdir+'/'+path)['path']
+        root_path = self.dropbox_root()
+        paths = root_path.get_all_files_as_paths()
+        for p in paths:
+            if p.basename() == path and p.is_dir:
+                return Path(private_path=p.private_path)
+
+        new_dir = app.dropbox.client.file_create_folder(root_path.join(path).private_path)
+        return Path(private_path=new_dir['path'])
 
     def dropbox_delete_file(self, path):
         try:
-            app.dropbox.client.file_delete(path)
+            app.dropbox.client.file_delete(path.private_path)
         except Exception:
             return
 
     def dropbox_get_non_gallery_image_directory(self):
-        return self.dropbox_create_folder(Profile.dropbox_profile_images_dirname)
+        folder_path = self.dropbox_create_folder(Profile.dropbox_profile_images_dirname)
+        return Path(private_path=folder_path.private_path)
 
     def dropbox_move_file(self, src, dst):
+        new_path = ''
         try:
-            return app.dropbox.client.file_move(src, dst)
-            # table.img_urls.append(md['path'])
+            new_path = app.dropbox.client.file_move(src.private_path, dst.private_path)['path']
         except Exception as e:
             if e.status == 403:
-                app.dropbox.client.file_delete(dst)
-                return app.dropbox.client.file_move(src, dst)
+                self.dropbox_delete_file(dst)
+                new_path = app.dropbox.client.file_move(src.private_path, dst.private_path)['path']
 
-    def get_absolute_url(self):
-        return url_for('profile', kwargs={"slug": self.username})
+        return Path(private_path=new_path)
 
     def get_background_url(self):
         if self.bkg_dropbox_path:
-            return app.dropbox.client.media(self.bkg_dropbox_path)['url']
-        else:
-            return self.bkg_img
+            bkg_url = self.bkg_dropbox_path.get_all_files_as_urls()
+            if len(bkg_url) > 0:
+                return bkg_url[0]
+
+        self.bkg_dropbox_path = None
+        return self.bkg_img
 
     def _dropbox_delete_root_files(self):
-        files = app.dropbox.client.metadata('/')['contents']
-        for f in files:
-            print 'FILE', f
-            if not f['is_dir']:
-                app.dropbox.client.file_delete(f['path'])
+        paths = Path(private_path='/').get_all_files_as_paths()
+        for p in paths:
+            if not p.is_dir:
+                self.dropbox_delete_file(p.private_path)
 
     def _dropbox_delete_unused_folders(self):
-        root = self.dropbox_root()
-        files = app.dropbox.client.metadata(root)['contents']
+        files = self.dropbox_root().get_all_files_as_paths()
         gallery_names = self.gallery.get_table_names()
         for f in files:
-            if f['is_dir']:
-                path_name = f['path'].split('/')[-1]
-                if path_name not in gallery_names and \
-                        path_name != Profile.dropbox_profile_images_dirname:
-                    app.dropbox.client.file_delete(f['path'])
+            if f.is_dir and f.basename() not in gallery_names and \
+               f.basename() != Profile.dropbox_profile_images_dirname:
+                self.dropbox_delete_file(f)
 
-    def __unicode__(self):
-        return self.username
+    def _dropbox_delete_unused_images(self):
+        files_in_dropbox = self.dropbox_get_non_gallery_image_directory().get_all_files_as_paths()
 
-    meta = {
-        'allow_inheritance': True,
-        'indexes': ['username'],
-    }
+        paths_used_in_description = [x.images for x in self.description.get_tables()]
+        paths_used_in_profile = [p.private_path for p in list(itertools.chain(*paths_used_in_description))]
+        if self.header.avatar_dropbox_path:
+            paths_used_in_profile.append(self.header.avatar_dropbox_path.private_path)
+        if self.bkg_dropbox_path:
+            paths_used_in_profile.append(self.bkg_dropbox_path.private_path)
+
+        for imglink in self.sidebar.img_links:
+            if imglink.dropbox_path:
+                paths_used_in_profile.append(imglink.dropbox_path.private_path)
+
+        paths_to_delete = filter(lambda x: x.private_path not in paths_used_in_profile, files_in_dropbox)
+        map(self.dropbox_delete_file, paths_to_delete)
 
     @staticmethod
     def initialize_to_default(profile):
@@ -317,74 +405,23 @@ class Profile(FlaskDocument):
 
         count = 0
         attr_tabl = EditableImageTable()
-        attr_rows = [
-                EditableRow(cells=[
-                    'add/delete a tab',
-                    'press the "+/-" icons to add a new tab'
-                    ]),
-                EditableRow(cells=[
-                    'add an image',
-                    'press the "image" button, paste a url into the dialog, and click submit'
-                    ]),
-                EditableRow(cells=[
-                    'delete an image',
-                    'press the "image" button, paste a url into the dialog, and click submit'
-                    ]),
-                EditableRow(cells=[
-                    'add a synced GoogleDrive/Dropbox folder',
-                    'press the "folder" button, paste a url into the dialog, and click submit',
-                    'all images in the directory will be synced'
-                    ]),
-                EditableRow(cells=[
-                    'delete a synced GoogleDrive/Dropbox folder',
-                    'press the "folder" button, leave the dialog blank, and click submit',
-                    ]),
-                ]
-        attr_tabl.rows += attr_rows
         attr_tabl.order = count; count+=1
+        attr_tabl.text = "Editing Galleries"
         profile.description.tables['Editing Galleries'] = attr_tabl
 
         attr_tabl = EditableImageTable()
-        attr_rows = [
-                EditableRow(cells=[
-                    'add/delete an imagelink',
-                    'click the "+/-" buttons in the sidebar'
-                    ]),
-                EditableRow(cells=[
-                    'change a imagelink image',
-                    'click the imagelnk, paste a url into the image dialog, and click submit'
-                    ]),
-                EditableRow(cells=[
-                    'change a imagelink link',
-                    'click the imagelnk, paste a url into the link dialog, and click submit'
-                    ]),
-                ]
-        attr_tabl.rows += attr_rows
         attr_tabl.order = count; count+=1
+        attr_tabl.text = "Editing Image Links"
         profile.description.tables['Editing ImageLinks'] = attr_tabl
 
         attr_tabl = EditableImageTable()
-        attr_rows = [
-                EditableRow(cells=[
-                    'change background',
-                    'click Edit Style - Change Background, paste a url, click submit'
-                    ]),
-                EditableRow(cells=[
-                    'change colors',
-                    'click Edit Style - Change Colors, select colors, click choose'
-                    ]),
-                EditableRow(cells=[
-                    'change fonts',
-                    'click Edit Style - Change Font, select font'
-                    ]),
-                ]
-        attr_tabl.rows += attr_rows
         attr_tabl.order = count; count+=1
+        attr_tabl.text = "Editing Background"
         profile.description.tables['Editing Background/Colors/Fonts'] = attr_tabl
 
         img_tabl = ImageTable()
         img_tabl.img_dir = ''
-        img_tabl.img_urls = []
+        img_tabl.image_urls = []
         img_tabl.name = 'Reference Images'
         profile.gallery.tables.append(img_tabl)
 

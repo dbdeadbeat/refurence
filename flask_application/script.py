@@ -6,7 +6,7 @@ from flask.ext.script import Command
 from flask.ext.security.confirmable import confirm_user
 
 from flask_application.models import FlaskDocument
-from flask_application.profiles.models import Profile, ImageTable, EditableTable, EditableRow
+from flask_application.profiles.models import Profile, ImageTable
 from flask_application.guides.models import Guide, Step
 
 

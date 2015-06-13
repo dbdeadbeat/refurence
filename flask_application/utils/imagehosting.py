@@ -61,6 +61,6 @@ def _get_driver(url):
         return HostedImageDriver(url)
 
 def get_hosted_image_urls(dir_url):
-    # dir_url = 'https://www.dropbox.com/sh/qld85pm3a798vh4/AACEdqHHZ9yq04SeHcsitNJpa?dl=0'
+    print "URL", dir_url
     driver = _get_driver(dir_url)
     return driver.get_image_urls()

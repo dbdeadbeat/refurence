@@ -4,59 +4,44 @@
 About
 {% endblock %}
 
-{% macro render_content() %}
+{% macro render_content(contributors) %}
 
-  <div class="col-xs-12 content-box">
-      <h2 class="text-center">About</h2>
-      <ul class="list-group">
-        <li class="list-group-item fill-transparent">
-        <p><strong>Refurence</strong> is a service for consolidating and displaying visual and text references to aid the art-making process</p>
-        </li>
-        <li class="list-group-item fill-transparent">
-        <p>This site in particular is intended as tool for use in the "Furry" fandom</p>
-        </li>
-        <li class="list-group-item fill-transparent">
-        <p>Make a fursona <strong>Refurence</strong> and send all relevant info to an artist with a single URL</p>
-        </li>
-      </ul>
+  <div class="jumbotron content-box" style="padding:40px;">
+      <h1 class="text-center">About</h1>
+      <p><strong>Refurence</strong> is a service for bringing together visual and text references to assist the art-making process</p>
+      <p><strong>Email:</strong> edeadbeat@gmail.com for any issues, questions, or comments</p>
+      <p><strong>Github:</strong> 
+      <a href="https://github.com/dbdeadbeat/refurence">https://github.com/dbdeadbeat/refurence</a>
+      </p>
   </div>
-
 
   <div class="col-xs-12 content-box">
       <h2 class="text-center">Contributors</h2>
-      <ul class="list-group">
-        <li class="list-group-item fill-low-opacity">
-            <span class="badge">
-                <img style="max-width:32px" src="https://0fc16b51807afd366d47010f72faa643b722b8cf.googledrive.com/host/0B_OR1VOUS7GiRmZ3ZHd3MVJ4MEk/img/avatar.png"> 
-            </span>
-            <p> deadbeat - code hyena, school boy bitch </p>
-        </li>
-        <li class="list-group-item fill-low-opacity">
-            <span class="badge">
-                <img style="max-width:32px" src="https://pbs.twimg.com/profile_images/417803077551271936/b_zsCbk7.png">
-            </span>
-            <p> Ruxley - the caribou guru</p>
-        </li>
-        <li class="list-group-item fill-low-opacity">
-            <span class="badge">
-                <img style="max-width:32px" src="http://d.facdn.net/art/therion87/1394692872/1394692872.therion87_scrypto_wolf_vector_icon_1200x1200.png">
-            </span>
-            <p> Seela - emotional support technician and a wolf</p>
-        </li>
-      </ul>
+      {% for c in contributors %}
+          <div class="media">
+              <div class="media-left">
+                  <a href="{{ c.url }}">
+                      <img class="media-object about-avatar" src="{{ c.image }}"> 
+                  </a>
+              </div>
+              <div class="media-body">
+                  <h4 class="media-heading">{{ c.name }}</h4>
+                  {{ c.description }}
+              </div>
+        </div>
+      {% endfor %}
   </div>
-</div>
 {% endmacro %}
 
 
 {% block content %}
 <div class="container-fluid">
     {% if request.MOBILE %}
-        {{ render_content() }}
+        {{ render_content(contributors) }}
     {% else %}
         <div class="col-xs-2"></div>
         <div class="col-xs-8">
-        {{ render_content() }}
+        {{ render_content(contributors) }}
         </div>
         <div class="col-xs-2"></div>
     {% endif %}

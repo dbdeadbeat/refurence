@@ -6,7 +6,14 @@
 </div>
 {% endmacro %}
 
-{% macro render_profile_list(profiles) %}
+{% macro render_profile_list(profiles, max_profiles) %}
+
+<div class="col-xs-12">
+  <p style="text-align:right;">
+  {{profiles|length}} / {{ max_profiles }}
+  </p>
+</div>
+
 {% if profiles|length > 0 %}
 <div class="list-group">
 {% for profile in profiles %}
@@ -15,7 +22,7 @@
   <div class="media">
     <div class="media-left">
       <a href="{{ url_for('profiles.detail', slug=profile.username) }}">
-        <img class="media-object" src="{{ profile.header.get_avatar_url() }}" width="64px">
+        <img class="media-object img-circle" src="{{ profile.header.get_avatar_url() }}" width="64px" height="64px">
       </a>
     </div>
     <div class="media-body">

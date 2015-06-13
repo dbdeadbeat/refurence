@@ -254,14 +254,15 @@ td {
 #links img {
   max-height: 150px;
   max-width: 150px;
-  overflow: hidden; }
+  overflow: hidden;
+  vertical-align: middle;
+}
 
 input, textarea {
   background: rgba(255, 255, 255, 0.5);
   border-radius: 8px; }
 
 .gallery-links {
-  text-align: center;
   padding: 40px;
   box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
 }
@@ -293,8 +294,8 @@ input, textarea {
 
 .text-editable {
   white-space: pre-wrap;
-  border-radius: 5px;
-  border: 2px dashed rgba(0,0,0,0.8);
+  /* border-radius: 5px; */
+  /* border: 2px dashed rgba(0,0,0,0.8); */
 }
 
 .td-header-cell {
@@ -400,6 +401,23 @@ img {
   border-radius: 3px;
 }
 
+.imglink-drop {
+  min-height: 0px;
+}
+
+.imglink-drop > .dz-message {
+  padding: 0px;
+  margin: 0px;
+}
+
+.imglink-drop > p {
+  margin: 0px;
+}
+
+.imglink-drop > p > .imglink-img {
+  max-width: 100%;
+}
+
 .dz-message {
   color: cadetblue;
   font-weight: bold;
@@ -438,6 +456,13 @@ p > img {
 
 .panel-group .panel-heading+.panel-collapse>.panel-body, .panel-group .panel-heading+.panel-collapse>.list-group {
     border-top: 0px solid #ddd;
+}
+
+.grid-item { width: 200px; }
+.grid-item--width2 { width: 400px; }
+
+.about-avatar {
+  max-width: 64px;
 }
 
 /*# sourceMappingURL=main.css.map */

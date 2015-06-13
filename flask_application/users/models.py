@@ -21,6 +21,8 @@ class User(FlaskDocument, UserMixin):
     roles = db.ListField(db.ReferenceField(Role), default=[])
     profiles = db.ListField(db.ReferenceField(Profile))
 
+    maximum_profiles = 5
+
     def _initialize(self):
         pass
 

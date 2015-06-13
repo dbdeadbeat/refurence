@@ -113,102 +113,13 @@
 {% endblock %}
 
 {%- block modals -%}
-<div class="modal fade modal-clear" id="modal_bkg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">change background</h4>
-      </div>
-      <div class="modal-body">
-        <ul class="list-group">
-          <li class="list-group-item">
-            <div class="input-group">
-              <span class="input-group-addon">background color</span>
-              <input type='text' class="basic" id="{{BKG_COLOR}}"/>
-            </div>
-          </li>
-          <li class="list-group-item">
-            <div class="input-group">
-              <span class="input-group-addon">background image</span>
-              <input type="text" class="form-control" id="input_bkg_url" placeholder="image url">
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-        <button type="button" class="btn btn-primary" id="btn_change_bkg_submit" data-dismiss="modal">ok</button>
-      </div>
-    </div>
-  </div>
+<div id="modals">
 </div>
-<div class="modal fade modal-clear" id="modal_colors" tabindex="-1" role="dialog" aria-labelledby="colorModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="colorModalLabel">change colors</h4>
-      </div>
-      <div class="modal-body">
-        <ul class="list-group">
-          <li class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">main</span>
-            <input type='text' class="basic" id="{{COLOR_MAIN}}"/>
-          </div>
-          </li>
-          <li class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">inner</span>
-            <input type='text' class="basic" id="{{COLOR_INNER}}"/>
-          </div>
-          </li>
-          <li class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">headers</span>
-            <input type='text' class="basic" id="{{COLOR_HEADERS}}"/>
-          </div>
-          </li>
-          <li class="list-group-item">
-          <div class="input-group">
-            <span class="input-group-addon">text</span>
-            <input type='text' class="basic" id="{{COLOR_TEXT}}"/>
-          </div>
-          </li>
-        </div>
-        </ul>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-        <button type="button" class="btn btn-primary" id="btn_change_colors_submit" data-dismiss="modal">ok</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade modal-clear" id="modal_fonts" tabindex="-1" role="dialog" aria-labelledby="fontModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">close</span></button>
-        <h4 class="modal-title" id="fontModalLabel">change font</h4>
-      </div>
-      <div class="modal-body">
-        <table>
-          <tr>
-            <td> <span class="input-group-addon"><h4>header font</h4></span> </td>
-            <td> <input id="{{FONT_HEADERS}}" type="text" /> </td>
-          </tr>
-          <tr>
-            <td> <span class="input-group-addon">text font</span> </td>
-            <td> <input id="{{FONT_TEXT}}" type="text" /> </td>
-          </tr>
-        </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">close</button>
-      </div>
-    </div>
-  </div>
+{% endblock %}
+
+{%- block popovers -%}
+<div id="popovers">
+{{ content.render_popovers(profile) }}
 </div>
 {% endblock %}
 
@@ -293,13 +204,6 @@ $(function() {
         $('.nav-pills>li.active').css("color", color);
       }
     }
-    $('#btn_change_bkg_submit').on('click', function() {
-        var input = document.getElementById('input_bkg_url');
-        Sijax.request('change_bkg', [ {
-            url : input.value,
-            color : $('#{{BKG_COLOR}}').spectrum('get').toRgbString()
-          } ]);
-    });
     $('#{{ BKG_COLOR }}').spectrum({
         change: function(color) {
         this.changed = true;
@@ -310,12 +214,12 @@ $(function() {
         },
         color:'{{ profile.bkg_color }}',
         move: function(color) {
-        set_color(this.id, color.toRgbString());
+          set_color(this.id, color.toRgbString());
         },
         hide: function(color) {
-        if (!this.changed) {
-        this.color = '{{ profile.bkg_color }}';
-        set_color(this.id, this.color);
+          if (!this.changed) {
+          this.color = '{{ profile.bkg_color }}';
+          set_color(this.id, this.color);
         }
       },
     });

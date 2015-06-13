@@ -39,23 +39,25 @@
 {% endmacro %}
 
 {% macro render_editablegallery(gallery) %}
-<div class="input-group">
+<div class="row">
+  <div class="col-xs-10">
     <div id="navtabs_gallery">
         {{ render_navtabs_gallery(gallery) }}
     </div>
-</div><!-- /input-group -->
-<div class="tab-content text" id="table_gallery">
-  {{ render_table_gallery(gallery)}}
-</div>
-<div class="text-center">
+  </div>
+  <div class="col-xs-2" style="text-align:center;">
     <div class="btn-group" role="group" aria-label="...">
         <button id="btn_gallery_add" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-plus" aria=hidden="true"> Add Another</span>
+            <span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
         </button>
         <button id="btn_gallery_del" type="button" class="btn btn-default">
-            <span class="glyphicon glyphicon-minus" aria=hidden="true"> Delete Selected</span>
+            <span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
         </button>
     </div>
+  </div>
+</div>
+<div class="tab-content text" id="table_gallery">
+  {{ render_table_gallery(gallery)}}
 </div>
 {% endmacro %}
 
@@ -67,17 +69,19 @@
   }
 
   function getDescriptionTable() {
-    var content = $(".description-content");
+    var titles = $('.description-title');
+    var bodies = $('.description-body');
     var out = {};
-    for (var idx = 0; idx < content.length; idx++) {
-      var c = content[idx];
-      console.log('conent', $(c));
-      var header = $(c.children[0]).text();
-      header = br2nl(header);
-      var body = $($($(c.children[1]).children()[2]).children()[0]).text();
-      body = br2nl(body);
-      console.log(header, body);
-      out[header] = {'order': idx, 'rows': [[body]]};
+    for (var idx = 0; idx < titles.length; idx++) {
+      var header = $(titles[idx]);
+      var body = $(bodies[idx]);
+
+      header = br2nl(header.html());
+      header = header.replace(/(\r\n|\n|\r)/gm,"");
+      header = header.replace(/^\s+|\s+$/g, '');
+
+      body = br2nl(body.html());
+      out[header] = {'order': idx, 'text': body};
     }
     return out;
   }
@@ -239,9 +243,6 @@
     $('button#btn_sidebar_add_link').on('click', function() {
         Sijax.request('add_imglink', [ {} ]);
     });
-    $('button#btn_sidebar_del_link').on('click', function() {
-        Sijax.request('del_imglink', [ {} ]);
-    });
     $('button#btn_desc_tbl_add').on('click', function() {
         Sijax.request('add_desc_table', [ {
             '{{DESC_TABLE}}'  : getDescriptionTable(),
@@ -271,8 +272,6 @@
           {
             '{{HEADER_TITLE}}': br2nl($('#{{HEADER_TITLE}}').html()),
             '{{HEADER_BODY}}' : br2nl($('#{{HEADER_BODY}}').html()),
-            '{{NOTES_TITLE}}'  : br2nl($('#{{NOTES_TITLE}}').html()),
-            '{{NOTES_BODY}}'  : br2nl($('#{{NOTES_BODY}}').html()),
             '{{DESC_TABLE}}'  : getDescriptionTable(),
             '{{GALLERY_TABS}}': getGalleryTableTabs(),
           }
@@ -290,41 +289,38 @@
         $(this).popover('show');
     });
 
-    $('body').on('click', '.btn-imglink-submit', function (e) {
-        var toks = e.target.id.split('_');
-        var num = toks[toks.length-1];
-        $('#imglink_'+num).popover('hide');
-
-        var imgurl = document.getElementById('input_imglink_icon_'+num).value;
-        var href = document.getElementById('input_imglink_href_'+num).value;
-        Sijax.request('update_imglink', [{
-          'num': parseInt(num),
-          'imgurl' : imgurl,
-          'href' : href
-        }]);
-    });
-
-    $('body').on('click', '.btn-imglink-delete', function (e) {
-        var toks = e.target.id.split('_');
-        var num = toks[toks.length-1];
-        $('#imglink_'+num).popover('hide');
-        Sijax.request('del_imglink', [{
-          'num': parseInt(num)
-        }]);
-    });
-
-    var content_edited = false;
     $('body').on('keydown', '[contenteditable="True"]', function (e) {
-      content_edited = true;
-      if (e.keyCode === 13) {
-        document.execCommand('insertHTML', false, '<br>');
-        return false;
-      }
+        var target = $(e.currentTarget);
+        if (e.keyCode === 13) {
+          if (target.attr('class') == 'panel-heading')
+            return false;
+
+          var selection = window.getSelection(),
+          range = selection.getRangeAt(0),
+          br = document.createTextNode('\n');
+          range.deleteContents();
+          range.insertNode(br);
+          range.setStartAfter(br);
+          range.setEndAfter(br);
+          range.collapse(false);
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          return false;
+        }
     });
 
-    $('a').on('paste', function (evt) {
-        var thisclass = $(this).attr("class");
-        if (thisclass == 'gallery_table_tab_name text-editable')
+    $('a').on('keydown', function (e) {
+        var target = $(e.currentTarget);
+        if (e.keyCode === 13) {
+          if (target.attr('class').includes('gallery_table_tab_name'))
+            return false;
+        }
+    });
+
+    $('a').on('paste', function (e) {
+        var target = $(e.currentTarget);
+        if (target.attr('class').includes('gallery_table_tab_name'))
           return false;
     });
 
@@ -381,12 +377,9 @@
     $('body').on('click', function (e) {
         $('[data-toggle="popover"]').each(function () {
           if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-          $(this).popover('hide');
+            $(this).popover('hide');
           }
-          if (content_edited) {
-              content_edited = false;
-          }
-          });
+        });
     });
 
     Dropzone.autoDiscover = false;
@@ -399,7 +392,7 @@
 
 $(function() {
     loadJS();
-    });
+});
 </script>
 
 {% endmacro %}
