@@ -13,6 +13,7 @@ class ControlPanelView(TemplateView):
     blueprint = users
 
     def get(self):
+        print "GET USER"
         user = self._get_current_user()
         self.make_dropbox_coherent(user)
         profiles = user.profiles
@@ -21,6 +22,7 @@ class ControlPanelView(TemplateView):
 
     def create_new_refurence_handler(self, obj_response, content):
         profile_name = content['name']
+        print 'here', content
 
         user = self._get_current_user()
         err_macro = get_template_attribute('users/_macros.html', 'render_error')
@@ -98,6 +100,7 @@ class ControlPanelView(TemplateView):
             pass
 
     def register_sijax(self):
+        print "REGISTER"
         g.sijax.register_callback('create_new_refurence', self.create_new_refurence_handler)
         g.sijax.register_callback('delete_refurence', self.delete_refurence_handler)
 

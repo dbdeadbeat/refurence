@@ -28,7 +28,7 @@ refurence
             <a class="navbar-logo" href="{{ url_for('index') }}">refurence</a>
 
             <!-- Mobile toggle button -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-xs">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mynavbar">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -38,7 +38,7 @@ refurence
         </div>
 
         <!-- Nav links -->
-        <div class="collapse navbar-collapse" id="collapse-xs">
+        <div class="collapse navbar-collapse" id="mynavbar">
 
             <!-- Left Links -->
             <ul class="nav navbar-nav">
@@ -76,7 +76,7 @@ refurence
     {{google.analytics(account="UA-45952945-2")}}
 <script>
 $(function() {
-    $('$collapse-xs').collapse();
+    $('#mynavbar').collapse();
 });
 </script>
 {% endblock %}
