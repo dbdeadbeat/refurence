@@ -15,7 +15,11 @@
 {% endblock %}
 
 {% block body_attribs %}
+{% if profile.bkg_color %}
+style="background: {{ profile.bkg_color }}; background-size: cover;"
+{% else %}
 style="background: url({{ profile.get_background_url() }}) no-repeat center center fixed; background-size: cover;"
+{% endif %}
 {% endblock %}
 
 
@@ -33,49 +37,13 @@ style="background: url({{ profile.get_background_url() }}) no-repeat center cent
         </div>
       </div>
       {% endif %}
-      <!-- <div class="row"> -->
-          <!-- <div class="col-xs-12 fill-transparent" style="height:50px;"> -->
-            <!-- <table> -->
-              <!-- {% for i in range(0, profile.sidebar.img_links|length) %} -->
-                <!-- {% if i == 0 or i == 5 %} -->
-                <!-- <tr> -->
-                <!-- {% endif %} -->
-
-                <!-- <td> -->
-                <!-- <a href="{{ profile.sidebar.img_links[i].link_url }}"> -->
-                    <!-- <img class="centered" style="max-height: 50px;" src="{{ profile.sidebar.img_links[i].get_image_url() }}"> -->
-                <!-- </a> -->
-                <!-- </td> -->
-
-                <!-- {% if i == 4 or i == 10 %} -->
-                <!-- </tr> -->
-                <!-- {% endif %} -->
-              <!-- {% endfor %} -->
-            <!-- </table> -->
-          <!-- </div> -->
-        <!-- </div> -->
-        <!-- <div class="col-xs-12"> -->
-            <!-- <h1 class="text-editable">{{ profile.header.title }}</h1> -->
-            <!-- <h4 class="text-editable">{{ profile.header.body }} </h4> -->
-        <!-- </div> -->
-      <!-- </div> -->
     </div>
   {%- endblock -%}
   <div class="col-xs-12 fill-solid rounded" id="inner_container">
-        <!-- notes -->
-        {%- block notes -%}
-        {% if profile.notes.is_renderable() %}
-          <h4 id="{{NOTES_TITLE}}" class="text-editable">{{profile.notes.title}}</h4>
-          <p class="text-editable">{{ profile.notes.body }}</p>
-        {% endif %}
-        {%- endblock -%}
-        <div class="col-xs-12 fill-transparent hr"></div>
-        <!-- END notes -->
-
         <!-- description-->
         {%- block description -%}
         {% if profile.description.is_renderable() %}
-          {{ content.render_description(profile.description) }} 
+          {{ content.render_description(profile.description, false) }} 
         {% endif %}
         {%- endblock -%}
         <div class="col-xs-12 fill-transparent hr"> </div>
@@ -140,6 +108,7 @@ style="background: url({{ profile.get_background_url() }}) no-repeat center cent
 
 {% block scripts %}
 {{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/3.3.0/masonry.pkgd.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
 <script>
   WebFont.load({
@@ -155,6 +124,8 @@ style="background: url({{ profile.get_background_url() }}) no-repeat center cent
   });
 </script>
 <script src={{ url_for('static', filename='js/blueimp-gallery.min.js') }} type="text/javascript"></script>
+<script src={{ url_for('static', filename='js/imagesloaded.pkgd.min.js') }} type="text/javascript"></script>
+<script src={{ url_for('static', filename='js/detail.js') }}></script>
 <script>
 //document.getElementById('links').onclick = function (event) {
 $('.gallery-links').on('click', function (event) {

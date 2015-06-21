@@ -8,6 +8,8 @@ from flask_application import app
 
 import copy
 import itertools
+import os
+import random
 
 
 class Path(db.EmbeddedDocument):
@@ -20,10 +22,10 @@ class Path(db.EmbeddedDocument):
     def get_all_files_as_urls(self):
         # return self.public_urls
         if self.public_path:
-            out = get_hosted_image_urls(self.public_path)
-            if len(out) == 0:
-                out = [self.public_path + '?raw=1']
-            return out
+            if os.path.splitext(self.public_path)[1]:
+                return [self.public_path + '?raw=1']
+            else:
+                return get_hosted_image_urls(self.public_path)
         return []
 
     def get_all_files_as_media(self):
@@ -130,6 +132,19 @@ class ImageTable(db.EmbeddedDocument):
         self.dropbox_path.share()
 
 
+    def get_image_style(self, url):
+        width = 200
+        height = 200
+        # if random.uniform(0,100) <= 15:
+            # width = 300
+            # height = 300
+        # elif random.uniform(0,100) <= 25:
+            # width = 350
+            # height = 350
+
+        return 'max-width:' + str(width) + 'px; max-height:' + str(height) + 'px;'
+
+
 class StylableContent(db.EmbeddedDocument):
     meta = {
         'allow_inheritance': True,
@@ -148,7 +163,6 @@ class HeaderContent(StylableContent):
     body       = db.StringField(max_length=16384, default="Add Text Here!")
     avatar_url = db.URLField(max_length=16384)
     avatar_dropbox_path = db.EmbeddedDocumentField('Path')
-    avatar_is_circle = db.BooleanField(default=False)
 
     def get_avatar_url(self):
         if self.avatar_dropbox_path:
@@ -241,7 +255,7 @@ class Profile(FlaskDocument):
     owner_email = db.StringField()
     username    = db.StringField(required=True)
     bkg_img     = db.URLField(max_length=16384)
-    bkg_color   = db.StringField(max_length=256)
+    bkg_color   = db.StringField(max_length=256, default=None)
     is_example  = db.BooleanField(default=False)
     is_default  = db.BooleanField(default=False)
 
@@ -323,8 +337,10 @@ class Profile(FlaskDocument):
             if len(bkg_url) > 0:
                 return bkg_url[0]
 
-        self.bkg_dropbox_path = None
-        return self.bkg_img
+        if self.bkg_img:
+            return self.bkg_img
+        
+        return None
 
     def _dropbox_delete_root_files(self):
         paths = Path(private_path='/').get_all_files_as_paths()

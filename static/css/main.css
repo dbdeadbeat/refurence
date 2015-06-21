@@ -38,6 +38,14 @@ font-size: 24px; }
 #main-nav .navbar-logo:hover {
   background-color: inherit; }
 
+#main-nav-container {
+  background-color: rgba(20, 20, 20, 0.95);
+}
+
+#collapse-xs {
+  background-color: rgba(20, 20, 20, 0.95);
+}
+
 body {
   font-size: 14px;
   font-family: "Marmelad", "Merriweather", sans-serif;
@@ -95,7 +103,9 @@ div.form {
 
 .navbar {
   height: 14px;
-  background: rgba(68, 68, 78, 0.85); }
+  background: rgba(68, 68, 78, 0.85);
+  z-index: 9999;
+}
 
 .sidebar-nav {
   background: rgba(68, 68, 78, 0.85);
@@ -263,13 +273,16 @@ input, textarea {
   border-radius: 8px; }
 
 .gallery-links {
-  padding: 40px;
-  box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+  padding-top: 10px;
+  min-height: 250px;
+  /* box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5) */
 }
 
 .gallery-links img {
-  max-height: 150px;
-  max-width: 150px;
+  max-width: 200px;
+  max-height: 200px;
+  /* height: 130px; */
+  /* width: 130px; */
   margin: 3px;
   overflow: hidden; }
 
@@ -344,10 +357,13 @@ img {
   padding-right: 2px; }
 
 .imglink-img {
-  max-width: 70%; }
+  max-width: 80%;
+}
 
 .avatar-img {
-  max-width: 100%; }
+  width: 150px;
+  height: 150px;
+}
 
 #avatar_container {
   padding-left: 0px;
@@ -405,11 +421,6 @@ img {
   min-height: 0px;
 }
 
-.imglink-drop > .dz-message {
-  padding: 0px;
-  margin: 0px;
-}
-
 .imglink-drop > p {
   margin: 0px;
 }
@@ -418,23 +429,10 @@ img {
   max-width: 100%;
 }
 
-.dz-message {
-  color: cadetblue;
-  font-weight: bold;
-  padding: 20px;
-  font-family: "Cabin";
-  font-size: 18px;
-}
-
 .sp-replacer {
   padding: 0px;
   border: 0px;
   background: transparent;
-}
-
-#avatar-drop > .dz-message {
-  padding: 0px;
-  margin: 0px;
 }
 
 .tool-panel {
@@ -463,6 +461,72 @@ p > img {
 
 .about-avatar {
   max-width: 64px;
+}
+
+.post {
+  max-width: 200px;
+  max-height: 200px;
+}
+
+.overlay {
+   position: relative; 
+}
+
+.caption {
+    top:10%;
+    left:5%;
+    position: absolute;
+}
+
+.badge-gallery-delete:hover { 
+    background-color: red;
+}
+
+.panel-body-text {
+  border-radius: 15px;
+  background: rgba(48, 48, 68, 0.5);
+  padding-top: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  bottom: 0;
+  right: 0;
+}
+
+#btn-edit-gallery {
+  padding-top: 20px;
+}
+
+.popover-content {
+  width: 256px;
+}
+.popover-content > p {
+  color: black;
+}
+
+.posts {
+  margin-bottom: 20px;
+}
+
+.fs-results > li {
+  color: black;
+}
+
+.dz-message {
+  color: grey;
+  font-weight: bold;
+  padding: 20px;
+  font-family: "Cabin";
+  font-size: 14px;
+}
+
+#avatar-drop > .dz-message {
+  padding: 5px;
+  margin: 0px;
+}
+
+.imglink-drop > .dz-message {
+  padding: 0px;
+  margin: 0px;
 }
 
 /*# sourceMappingURL=main.css.map */

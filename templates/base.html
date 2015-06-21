@@ -21,14 +21,14 @@ refurence
 {% block navbar %}
 
 <nav class="navbar navbar-default" id="main-nav">
-    <div class="container-fluid">
+    <div class="container-fluid" id="main-nav-container">
 
         <div class="navbar-header">
 
             <a class="navbar-logo" href="{{ url_for('index') }}">refurence</a>
 
             <!-- Mobile toggle button -->
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapse-xs">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#collapse-xs">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -38,7 +38,7 @@ refurence
         </div>
 
         <!-- Nav links -->
-        <div class="collapse navbar-collapse" id="">
+        <div class="collapse navbar-collapse" id="collapse-xs">
 
             <!-- Left Links -->
             <ul class="nav navbar-nav">
@@ -74,4 +74,9 @@ refurence
 {% block scripts %}
     {{ super() }}
     {{google.analytics(account="UA-45952945-2")}}
+<script>
+$(function() {
+    $('$collapse-xs').collapse();
+});
+</script>
 {% endblock %}

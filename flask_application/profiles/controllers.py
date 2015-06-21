@@ -3,6 +3,7 @@ from flask import Blueprint, redirect, render_template, url_for, g, session, \
 from werkzeug import secure_filename
 
 from flask_application.controllers import TemplateView
+from flask_application.profiles.decorators import ajax_catch_error
 from flask_application.profiles.constants import profile_constants as pc
 from flask_application.profiles.models import *
 from flask_application.utils.html import convert_html_entities, sanitize_html
@@ -43,8 +44,8 @@ class ListView(TemplateView):
     def get(self, slug):
         if slug == 'all':
             return render_template('profiles/list.html',
-                                   profiles=Profile.objects.all(),
-                                   title='profiles')
+                                    profiles=Profile.objects.all(),
+                                    title='profiles')
         elif slug == 'examples':
             return render_template('profiles/list.html',
                                    profiles=Profile.objects(is_example=True),
@@ -131,12 +132,6 @@ class EditView(ProfileView):
         element = '#links' + str(table.order)
         obj_response.html(element, links_html)
 
-    def discard_changes_handler(self, obj_response, content):
-        username = current_app.dropbox.account_info['email']
-        profile = Profile.objects.get_or_404(owner_email=username)
-        profile.dropbox_cleanup()
-        obj_response.redirect(url_for('profiles.detail', slug=profile.username))
-
     def extract_desc_content(self, tables):
         out = {}
         for tab_name, tbl in tables.iteritems():
@@ -152,15 +147,34 @@ class EditView(ProfileView):
         for tbl in profile.description.get_tables():
             tbl.images = desc_images[tbl.order]
 
+    @ajax_catch_error
+    def discard_changes_handler(self, obj_response, content):
+        username = current_app.dropbox.account_info['email']
+        profile = Profile.objects.get_or_404(owner_email=username)
+        profile.dropbox_cleanup()
+        obj_response.redirect(url_for('profiles.detail', slug=profile.username))
+
+    @ajax_catch_error
     def save_profile_handler(self, obj_response, content):
         profile                    = self.get_user_profile_edit()
         profile.header.title       = format_input(content[pc['HEADER_TITLE']])
         profile.header.body        = format_input(content[pc['HEADER_BODY']])
 
         self.update_description_content(profile, content[pc['DESC_TABLE']])
+        print "HERE", len(profile.description.get_keys())
+        for tbl_name in profile.description.get_keys():
+            print 'tbl name', tbl_name
+            if len(tbl_name) == 0:
+                obj_response.alert("ERROR: notes cannot have empty titles")
+                return
+
 
         tabs = [format_input(x) for x in content[pc['GALLERY_TABS']]]
         for idx, tab in enumerate(tabs):
+            if len(tab) == 0:
+                obj_response.alert("ERROR: gallerys cannot have empty titles")
+                return
+
             table = profile.gallery.tables[idx]
             if table.name != tab:
                 try:
@@ -183,8 +197,11 @@ class EditView(ProfileView):
             return
 
         master_profile = Profile.objects.get(username=profile.username)
-        if not profile.bkg_img:
+        if not profile.bkg_img and master_profile.bkg_img:
             master_profile.bkg_img = None
+            master_profile.save()
+        if not profile.bkg_color and master_profile.bkg_color:
+            master_profile.bkg_color = None
             master_profile.save()
 
         for img in session['dropbox_paths_to_delete']:
@@ -195,6 +212,7 @@ class EditView(ProfileView):
         obj_response.redirect(url_for('profiles.detail',
                               slug=profile.username))
 
+    @ajax_catch_error
     def add_imglink_handler(self, obj_response, content):
         def get_default_imglink_img(idx):
             if (idx > 3):
@@ -215,6 +233,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.sidebar_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def update_imglink_image_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
 
@@ -231,6 +250,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.sidebar_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def update_imglink_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
 
@@ -243,6 +263,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.sidebar_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def del_imglink_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         num = content['num']
@@ -251,6 +272,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.sidebar_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def update_avatar_url_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
 
@@ -267,12 +289,6 @@ class EditView(ProfileView):
         dim_x, dim_y = new_file['dimensions']
         if (dim_x > 0 and dim_y > 0):
             ratio = float(dim_x)/float(dim_y)
-            if ratio > 0.9 and ratio < 1.1:
-                profile.header.avatar_is_circle = True
-            else:
-                profile.header.avatar_is_circle = False
-        else:
-            profile.header.avatar_is_circle = False
 
         self.save_user_profile_edit(profile)
 
@@ -280,6 +296,7 @@ class EditView(ProfileView):
         avt_html = avtimg_macro(profile.header)
         obj_response.html("#avatar", avt_html)
 
+    @ajax_catch_error
     def add_desc_content_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         num_tabls = len(profile.description.tables)
@@ -288,7 +305,7 @@ class EditView(ProfileView):
             return
 
         attr_tabl = EditableImageTable()
-        attr_tabl.text = 'text here'
+        attr_tabl.text = 'write text here...'
         name = 'Note' + str(num_tabls)
         while name in profile.description.tables:
             num_tabls += 1
@@ -299,6 +316,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def del_desc_content_handler(self, obj_response, content):
         idx = int(content['num'])
         if idx < 0:
@@ -309,6 +327,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def add_gallery_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         num_gallerys = len(profile.gallery.tables)
@@ -330,6 +349,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.gallery_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def del_gallery_handler(self, obj_response, content):
         idx = int(content['active'])
         if idx < 0:
@@ -340,6 +360,7 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.gallery_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def gallery_del_image_handler(self, obj_response, content):
         idx = int(content['active'])
         if idx < 0:
@@ -356,21 +377,23 @@ class EditView(ProfileView):
             if fname == filepath:
                 profile.dropbox_delete_file(img)
 
-        self.gallery_links_html_update(obj_response, profile, table)
+        # self.gallery_links_html_update(obj_response, profile, table)
 
+    @ajax_catch_error
     def change_bkg_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
-        profile.bkg_img = content['url'] if content['url'] else None
-        if not profile.bkg_img:
-            profile.bkg_color = content['color'] if content['color'] else None
+
+        profile.bkg_color = content['color'] if content['color'] else None
+        if profile.bkg_dropbox_path:
+            session['dropbox_paths_to_delete'].append(profile.bkg_dropbox_path)
+
         self.save_user_profile_edit(profile)
-        if profile.bkg_img:
-            element = 'url(' + profile.bkg_img + ') no-repeat center center fixed'
-        else:
-            element = profile.bkg_color
+
+        element = profile.bkg_color
         obj_response.css('body', 'background', element)
         obj_response.css('body', 'background-size', 'cover')
 
+    @ajax_catch_error
     def change_bkg_dropbox_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
 
@@ -384,6 +407,9 @@ class EditView(ProfileView):
         profile.bkg_dropbox_path = profile.dropbox_move_file(src, dst)
         profile.bkg_dropbox_path.share()
 
+        if profile.bkg_color:
+            del profile.bkg_color
+
         self.save_user_profile_edit(profile)
 
         element = 'url(' + profile.get_background_url() + ') no-repeat center center fixed'
@@ -391,16 +417,19 @@ class EditView(ProfileView):
         obj_response.css('body', 'background', element)
         obj_response.css('body', 'background-size', 'cover')
 
+    @ajax_catch_error
     def change_color_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         profile.colors[content['color']] = content['value']
         self.save_user_profile_edit(profile)
 
+    @ajax_catch_error
     def change_font_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         profile.fonts[content['font']] = content['value']
         self.save_user_profile_edit(profile)
 
+    @ajax_catch_error
     def add_image_to_description_handler(self, obj_response, content):
         idx = int(content['num'])
         if idx < 0:
@@ -412,17 +441,21 @@ class EditView(ProfileView):
         if not table:
             return
 
-        file_path = content['files'][0]['path']
-        src = Path(private_path=file_path)
-        dst = profile.dropbox_get_non_gallery_image_directory().join(file_path)
-        if len(table.images) > 0 and table.images[0]:
-            session['dropbox_paths_to_delete'].append(table.images[0])
-        table.images = [profile.dropbox_move_file(src, dst)]
+        for idx, f in enumerate(table.images):
+            session['dropbox_paths_to_delete'].append(f)
+        table.images = []
+
+        fdir = profile.dropbox_get_non_gallery_image_directory()
+        for f in content['files']:
+            src = Path(private_path=f['path'])
+            dst = fdir.join(f['path'])
+            table.images.append(profile.dropbox_move_file(src, dst))
         table.share()
 
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
 
+    @ajax_catch_error
     def add_image_to_gallery_handler(self, obj_response, content):
         idx = int(content['num'])
         if idx < 0:

@@ -104,7 +104,11 @@ class ControlPanelView(TemplateView):
     def _get_current_user(self):
         if not current_app.dropbox.is_authenticated:
             return redirect('404')
-        dropbox_email = current_app.dropbox.account_info['email']
+        try:
+            dropbox_email = current_app.dropbox.account_info['email']
+        except Exception as e:
+            return redirect('404')
+
         try:
             user = User.objects.get(email=dropbox_email)
         except Exception:
