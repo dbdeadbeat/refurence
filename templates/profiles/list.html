@@ -12,22 +12,25 @@
             <h2>Nothing to see here.</h2>
 
         {% else %}
-
-        <ul class="list-group">
-            {% for profile in profiles %}
-            <li class="list-group-item fill" style="overflow:hidden; margin:2px">
-                <span class="badge">
-                    <img style="max-width:64px" src="{{ profile.header.get_avatar_url() }}">
-                </span>
-                <a href="{{ url_for('profiles.detail', slug=profile.username) }}">
-                    <h3>{{ profile.header.title }}</h3>
-                </a>
-                <p>
-                    {{ profile.header.body }}
-                </p>
-            </li>
-            {% endfor %}
-        </ul>
+            <div class="list-group">
+                {% for profile in profiles %}
+                <li class="list-group-item controlpanel-list">
+                <div class="col-xs-12">
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="{{ url_for('profiles.detail', slug=profile.username) }}">
+                                <img class="media-object img-circle" src="{{ profile.header.get_avatar_url() }}" width="64px" height="64px">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">{{ profile.username }}</h4>
+                            {{ profile.header.body }}
+                        </div>
+                    </div>
+                </div>
+                </li>
+                {% endfor %}
+            </div>
         {% endif %}
     </div>
 
