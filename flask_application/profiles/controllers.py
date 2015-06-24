@@ -161,9 +161,7 @@ class EditView(ProfileView):
         profile.header.body        = format_input(content[pc['HEADER_BODY']])
 
         self.update_description_content(profile, content[pc['DESC_TABLE']])
-        print "HERE", len(profile.description.get_keys())
         for tbl_name in profile.description.get_keys():
-            print 'tbl name', tbl_name
             if len(tbl_name) == 0:
                 obj_response.alert("ERROR: notes cannot have empty titles")
                 return

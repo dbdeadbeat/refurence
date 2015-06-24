@@ -15,7 +15,7 @@
 </div>
 
 {% if profiles|length > 0 %}
-<div class="list-group">
+<ul class="list-group">
     {% for profile in profiles %}
     <li class="list-group-item controlpanel-list">
     <div class="col-xs-10">
@@ -41,7 +41,7 @@
     </div>
     </li>
     {% endfor %}
-</div>
+</ul>
 {% else %}
 <h4>You have no refurences</h4>
 <p>create one with the textbox below!!</p>

@@ -28,72 +28,73 @@ style="background: url({{ profile.get_background_url() }}) no-repeat center cent
 {% endblock %}
 {% if profile.sidebar.img_links %}
 {% endif %}
-<div class="container-fluid" id="maincontainer" style="padding:0px;">
-  {%- block header -%}
-      {% if profile.header.get_avatar_url() %}
-      <div class="row">
+<div class="container-fluid fill-solid" id="maincontainer" style="padding:0px;">
+    {%- block header -%}
+    {% if profile.header.get_avatar_url() %}
+    <div class="row">
         <div class="col-xs-12 centered" id="avatar_container">
-          <img id="{{AVATAR_IMG}}" class="porthole avatar-img" src="{{ profile.header.get_avatar_url() }}">
+              {{ content.render_avatarimg(profile.header) }}
         </div>
-      </div>
-      {% endif %}
+        <div class="col-xs-12">
+          <h1 id="{{HEADER_TITLE}}">{{ profile.header.title }}</h1>
+          <h4 id="{{HEADER_BODY}}">{{ profile.header.body }}</h4>
+        </div>
     </div>
-  {%- endblock -%}
-  <div class="col-xs-12 fill-solid rounded" id="inner_container">
+    {% endif %}
+    {%- endblock -%}
+    <div class="col-xs-12 rounded" id="inner_container">
         <!-- description-->
         {%- block description -%}
         {% if profile.description.is_renderable() %}
-          {{ content.render_description(profile.description, false) }} 
+        {{ content.render_description(profile.description, false) }} 
         {% endif %}
         {%- endblock -%}
-        <div class="col-xs-12 fill-transparent hr"> </div>
         <!-- END description-->
 
         <!-- gallery -->
-        <div class="col-xs-12 fill-transparent hr"> </div>
-        <!-- END gallery -->
         <div class="col-xs-12 rounded">
-          {%- block gallery -%}
-          {% if profile.gallery.is_renderable() %}
+            {%- block gallery -%}
+            {% if profile.gallery.is_renderable() %}
             {{ content.render_gallery(profile.gallery) }}
-          {% endif %}
-          {%- endblock -%}
+            {% endif %}
+            {%- endblock -%}
+        </div>
+        <!-- END gallery -->
+    </div>
+</div>
+<div id="blueimp-gallery" class="blueimp-gallery">
+    <!-- The container for the modal slides -->
+    <div class="slides"></div>
+    <!-- Controls for the borderless lightbox -->
+    <h3 class="title"></h3>
+    <a class="prev">‹</a>
+    <a class="next">›</a>
+    <a class="close">×</a>
+    <a class="play-pause"></a>
+    <ol class="indicator"></ol>
+    <!-- The modal dialog, which will be used to wrap the lightbox content -->
+    <div class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body next"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left prev">
+                        <i class="glyphicon glyphicon-chevron-left"></i>
+                        Previous
+                    </button>
+                    <button type="button" class="btn btn-primary next">
+                        Next
+                        <i class="glyphicon glyphicon-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-  </div>
-  <div id="blueimp-gallery" class="blueimp-gallery">
-      <!-- The container for the modal slides -->
-      <div class="slides"></div>
-      <!-- Controls for the borderless lightbox -->
-      <h3 class="title"></h3>
-      <a class="prev">‹</a>
-      <a class="next">›</a>
-      <a class="close">×</a>
-      <a class="play-pause"></a>
-      <ol class="indicator"></ol>
-      <!-- The modal dialog, which will be used to wrap the lightbox content -->
-      <div class="modal fade">
-          <div class="modal-dialog">
-              <div class="modal-content">
-                  <div class="modal-header">
-                      <button type="button" class="close" aria-hidden="true">&times;</button>
-                      <h4 class="modal-title"></h4>
-                  </div>
-                  <div class="modal-body next"></div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-default pull-left prev">
-                          <i class="glyphicon glyphicon-chevron-left"></i>
-                          Previous
-                      </button>
-                      <button type="button" class="btn btn-primary next">
-                          Next
-                          <i class="glyphicon glyphicon-chevron-right"></i>
-                      </button>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
+</div>
 {%- block footer-%}
 <div class="row">
     <div class="col-xs-10">
@@ -111,17 +112,17 @@ style="background: url({{ profile.get_background_url() }}) no-repeat center cent
 <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/3.3.0/masonry.pkgd.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
 <script>
-  WebFont.load({
-    google: {
-      families: [
-      {% for key in profile.fonts.keys() %}
-        {% if profile.fonts[key]|length > 0 %}
-          '{{ profile.fonts[key] }}',
-        {% endif %}
-      {% endfor %}
-      ]
-    }
-  });
+WebFont.load({
+google: {
+families: [
+{% for key in profile.fonts.keys() %}
+{% if profile.fonts[key]|length > 0 %}
+'{{ profile.fonts[key] }}',
+{% endif %}
+{% endfor %}
+]
+}
+});
 </script>
 <script src={{ url_for('static', filename='js/blueimp-gallery.min.js') }} type="text/javascript"></script>
 <script src={{ url_for('static', filename='js/imagesloaded.pkgd.min.js') }} type="text/javascript"></script>
@@ -129,12 +130,12 @@ style="background: url({{ profile.get_background_url() }}) no-repeat center cent
 <script>
 //document.getElementById('links').onclick = function (event) {
 $('.gallery-links').on('click', function (event) {
-event = event || window.event;
-var target = event.target || event.srcElement,
-    link = target.src ? target.parentNode : target,
-    options = {index: link, event: event},
-    links = this.getElementsByTagName('a');
-blueimp.Gallery(links, options);
-});
+        event = event || window.event;
+        var target = event.target || event.srcElement,
+        link = target.src ? target.parentNode : target,
+        options = {index: link, event: event},
+        links = this.getElementsByTagName('a');
+        blueimp.Gallery(links, options);
+        });
 </script>
 {% endblock %}

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, current_app, redirect, g, get_temp
 from flask_application.controllers import TemplateView
 from flask_application.profiles.models import Profile
 from flask_application.users.models import User
+from flask.ext.mobility.decorators import mobilized
 
 import re
 
@@ -13,16 +14,21 @@ class ControlPanelView(TemplateView):
     blueprint = users
 
     def get(self):
-        print "GET USER"
         user = self._get_current_user()
         self.make_dropbox_coherent(user)
         profiles = user.profiles
         return render_template('users/controlpanel.html', user=user,
                 profiles=profiles, maximum_profiles=User.maximum_profiles)
 
+    @mobilized(get)
+    def get(self):
+        user = self._get_current_user()
+        profiles = user.profiles
+        return render_template('mobile/users/controlpanel.html', user=user,
+                profiles=profiles, maximum_profiles=User.maximum_profiles)
+
     def create_new_refurence_handler(self, obj_response, content):
         profile_name = content['name']
-        print 'here', content
 
         user = self._get_current_user()
         err_macro = get_template_attribute('users/_macros.html', 'render_error')
@@ -100,7 +106,6 @@ class ControlPanelView(TemplateView):
             pass
 
     def register_sijax(self):
-        print "REGISTER"
         g.sijax.register_callback('create_new_refurence', self.create_new_refurence_handler)
         g.sijax.register_callback('delete_refurence', self.delete_refurence_handler)
 

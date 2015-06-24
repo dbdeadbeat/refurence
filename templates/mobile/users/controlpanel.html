@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% import "users/_macros.html" as macros with context %}
+
+{% block title %}
+refurence
+{% endblock %}
+
+{% block js_header %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	{%- block maincontainer -%}
+	<div class="col-xs-12 content-box">
+		<div class="col-xs-12">
+			<h3> Control Panel </h3>
+		</div>
+		<div class="col-xs-12 fill hr"></div>
+
+		<div class="col-xs-12" id="profile-list">
+			{% if profiles|length > 0 %}
+			<ul class="list-group">
+				{% for profile in profiles %}
+				<li class="list-group-item controlpanel-list">
+				<div class="media">
+					<div class="media-left">
+						<a href="{{ url_for('profiles.detail', slug=profile.username) }}">
+							<img class="media-object img-circle" src="{{ profile.header.get_avatar_url() }}" width="64px" height="64px">
+						</a>
+					</div>
+					<div class="media-body">
+						<h4 class="media-heading">{{ profile.username }}</h4>
+						{{ profile.header.body }}
+					</div>
+				</div>
+				</li>
+				{% endfor %}
+			</ul>
+			{% else %}
+			<h4>You have no refurences</h4>
+			<p>create one with the textbox below!!</p>
+			{% endif %}
+		</div>
+		{% endblock %}
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
+{% endblock %}
