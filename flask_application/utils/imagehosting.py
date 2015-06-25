@@ -61,6 +61,5 @@ def _get_driver(url):
         return HostedImageDriver(url)
 
 def get_hosted_image_urls(dir_url):
-    print "URL", dir_url
     driver = _get_driver(dir_url)
     return driver.get_image_urls()

@@ -55,7 +55,6 @@ $(function () {
         link = target.src ? target.parentNode : target,
         options = {index: link, event: event},
         links = [$(this).css('background-image').slice(4, -1)]
-        console.log("LINK", options, links);
         blueimp.Gallery(links, options);
     })
 

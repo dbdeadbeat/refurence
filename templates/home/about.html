@@ -7,12 +7,10 @@ About
 {% macro render_content(contributors) %}
 
   <div class="jumbotron content-box" style="padding:40px;">
-      <h1 class="text-center">About</h1>
-      <p><strong>Refurence</strong> is a service for bringing together visual and text references to assist the art-making process</p>
+      <h2 class="text-center">About</h2>
+      <p><strong>Refurence</strong> is a useful tool for storing and showing images+text references to help artists make art</p>
+      <p>it can be a hassle for an artist and client to easily communicate what they </p>
       <p><strong>Email:</strong> edeadbeat@gmail.com for any issues, questions, or comments</p>
-      <p><strong>Github:</strong> 
-      <a href="https://github.com/dbdeadbeat/refurence">https://github.com/dbdeadbeat/refurence</a>
-      </p>
   </div>
 
   <div class="col-xs-12 content-box">
@@ -31,19 +29,53 @@ About
         </div>
       {% endfor %}
   </div>
+
+  <div class="col-xs-12 content-box">
+      <h2 class="text-center">Privacy Policy</h2>
+      <ul class="list-group">
+          <li class="list-group-item">
+          <h4 class="list-group-item-heading">refurence's will do the following:</h4>
+              <p class="list-group-item-text">
+              - ask for permission to create a folder in your Dropbox via the Dropbox API</br></br>
+              - create its own folder in your Dropbox Apps folders</br></br>
+              - upload, delete, and modify files within its own Dropbox folder</br></br>
+              - in order to make images publicly visible, refurence will automatically "Share so anyone with a link can view" all files in the refurence folder</br></br>
+              - store text and URLs that you add to your refurence into a database</br></br>
+              </p>
+          </li>
+          <li class="list-group-item">
+              <h4 class="list-group-item-heading">refurence's will NOT do the following:</h4>
+              <p class="list-group-item-text">
+              - store your password.  refurence forces users to login with their credentials through Dropbox; this means refurence will never see your password</br></br>
+              - share your data.  not like its very useful anyway :p</br></br>
+              - show ads or make any money of any kind.</br></br>
+              </p>
+          </li>
+          <li class="list-group-item">
+              <h4 class="list-group-item-heading">Refurence for Dropbox</h4>
+              <p class="list-group-item-text">
+              - refurence uses Dropbox for ease of hosting and sharing images for public viewing</br></br>
+              - refurence does NOT have access to anything other than files in the folder it creates in your Dropbox</br></br>
+              - this folder is created as "/Apps/refurence"</br></br>
+              - using Dropbox gives the user more control over which images are hosted and how</br></br>
+              - using Dropbox simplifies the process of authenticating users</br></br>
+              </p>
+          </li>
+      </ul>
+  </div>
 {% endmacro %}
 
 
 {% block content %}
 <div class="container-fluid">
     {% if request.MOBILE %}
-        {{ render_content(contributors) }}
+    {{ render_content(contributors) }}
     {% else %}
-        <div class="col-xs-2"></div>
-        <div class="col-xs-8">
+    <div class="col-xs-2"></div>
+    <div class="col-xs-8">
         {{ render_content(contributors) }}
-        </div>
-        <div class="col-xs-2"></div>
+    </div>
+    <div class="col-xs-2"></div>
     {% endif %}
 </div>
 {{ super() }}
