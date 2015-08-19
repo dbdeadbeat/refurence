@@ -1,5 +1,6 @@
 /* Main stylesheet */
 @import url(http://fonts.googleapis.com/css?family=Corben|Bitter|Merriweather|Comfortaa|Marmelad|Cabin);
+
 body {
   padding-top: 50px; }
 
@@ -43,7 +44,7 @@ font-size: 24px; }
 }
 
 #mynavbar {
-  background-color: rgba(20, 20, 20, 0.95);
+	background-color: rgba(20, 20, 20, 0.95);
 }
 
 body {

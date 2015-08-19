@@ -1,0 +1,49 @@
+
+html, body, .container-fluid, .row {
+		height: 100%;
+		width: 100%;
+}
+
+body {
+		background: black;
+}
+
+.sidebar {
+		background-color: #CCCCCC;
+}
+
+@media (min-width: 992px) {
+		.sidebar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				z-index: 1000;
+				display: block;
+		}
+}
+
+#mynavbar {
+		background-color: transparent;
+}
+
+.sidebar {
+		padding: 0px;
+}
+
+.content {
+}
+
+.avatar-img {
+		max-width: 125px;
+		max-height: 125px;
+}
+
+.panel-group .panel+.panel {
+		margin-top: 0px;
+}
+
+.panel-footer {
+		background-color: rgba(0,0,0,0.25);
+		border: 0px;
+}

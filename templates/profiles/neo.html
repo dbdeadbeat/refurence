@@ -1,0 +1,77 @@
+{% import "profiles/_content.html" as content with context %}
+{% import "profiles/_neo.html" as neo with context %}
+{% extends "base.html" %}
+
+{% block title %}
+{{ profile.username }}
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/neo.css') }}">
+{{ neo.render_header_style(profile) }}
+{% endblock %}
+
+{% block topbar %}
+{% endblock %}
+
+{% block body_attribs %}
+{% endblock %}
+
+
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+<div class="container container-fluid">
+		<div class="col-md-1 sidebar">
+				<p style="text-align: center">
+				<div class="col-xs-12">
+						<div id="avatar">
+								{{ neo.render_avatarimg(profile.header)}}
+						</div>
+				</div>
+				<div class="col-xs-12 hr fill-solid"></div>
+				<div class="col-xs-12">
+						{{ neo.render_description(profile.description) }}
+				</div>
+				<div class="col-xs-12 hr fill-solid"></div>
+				<div class="col-xs-12">
+						<ul class="nav navbar-nav navbar-right">
+								{% if not dropbox.is_authenticated %}
+								<li> <a href="{{dropbox.login_url}}">login with dropbox</a> </li>
+								{% else %}
+								<li> <a href="{{ url_for('users.controlpanel')}}">{{dropbox.account_info['email']}}</a></li>
+								<li><a href="{{dropbox.logout_url}}">logout</a> </li>
+								{% endif %}
+						</ul>
+				</div>
+				</p>
+		</div>
+		<div class="col-md-11 col-md-offset-1 content">
+				{{ neo.render_gallery(profile.gallery) }}
+		</div>
+</div> <!-- END container -->
+
+{% endblock %} <!-- END block content -->
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/3.3.0/masonry.pkgd.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
+
+<script>
+WebFont.load({
+google: {
+families: [
+{% for key in profile.fonts.keys() %}
+{% if profile.fonts[key]|length > 0 %}
+'{{ profile.fonts[key] }}',
+{% endif %}
+{% endfor %}
+]
+}
+});
+</script>
+<script src={{ url_for('static', filename='js/imagesloaded.pkgd.min.js') }} type="text/javascript"></script>
+{% endblock %}

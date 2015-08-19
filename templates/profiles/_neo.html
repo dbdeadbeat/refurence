@@ -1,0 +1,105 @@
+
+{% macro render_header_style(profile) %}
+<style id="header_style">
+h1, h2, h3, h4, h5 {
+    color :  {{profile.colors[COLOR_HEADERS]}};
+}
+.panel-heading {
+    color :  {{profile.colors[COLOR_HEADERS]}};
+}
+</style>
+<style id="style_{{FONT_HEADERS}}">
+h1, h2, h3, h4, h5 {
+    font-family : {{profile.fonts[FONT_HEADERS]}};
+}
+.panel-heading {
+    font-family : {{profile.fonts[FONT_HEADERS]}};
+}
+</style>
+<style id="text_style">
+p, td, tr, li {
+  color :  {{profile.colors[COLOR_TEXT]}};
+}
+.panel-body {
+  color :  {{profile.colors[COLOR_TEXT]}};
+}
+</style>
+<style id="style_{{FONT_TEXT}}">
+p, td, tr, li {
+  font-family : {{profile.fonts[FONT_TEXT]}};
+}
+.panel-body {
+  font-family : {{profile.fonts[FONT_TEXT]}};
+}
+</style>
+<style id="links_style">
+a:link { color :  {{profile.colors[COLOR_HEADERS]}}; }
+a:hover { color :  {{profile.colors[COLOR_HEADERS]}}; }
+button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
+.col-xs-4 > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
+.btn-group > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
+</style>
+<style id="tabs_style">
+.nav-pills>li {
+  background-color :  {{profile.colors[COLOR_MAIN]}};
+}
+.nav-pills>li>a {
+  color :  {{profile.colors[COLOR_HEADERS]}};
+}
+.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
+  background-color :  {{profile.colors[COLOR_HEADERS]}};
+}
+</style>
+<style>
+#maincontainer, #sidebar_container {
+  background-color :  {{profile.colors[COLOR_MAIN]}};
+}
+#inner_container {
+  background-color :  transparent;
+}
+.panel {
+  background-color :  {{profile.colors[COLOR_INNER]}};
+}
+.panel-heading {
+  background-color :  {{profile.colors[COLOR_INNER]}};
+}
+.panel-heading:hover {
+  background-color :  {{profile.colors[COLOR_HEADERS]}};
+}
+</style>
+{% endmacro %}
+
+{% macro render_avatarimg(header) %}
+<div id="{{AVATAR_IMG}}" class="img-circle avatar-img centered"
+    style="background: url({{header.get_avatar_url()}}) 50% 50% / cover no-repeat;">
+</div>
+{% endmacro %}
+
+{% macro render_description(description) %}
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+		{% for i in range(0, description.tables.keys()|length) %}
+		<div class="panel description-content" id="description-content-{{i}}">
+				<div class="panel-heading" role="tab" id="heading{{i}}">
+						<h4 class="panel-title">{{ description.get_keys()[i] }}</h4>
+				</div>
+		</div>
+		{% endfor %}
+</div>
+{% endmacro %}
+
+{% macro render_links_gallery(gallery) %}
+{% for url in gallery.get_image_urls()%}
+		<a href="{{ url }}" title="{{ url }}" data-gallery>
+				<img class="post" src="{{ url }}" alt="" style="{{gallery.get_image_style(url)}}">
+		</a>
+{% endfor %}
+{% endmacro %}
+
+{% macro render_gallery(gallery) %}
+		{% for i in range(0, gallery.tables|length) %}
+		<a class="gallery-nav" href="#gallery-tab-{{i}}" data-toggle="tab">{{ gallery.get_table_names()[i] }}</a>
+		<div class="row gallery-links posts">
+				{{ render_links_gallery(gallery.get_tables()[i]) }}
+		</div>
+{% endfor %}
+{% endmacro %}
