@@ -70,9 +70,8 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {% endmacro %}
 
 {% macro render_avatarimg(header) %}
-<div id="{{AVATAR_IMG}}" class="img-circle avatar-img centered"
-    style="background: url({{header.get_avatar_url()}}) 50% 50% / cover no-repeat;">
-</div>
+<!-- <div id="{{AVATAR_IMG}}" class="img-circle avatar-img centered" -->
+<img id="{{AVATAR_IMG}}" class="img-responsive img-circle" src="{{ header.avatar_url }}">
 {% endmacro %}
 
 {% macro render_description(description) %}
@@ -88,7 +87,7 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
-{% for url in gallery.get_image_urls()%}
+{% for url in gallery.get_image_urls(debug=True)%}
 		<a href="{{ url }}" title="{{ url }}" data-gallery>
 				<img class="post" src="{{ url }}" alt="" style="{{gallery.get_image_style(url)}}">
 		</a>

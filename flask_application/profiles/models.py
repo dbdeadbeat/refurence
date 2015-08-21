@@ -114,12 +114,20 @@ class ImageTable(db.EmbeddedDocument):
     def is_removeable(self, img_url):
         return True
 
-    def get_image_urls(self):
+    def get_image_urls(self, debug=False):
+        if debug:
+            out = []
+            for i in range(0, 10):
+                x = random.choice([200, 150, 100, 300])
+                y = random.choice([200, 150, 100, 300])
+                out.append('http://placehold.it/' + str(x) + 'x' + str(y))
+            return out
+        else:
         # if app.dropbox.is_authenticated:
             # return self.dropbox_path.get_all_files_as_media()
         # else:
             # return get_hosted_image_urls(self.dropbox_path.public_path)
-        return self.dropbox_path.get_all_files_as_urls()
+            return self.dropbox_path.get_all_files_as_urls()
 
     def get_image_paths(self):
         return self.dropbox_path.get_all_files_as_paths()
