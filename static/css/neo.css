@@ -31,6 +31,18 @@ body {
 		padding: 0px;
 }
 
+.sidebar .col-xs-12{
+		padding: 0px;
+}
+
+.sidebar .btn {
+		padding-top: 10px;
+		padding-bottom: 10px;
+		overflow: hidden;
+		white-space: normal;
+		text-overflow: ellipsis;
+}
+
 .content {
 }
 
@@ -46,4 +58,19 @@ body {
 .panel-footer {
 		background-color: rgba(0,0,0,0.25);
 		border: 0px;
+}
+
+.panel-data-toggle {
+		width: 100%;
+		height: 100%;
+		padding: 0px;
+}
+
+
+.panel-heading {
+		background-color: darkblue;
+}
+
+.clicked {
+		background-color: red;
 }

@@ -33,24 +33,62 @@
 				</div>
 				<div class="col-xs-12 hr fill-solid"></div>
 				<div class="col-xs-12">
-						{{ neo.render_description(profile.description) }}
+						<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+								{% for i in range(0, profile.description.tables.keys()|length) %}
+								<div class="panel description-content" id="description-content-{{i}}">
+										<div class="panel-heading" role="tab" id="heading{{i}}">
+												<a class="panel-data-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}" aria-expanded="true" aria-controls="collapse{{i}}">
+														<h4 class="panel-title">{{ profile.description.get_keys()[i] }}</h4>
+												</a>
+										</div>
+								</div>
+								{% endfor %}
+						</div>
 				</div>
 				<div class="col-xs-12 hr fill-solid"></div>
 				<div class="col-xs-12">
-						<ul class="nav navbar-nav navbar-right">
-								{% if not dropbox.is_authenticated %}
-								<li> <a href="{{dropbox.login_url}}">login with dropbox</a> </li>
-								{% else %}
-								<li> <a href="{{ url_for('users.controlpanel')}}">{{dropbox.account_info['email']}}</a></li>
-								<li><a href="{{dropbox.logout_url}}">logout</a> </li>
-								{% endif %}
-						</ul>
+						<div class="btn-group-vertical" role="group" aria-label="..."
+								style="width:100%;">
+						{% if not dropbox.is_authenticated %}
+						<button type="button" class="btn btn-default">
+								<a href="{{dropbox.login_url}}">login with dropbox</a>
+						</button>
+						{% else %}
+						<!-- <a href="#" class="btn btn-primary btn-xs col-lg-12" style="margin-bottom:4px; word-wrap:break-word;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a> -->
+						<a class="btn btn-default" href="{{ url_for('users.controlpanel')}}">{{dropbox.account_info['email']}}</a>
+						<a class="btn btn-default" href="{{dropbox.logout_url}}">logout</a>
+						<!-- <button type="button" class="btn btn-default"> -->
+								<!-- <a href="{{dropbox.logout_url}}">logout</a> -->
+						<!-- </button> -->
+						{% endif %}
 				</div>
-				</p>
+				<ul class="nav navbar-nav navbar-right">
+				</ul>
 		</div>
-		<div class="col-md-11 col-md-offset-1 content">
-				{{ neo.render_gallery(profile.gallery) }}
+		</p>
+</div>
+<div class="col-md-11 col-md-offset-1 content">
+		{% for i in range(0, profile.description.tables.keys()|length) %}
+		<div id="collapse{{i}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{i}}">
+				{% if profile.description.get_tables()[i].get_image_links()[0] %}
+				<div class="panel-body" style="background: url({{profile.description.get_tables()[i].get_image_links()[0]}}) 50% 50% / cover no-repeat; min-height: 500px;">
+				{% else %}
+				<div class="panel-body">
+				{% endif %}
+						<div class="row">
+								<div class="col-xs-12 panel-body-text" 
+										{% if not profile.description.get_tables()[i].get_text() %}
+										style="background-color: transparent;"
+										{% endif %}
+										>
+										<p class="text-editable">{{ profile.description.get_tables()[i].get_text() }}</p>
+								</div>
+						</div>
+				</div>
 		</div>
+		{% endfor %}
+		{{ neo.render_gallery(profile.gallery) }}
+</div>
 </div> <!-- END container -->
 
 {% endblock %} <!-- END block content -->
@@ -74,4 +112,13 @@ families: [
 });
 </script>
 <script src={{ url_for('static', filename='js/imagesloaded.pkgd.min.js') }} type="text/javascript"></script>
+<script src={{ url_for('static', filename='js/detail.js') }} type="text/javascript"></script>
+
+<script>
+$(function() {
+				$('.panel-data-toggle').on('click', function() {
+						$(this).parent().toggleClass("clicked");
+				})
+});
+</script>
 {% endblock %}

@@ -60,30 +60,11 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 .panel {
   background-color :  {{profile.colors[COLOR_INNER]}};
 }
-.panel-heading {
-  background-color :  {{profile.colors[COLOR_INNER]}};
-}
-.panel-heading:hover {
-  background-color :  {{profile.colors[COLOR_HEADERS]}};
-}
 </style>
 {% endmacro %}
 
 {% macro render_avatarimg(header) %}
-<!-- <div id="{{AVATAR_IMG}}" class="img-circle avatar-img centered" -->
 <img id="{{AVATAR_IMG}}" class="img-responsive img-circle" src="{{ header.avatar_url }}">
-{% endmacro %}
-
-{% macro render_description(description) %}
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		{% for i in range(0, description.tables.keys()|length) %}
-		<div class="panel description-content" id="description-content-{{i}}">
-				<div class="panel-heading" role="tab" id="heading{{i}}">
-						<h4 class="panel-title">{{ description.get_keys()[i] }}</h4>
-				</div>
-		</div>
-		{% endfor %}
-</div>
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
