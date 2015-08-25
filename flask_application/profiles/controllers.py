@@ -30,7 +30,7 @@ class ProfileView(TemplateView):
         profile = Profile.objects.get_or_404(username__iexact=slug)
         if current_app.dropbox.is_authenticated and\
            current_app.dropbox.account_info['email'] == profile.owner_email:
-            return render_template('profiles/neo.html', profile=profile)
+            return render_template('profiles/neo.html', profile=profile, is_me=True)
             #  return render_template('profiles/me.html', profile=profile)
         else:
             #  return render_template('profiles/detail.html', profile=profile)
