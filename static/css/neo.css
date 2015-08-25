@@ -6,6 +6,53 @@ html, body, .container-fluid, .row {
 
 body {
 		background: black;
+		background-color: rgba(10, 10, 10, 1.00);
+}
+
+#neo-nav {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		background-color: rgba(20, 20, 20, 0.85);
+		font-family: "Cabin";
+		font-size: 12px;
+		border: none;
+		border-bottom: 0px solid #CCC;
+		border-radius: 0px;
+		height: 20px;
+}
+
+#neo-nav a {
+		color: gray;
+		font-weight: bold;
+}
+
+#neo-nav a:hover {
+		background-color: rgba(255, 255, 255, 0.25);
+		color: #0b3347;
+text-shadow: none; }
+
+#neo-nav ul {
+margin-left: 8px; }
+
+#neo-nav .navbar-logo:hover {
+background-color: inherit; }
+
+#neo-nav-container {
+		background-color: rgba(20, 20, 20, 1.00);
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+		border-bottom-color: rgba(10, 10, 10, 1.0);
+}
+
+.navbar-nav > li > a, .navbar-brand {
+		padding-top:4px !important; 
+		padding-bottom:0 !important;
+		height: 22px;
+}
+
+.navbar {min-height:22px !important;
 }
 
 .sidebar {
@@ -15,7 +62,7 @@ body {
 @media (min-width: 992px) {
 		.sidebar {
 				position: fixed;
-				top: 0;
+				top: 22px;
 				left: 0;
 				bottom: 0;
 				z-index: 1000;
@@ -23,12 +70,13 @@ body {
 		}
 }
 
-#mynavbar {
-		background-color: transparent;
+.content {
+		padding-top: 32px;
 }
 
 .sidebar {
 		padding: 0px;
+		background-color: rgba(20, 20, 20, 0.95);
 }
 
 .sidebar .col-xs-12{
@@ -41,14 +89,32 @@ body {
 		overflow: hidden;
 		white-space: normal;
 		text-overflow: ellipsis;
+		box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
 }
 
-.content {
+.btn-sidebar {
+		padding-top: 10px;
+		padding-bottom: 10px;
+		overflow: hidden;
+		white-space: normal;
+		text-overflow: ellipsis;
+		box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+}
+
+.description-content {
+		margin-left: 8px;
+		margin-right: 8px;
 }
 
 .avatar-img {
 		max-width: 125px;
 		max-height: 125px;
+}
+
+#header {
+		padding: 0px;
+		padding-top: 0px;
+		padding-bottom: 30px;
 }
 
 .panel-group .panel+.panel {
@@ -64,13 +130,23 @@ body {
 		width: 100%;
 		height: 100%;
 		padding: 0px;
+		box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
 }
 
+.panel-body {
+		margin: 0px;
+		margin-bottom: 10px;
+		padding: 0px;
+}
+
+.panel-body-text {
+		border-radius: 5px;
+}
 
 .panel-heading {
-		background-color: darkblue;
 }
 
 .clicked {
 		background-color: red;
 }
+
