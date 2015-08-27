@@ -22,21 +22,21 @@
 
 {% block navbar %}
 <nav class="navbar navbar-default" id="neo-nav">
-    <div class="container-fluid" id="neo-nav-container">
-        <!-- Nav links -->
-        <div class="collapse navbar-collapse" id="neonavbar">
+		<div class="container-fluid" id="neo-nav-container">
+				<!-- Nav links -->
+				<div class="collapse navbar-collapse" id="neonavbar">
 
-            <ul class="nav navbar-nav navbar-right">
-                {% if not dropbox.is_authenticated %}
-                <li> <a href="{{dropbox.login_url}}">login with dropbox</a> </li>
-                {% else %}
-                <li> <a href="{{ url_for('users.controlpanel')}}">{{dropbox.account_info['email']}}</a></li>
-                <li><a href="{{dropbox.logout_url}}">logout</a> </li>
-                {% endif %}
+						<ul class="nav navbar-nav navbar-right">
+								{% if not dropbox.is_authenticated %}
+								<li> <a href="{{dropbox.login_url}}">login with dropbox</a> </li>
+								{% else %}
+								<li> <a href="{{ url_for('users.controlpanel')}}">{{dropbox.account_info['email']}}</a></li>
+								<li><a href="{{dropbox.logout_url}}">logout</a> </li>
+								{% endif %}
 
-            </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
+						</ul>
+				</div><!-- /.navbar-collapse -->
+		</div><!-- /.container-fluid -->
 </nav>
 {% endblock %}
 
@@ -83,23 +83,31 @@
 						<h4 id="{{HEADER_BODY}}" class="text-editable"
 								contenteditable="{{editable}}">{{ profile.header.body }}</h4>
 				</div>
-				{% for i in range(0, profile.description.tables.keys()|length) %}
-				<div id="collapse{{i}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{i}}">
-						{% if profile.description.get_tables()[i].get_image_links()[0] %}
-						<div class="panel-body" style="background: url({{profile.description.get_tables()[i].get_image_links()[0]}}) 50% 50% / cover no-repeat; min-height: 500px;">
+				<div class="col-xs-12" id="description-panels">
+						{% for i in range(0, profile.description.tables.keys()|length) %}
+						<div id="collapse{{i}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{i}}">
+								{% if profile.description.get_tables()[i].get_image_links()[0] %}
+								<!-- <div class="panel-body" style="background: url({{profile.description.get_tables()[i].get_image_links()[0]}}) 50% 50% / cover no-repeat;"> -->
+								<div class="panel-body">
 								{% else %}
 								<div class="panel-body">
-										{% endif %}
+								{% endif %}
 										<div class="col-xs-12 panel-body-text" 
 												{% if not profile.description.get_tables()[i].get_text() %}
 												style="background-color: transparent;"
-												{% endif %}
-												>
-												<p class="text-editable">{{ profile.description.get_tables()[i].get_text() }}</p>
+												{% endif %}>
+												<div class="col-xs-6">
+												<img class="img-responsive" src="{{profile.description.get_tables()[i].get_image_links()[0]}}">
+												</div>
+												<div class="col-xs-6">
+														<p id="description-text-{{i}}" class="text-editable">{{ profile.description.get_tables()[i].get_text() }}</p>
+												</div>
 										</div>
 								</div>
 						</div>
 						{% endfor %}
+				</div>
+				<div class="col-xs-12">
 						{{ neo.render_gallery(profile.gallery) }}
 				</div>
 		</div>
@@ -107,37 +115,37 @@
 
 <!-- blueimp -->
 <div id="blueimp-gallery" class="blueimp-gallery">
-  <!-- The container for the modal slides -->
-  <div class="slides"></div>
-  <!-- Controls for the borderless lightbox -->
-  <h3 class="title"></h3>
-  <a class="prev">‹</a>
-  <a class="next">›</a>
-  <a class="close">×</a>
-  <a class="play-pause"></a>
-  <ol class="indicator"></ol>
-  <!-- The modal dialog, which will be used to wrap the lightbox content -->
-  <div class="modal fade">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" aria-hidden="true">&times;</button>
-          <h4 class="modal-title"></h4>
-        </div>
-        <div class="modal-body next"></div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default pull-left prev">
-            <i class="glyphicon glyphicon-chevron-left"></i>
-            Previous
-          </button>
-          <button type="button" class="btn btn-primary next">
-            Next
-            <i class="glyphicon glyphicon-chevron-right"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+		<!-- The container for the modal slides -->
+		<div class="slides"></div>
+		<!-- Controls for the borderless lightbox -->
+		<h3 class="title"></h3>
+		<a class="prev">‹</a>
+		<a class="next">›</a>
+		<a class="close">×</a>
+		<a class="play-pause"></a>
+		<ol class="indicator"></ol>
+		<!-- The modal dialog, which will be used to wrap the lightbox content -->
+		<div class="modal fade">
+				<div class="modal-dialog">
+						<div class="modal-content">
+								<div class="modal-header">
+										<button type="button" class="close" aria-hidden="true">&times;</button>
+										<h4 class="modal-title"></h4>
+								</div>
+								<div class="modal-body next"></div>
+								<div class="modal-footer">
+										<button type="button" class="btn btn-default pull-left prev">
+												<i class="glyphicon glyphicon-chevron-left"></i>
+												Previous
+										</button>
+										<button type="button" class="btn btn-primary next">
+												Next
+												<i class="glyphicon glyphicon-chevron-right"></i>
+										</button>
+								</div>
+						</div>
+				</div>
+		</div>
 </div> <!-- END blueimp -->
 
 {% endblock %} <!-- END block content -->
@@ -168,7 +176,7 @@ families: [
 $(function() {
 				$('.panel-data-toggle').on('click', function() {
 						$(this).parent().toggleClass("clicked");
-						})
-				});
+				})
+});
 </script>
 {% endblock %}

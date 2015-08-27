@@ -22,6 +22,13 @@ class Path(db.EmbeddedDocument):
     def get_all_files_as_urls(self):
         # return self.public_urls
         if self.public_path:
+            resp = app.dropbox.client.thumbnail(self.private_path, size='s',
+                    format='PNG')
+            thumb = resp.read()
+            print 'thumb', resp, resp.getheaders()
+            resp.close()
+            #  return ['data:image/png;' + thumb]
+            return ['data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAFk9Q05DOFlOSE5kXllphd6QhXp6hf/CzaHe//////////////////////////////////////////////////8BXmRkhXWF/5CQ///////////////////////////////////////////////////////////////////////////AABEIAAAAAAMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AP8A/9k=']
             if os.path.splitext(self.public_path)[1]:
                 return [self.public_path + '?raw=1']
             else:

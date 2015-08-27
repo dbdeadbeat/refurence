@@ -6,7 +6,7 @@ html, body, .container-fluid, .row {
 
 body {
 		background: black;
-		background-color: rgba(10, 10, 10, 1.00);
+		background-color: rgba(25, 25, 25, 1.00);
 }
 
 #neo-nav {
@@ -66,6 +66,7 @@ background-color: inherit; }
 				bottom: 0;
 				z-index: 1000;
 				display: block;
+				box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
 		}
 }
 
@@ -116,6 +117,10 @@ background-color: inherit; }
 		padding-bottom: 30px;
 }
 
+#description-panels {
+		padding-bottom: 30px;
+}
+
 .panel-group .panel+.panel {
 		margin-top: 0px;
 }
@@ -140,6 +145,7 @@ background-color: inherit; }
 
 .panel-body-text {
 		border-radius: 5px;
+		/* min-height: 100px; */
 }
 
 .panel-heading {

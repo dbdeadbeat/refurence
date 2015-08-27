@@ -31,7 +31,6 @@ $(function () {
     $(window).load(function () {
         $('.posts').show();
         refreshMasonry();
-        $('#collapse0').collapse('show');
     });
 
     $(window).bind('resize', function () {
