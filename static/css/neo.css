@@ -14,7 +14,6 @@ body {
 		top: 0px;
 		left: 0px;
 		right: 0px;
-		background-color: rgba(20, 20, 20, 0.85);
 		font-family: "Cabin";
 		font-size: 12px;
 		border: none;
@@ -40,7 +39,7 @@ margin-left: 8px; }
 background-color: inherit; }
 
 #neo-nav-container {
-		background-color: rgba(20, 20, 20, 1.00);
+		background-color: rgba(20, 20, 20, 0.0);
 		border-bottom-style: solid;
 		border-bottom-width: 1px;
 		border-bottom-color: rgba(10, 10, 10, 1.0);
@@ -76,7 +75,7 @@ background-color: inherit; }
 
 .sidebar {
 		padding: 0px;
-		background-color: rgba(20, 20, 20, 0.95);
+		background-color: rgba(40, 40, 40, 1.0);
 }
 
 .sidebar .col-xs-12{
