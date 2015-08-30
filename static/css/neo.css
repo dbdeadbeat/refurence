@@ -10,7 +10,6 @@ body {
 }
 
 #neo-nav {
-		position: absolute;
 		top: 0px;
 		left: 0px;
 		right: 0px;
@@ -89,16 +88,9 @@ background-color: inherit; }
 		overflow: hidden;
 		white-space: normal;
 		text-overflow: ellipsis;
-		box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
-}
-
-.btn-sidebar {
-		padding-top: 10px;
-		padding-bottom: 10px;
-		overflow: hidden;
-		white-space: normal;
-		text-overflow: ellipsis;
-		box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5)
+		text-align: left;
+		width: 100%;
+		box-shadow: inset 0px 0px 2px 0px rgba(0, 0, 0, 0.5), 1px 1px 15px 0px rgba(0, 0, 0, 0.5)
 }
 
 .description-content {
@@ -155,3 +147,19 @@ background-color: inherit; }
 		background-color: red;
 }
 
+#container-content {
+		width: 100%;
+}
+
+.img-description {
+		max-height: 500px;
+		max-width: 100%;
+		box-shadow: 0px 0px 75px rgba(255,255,255,0.35);
+}
+
+.description-img-well {
+}
+
+.imglink-img {
+  width: 32px;
+}

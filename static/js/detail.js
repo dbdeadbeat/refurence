@@ -67,5 +67,5 @@ $(function () {
         blueimp.Gallery(links, options);
     });
 
-    $('.panel-collapse').collapse();
+		$('.panel-collapse').collapse();
 });

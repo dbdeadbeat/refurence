@@ -21,11 +21,10 @@
 
 
 {% block navbar %}
-<nav class="navbar navbar-default" id="neo-nav">
+<nav class="navbar navbar-default navbar-fixed-top" id="neo-nav">
 		<div class="container-fluid" id="neo-nav-container">
 				<!-- Nav links -->
 				<div class="collapse navbar-collapse" id="neonavbar">
-
 						<ul class="nav navbar-nav navbar-right">
 								{% if not dropbox.is_authenticated %}
 								<li> <a href="{{dropbox.login_url}}">login with dropbox</a> </li>
@@ -42,75 +41,86 @@
 
 {% block content %}
 <div class="container container-fluid">
-		<div class="col-md-1 sidebar">
-				<p style="text-align: center">
-				<div class="col-xs-12">
-						<div id="avatar">
-								<img id="{{AVATAR_IMG}}" class="img-responsive img-circle avatar-img centered" src="{{ profile.header.avatar_url }}">
-						</div>
-				</div>
-				{% if is_me %}
-				<div class="col-xs-12 hr fill-low-opacity"></div>
-				<div class="col-xs-12">
-						<a class="btn btn-dark btn-lg btn-sidebar" type="button" href="{{ url_for('profiles.edit', slug=profile.username) }}">
-								<span class="glyphicon glyphicon-edit" aria=hidden="true"></span>
-								Edit Profile
-						</a>
-				</div>
-				{% endif %}
-				<div class="col-xs-12 hr fill-low-opacity"></div>
-				{% if profile.description.tables.keys()|length > 0 %}
-				<div class="col-xs-12">
-						<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-								{% for i in range(0, profile.description.tables.keys()|length) %}
-								<div class="panel description-content" id="description-content-{{i}}">
-										<div class="panel-heading btn-sidebar" role="tab" id="heading{{i}}">
-												<a class="panel-data-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse{{i}}" aria-expanded="true" aria-controls="collapse{{i}}">
-														<h4 class="panel-title">{{ profile.description.get_keys()[i] }}</h4>
-												</a>
-										</div>
+		<div class="row">
+				<div class="col-md-1 sidebar">
+						<p style="text-align: center">
+						<div class="col-xs-12">
+								<div id="avatar">
+										<img id="{{AVATAR_IMG}}" class="img-responsive img-circle avatar-img centered" src="{{ profile.header.get_avatar_url() }}">
 								</div>
+						</div>
+
+						{% if is_me %}
+						<div class="col-xs-12 hr fill-low-opacity"></div>
+						<div class="col-xs-12">
+								<a class="btn btn-dark btn-lg btn-sidebar" type="button" href="{{ url_for('profiles.edit', slug=profile.username) }}">
+										<span class="glyphicon glyphicon-edit" aria=hidden="true"></span>
+										Edit Profile
+								</a>
+						</div>
+						{% endif %}
+
+						<div class="col-xs-12 hr fill-low-opacity"></div>
+						{% if profile.description.tables.keys()|length > 0 %}
+						<div class="col-xs-12">
+								{% for i in range(0, profile.description.tables.keys()|length) %}
+								<a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}">
+										<h4>{{ profile.description.get_keys()[i] }}</h4>
+								</a>
 								{% endfor %}
 						</div>
+						{% endif %}
+						</p>
 				</div>
-				{% endif %}
-				</p>
-		</div>
-		<div class="col-md-11 col-md-offset-1 content">
-				<div class="col-xs-12" id="header">
-						<h1 id="{{HEADER_TITLE}}" class="text-editable"
-								contenteditable="{{editable}}">{{ profile.header.title }}</h1>
-						<h4 id="{{HEADER_BODY}}" class="text-editable"
-								contenteditable="{{editable}}">{{ profile.header.body }}</h4>
-				</div>
-				<div class="col-xs-12" id="description-panels">
-						{% for i in range(0, profile.description.tables.keys()|length) %}
-						<div id="collapse{{i}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{i}}">
-								{% if profile.description.get_tables()[i].get_image_links()[0] %}
-								<!-- <div class="panel-body" style="background: url({{profile.description.get_tables()[i].get_image_links()[0]}}) 50% 50% / cover no-repeat;"> -->
-								<div class="panel-body">
-								{% else %}
-								<div class="panel-body">
-								{% endif %}
-										<div class="col-xs-12 panel-body-text" 
-												{% if not profile.description.get_tables()[i].get_text() %}
-												style="background-color: transparent;"
-												{% endif %}>
-												<div class="col-xs-6">
-												<img class="img-responsive" src="{{profile.description.get_tables()[i].get_image_links()[0]}}">
-												</div>
-												<div class="col-xs-6">
-														<p id="description-text-{{i}}" class="text-editable">{{ profile.description.get_tables()[i].get_text() }}</p>
-												</div>
+				<div class="col-md-11 col-md-offset-1 content">
+						<div class="container" id="container-content">
+								<div class="row">
+										<div class="col-xs-12" id="header">
+												<h1 id="{{HEADER_TITLE}}" class="text-editable"
+														contenteditable="{{editable}}">{{ profile.header.title }}</h1>
+												<h4 id="{{HEADER_BODY}}" class="text-editable"
+														contenteditable="{{editable}}">{{ profile.header.body }}</h4>
 										</div>
 								</div>
-						</div>
-						{% endfor %}
-				</div>
-				<div class="col-xs-12">
-						{{ neo.render_gallery(profile.gallery) }}
-				</div>
-		</div>
+								<div class="row">
+										<div class="col-xs-12">
+										{% for i in range(0, profile.sidebar.img_links|length) %}
+												<div class="col-xs-1">
+												<a href="{{ profile.sidebar.img_links[i].link_url }}">
+												<img class="img-responsive centered imglink-img" src="{{ profile.sidebar.img_links[i].get_image_url() }}">
+												</a>
+												</div>
+										{% endfor %}
+										</div>
+								</div>
+								<div class="row">
+										{% for i in range(0, profile.description.tables.keys()|length) %}
+										<div id="description-{{i}}" class="description-panel {% if i != 0 %}hidden{% endif %}">
+												<div class="col-md-8 description-img-well">
+														{% if profile.description.get_tables()[i].get_image_links()[0] %}
+														<img class="img-description img-responsive centered" src="{{profile.description.get_tables()[i].get_image_links()[0]}}">
+														{% else %}
+														<img class="img-description img-responsive centered" src="{{url_for('static', filename='img/bkg.jpg')}}">
+														{% endif %}
+												</div>
+												<div class="col-md-4 fill-low-opacity">
+														<h3>{{ profile.description.get_keys()[i] }}</h3>
+														<p class="text-editable">{{ profile.description.get_tables()[i].get_text() }}</p>
+												</div>
+										</div>
+										{% endfor %}
+								</div>
+								<div class="row">
+										<div class="col-xs-12 hr fill-low-opacity"></div>
+								</div>
+								<div class="row">
+										<div class="col-xs-12">
+												{{ neo.render_gallery(profile.gallery) }}
+										</div>
+								</div>
+						</div> <!-- END container -->
+				</div> <!-- END col-xs-11 -->
+		</div> <!-- END row -->
 </div> <!-- END container -->
 
 <!-- blueimp -->
@@ -174,8 +184,23 @@ families: [
 
 <script>
 $(function() {
-				$('.panel-data-toggle').on('click', function() {
-						$(this).parent().toggleClass("clicked");
+				$('.panel-heading').on('click', function() {
+						var toks = $(this).attr('id').split('-');
+						var id = parseInt(toks[toks.length-1]);
+
+						var panels = $('.description-panel');
+						for (var idx = 0; idx < panels.length; idx++) {
+							$(panels[idx]).addClass('hidden');
+							$(panels[idx]).removeClass('active');
+						}
+						$(panels[id]).removeClass('hidden');
+						$(panels[id]).addClass('active');
+
+						var buttons = $('.panel-heading');
+						for (var idx = 0; idx < buttons.length; idx++) {
+							$(buttons[idx]).removeClass('clicked');
+						}
+						$(this).toggleClass("clicked");
 				})
 });
 </script>
