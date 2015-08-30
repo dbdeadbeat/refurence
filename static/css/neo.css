@@ -55,6 +55,7 @@ background-color: inherit; }
 
 .sidebar {
 		background-color: #CCCCCC;
+		overflow: overlay;
 }
 
 @media (min-width: 992px) {
@@ -158,6 +159,27 @@ background-color: inherit; }
 }
 
 .description-img-well {
+}
+
+#imglinks {
+		border-radius: 10px;
+		background-color: rgba(20,20,20,1.0);
+		margin-left: 40px;
+}
+
+#imglinks li a {
+		padding: 0px;
+}
+
+#imglinks .hr {
+		margin: 10px 0px 10px 0px;
+}
+
+.affix {
+		margin-right: 40px;
+}
+
+.affix-top {
 }
 
 .imglink-img {

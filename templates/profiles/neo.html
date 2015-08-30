@@ -61,6 +61,7 @@
 						{% endif %}
 
 						<div class="col-xs-12 hr fill-low-opacity"></div>
+
 						{% if profile.description.tables.keys()|length > 0 %}
 						<div class="col-xs-12">
 								{% for i in range(0, profile.description.tables.keys()|length) %}
@@ -72,7 +73,7 @@
 						{% endif %}
 						</p>
 				</div>
-				<div class="col-md-11 col-md-offset-1 content">
+				<div class="col-md-10 col-md-offset-1 content">
 						<div class="container" id="container-content">
 								<div class="row">
 										<div class="col-xs-12" id="header">
@@ -80,17 +81,6 @@
 														contenteditable="{{editable}}">{{ profile.header.title }}</h1>
 												<h4 id="{{HEADER_BODY}}" class="text-editable"
 														contenteditable="{{editable}}">{{ profile.header.body }}</h4>
-										</div>
-								</div>
-								<div class="row">
-										<div class="col-xs-12">
-										{% for i in range(0, profile.sidebar.img_links|length) %}
-												<div class="col-xs-1">
-												<a href="{{ profile.sidebar.img_links[i].link_url }}">
-												<img class="img-responsive centered imglink-img" src="{{ profile.sidebar.img_links[i].get_image_url() }}">
-												</a>
-												</div>
-										{% endfor %}
 										</div>
 								</div>
 								<div class="row">
@@ -120,6 +110,20 @@
 								</div>
 						</div> <!-- END container -->
 				</div> <!-- END col-xs-11 -->
+				<div class="col-xs-1" id="imglink_col">
+						<ul class="nav nav-stacked" id="imglinks">
+								{% for i in range(0, profile.sidebar.img_links|length) %}
+								<div class="col-xs-12 hr fill-low-opacity"></div>
+								<div class="col-xs-12">
+										<li>
+												<a href="{{ profile.sidebar.img_links[i].link_url }}">
+														<img class="centered imglink-img" src="{{ profile.sidebar.img_links[i].get_image_url() }}">
+												</a>
+										</li>
+								</div>
+								{% endfor %}
+						</ul>
+				</div>
 		</div> <!-- END row -->
 </div> <!-- END container -->
 
@@ -202,6 +206,20 @@ $(function() {
 						}
 						$(this).toggleClass("clicked");
 				})
+
+				$('#imglinks').affix({
+					offset: {
+						top: 235
+					}
+				});
+
+				var $body   = $(document.body);
+				var navHeight = $('.navbar').outerHeight(true) + 10;
+
+				$body.scrollspy({
+					target: '#imglink_col',
+					offset: navHeight
+				});
 });
 </script>
 {% endblock %}
