@@ -101,10 +101,12 @@ class EditView(ProfileView):
 
     # common html update functions
     def sidebar_html_update(self, obj_response, profile):
-        sidebar_macro = get_template_attribute('profiles/_content.html',
-                                               'render_sidebar')
-        sidebar_html = sidebar_macro(profile.sidebar, True)
-        obj_response.html("#sidebar", sidebar_html)
+        print "PROFILE", profile
+        sidebar_macro = get_template_attribute('profiles/_neo.html',
+                                               'render_editable_imglinks')
+        sidebar_html = sidebar_macro(profile.sidebar.img_links)
+        obj_response.html("#imglink-container", sidebar_html)
+        print "HTML", sidebar_html
 
         popover_macro = get_template_attribute('profiles/_content.html',
                                                'render_popovers')
@@ -213,7 +215,6 @@ class EditView(ProfileView):
         obj_response.redirect(url_for('profiles.detail',
                               slug=profile.username))
 
-    @ajax_catch_error
     def add_imglink_handler(self, obj_response, content):
         def get_default_imglink_img(idx):
             if (idx > 3):
@@ -234,7 +235,6 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.sidebar_html_update(obj_response, profile)
 
-    @ajax_catch_error
     def update_imglink_image_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
 

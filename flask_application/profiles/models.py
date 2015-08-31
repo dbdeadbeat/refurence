@@ -279,7 +279,7 @@ class Profile(FlaskDocument):
                                             pc['FONT_LINKS'] :     '',
                                             pc['FONT_TEXT'] :     '',
                                             });
-    dropbox_profile_images_dirname = '_profile_images'
+    dropbox_profile_images_dirname = '_profile_images_DO_NOT_MODIFY'
     bkg_dropbox_path = db.EmbeddedDocumentField('Path')
     dropbox_root_public_path = db.StringField()
 
@@ -376,6 +376,8 @@ class Profile(FlaskDocument):
         dropbox_paths = get_hosted_dir_urls(self.dropbox_root_public_path)
         out = []
         for p in dropbox_paths:
+            if p['name'] == Profile.dropbox_profile_images_dirname:
+                continue
             p['imgs'] = get_hosted_image_urls(p['url'])
             out.append(MonkeyPatchGallery(p))
         for tbl in out:

@@ -84,3 +84,26 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 		<div class="col-xs-12 hr fill-low-opacity"></div>
 {% endfor %}
 {% endmacro %}
+
+{% macro render_editable_imglinks(img_links) %}
+<ul class="nav nav-stacked" id="imglinks">
+		{% for i in range(0, img_links|length) %}
+		<div class="col-xs-12 hr fill-low-opacity"></div>
+		<div class="col-xs-12">
+				<li>
+						<a href="{{ img_links[i].link_url }}">
+								<img class="centered imglink-img" src="{{ img_links[i].get_image_url() }}">
+						</a>
+				</li>
+		</div>
+		{% endfor %}
+		<div class="col-xs-12 hr fill-low-opacity"></div>
+		<div class="col-xs-12">
+				<li style="text-align:center;">
+				<button id="btn_sidebar_add_link" class="btn btn-default">
+						<span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
+				</button>
+				</li>
+		</div>
+</ul>
+{% endmacro %}
