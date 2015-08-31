@@ -68,7 +68,7 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
-{% for url in gallery.get_image_urls(debug=False)%}
+{% for url in gallery.get_image_urls(debug=True)%}
 		<a href="{{ url }}" title="{{ url }}" data-gallery>
 				<img class="post" src="{{ url }}" alt="" style="{{gallery.get_image_style(url)}}">
 		</a>
@@ -81,5 +81,6 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 		<div class="row gallery-links posts">
 				{{ render_links_gallery(gallery.get_tables()[i]) }}
 		</div>
+		<div class="col-xs-12 hr fill-low-opacity"></div>
 {% endfor %}
 {% endmacro %}

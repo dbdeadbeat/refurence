@@ -76,7 +76,8 @@ class EditView(ProfileView):
            current_app.dropbox.account_info['email'] == profile.owner_email:
                 session['temp_profile'] = deepcopy(profile)
                 session['dropbox_paths_to_delete'] = []
-                return render_template('profiles/edit.html', profile=profile)
+                #  return render_template('profiles/edit.html', profile=profile)
+                return render_template('profiles/neo_edit.html', profile=profile)
         else:
             return redirect('404')
 

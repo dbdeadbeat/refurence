@@ -144,13 +144,6 @@ class ImageTable(db.EmbeddedDocument):
     def get_image_style(self, url):
         width = 200
         height = 200
-        # if random.uniform(0,100) <= 15:
-            # width = 300
-            # height = 300
-        # elif random.uniform(0,100) <= 25:
-            # width = 350
-            # height = 350
-
         return 'max-width:' + str(width) + 'px; max-height:' + str(height) + 'px;'
 
 
