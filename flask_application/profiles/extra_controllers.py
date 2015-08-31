@@ -329,6 +329,96 @@ class EditView(ProfileView):
         self.description_content_html_update(obj_response, profile)
 
     @ajax_catch_error
+    def add_gallery_handler(self, obj_response, content):
+        profile = self.get_user_profile_edit()
+        num_gallerys = len(profile.gallery.tables)
+
+        if num_gallerys >= 10:
+            return
+
+        imgtable = ImageTable()
+        name = 'Gallery' + str(num_gallerys)
+        while name in profile.gallery.get_table_names():
+            num_gallerys += 1
+            name = 'Gallery' + str(num_gallerys)
+        imgtable.name = name
+        imgtable.order = num_gallerys
+        imgtable.dropbox_path = profile.dropbox_create_folder(imgtable.name)
+        imgtable.share()
+        profile.gallery.tables.append(imgtable)
+
+        self.save_user_profile_edit(profile)
+        self.gallery_html_update(obj_response, profile)
+
+    @ajax_catch_error
+    def del_gallery_handler(self, obj_response, content):
+        idx = int(content['active'])
+        if idx < 0:
+            return
+
+        profile = self.get_user_profile_edit()
+        del profile.gallery.tables[idx]
+        self.save_user_profile_edit(profile)
+        self.gallery_html_update(obj_response, profile)
+
+    @ajax_catch_error
+    def gallery_del_image_handler(self, obj_response, content):
+        idx = int(content['active'])
+        if idx < 0:
+            return
+
+        profile = self.get_user_profile_edit()
+        table = profile.gallery.get_tables()[idx]
+        images = table.get_image_paths()
+        filepath = os.path.basename(content['url'])
+        if '?' in filepath:
+            filepath = filepath[0:filepath.index('?')]
+        for img in images:
+            fname = os.path.basename(img.private_path)
+            if fname == filepath:
+                profile.dropbox_delete_file(img)
+
+        # self.gallery_links_html_update(obj_response, profile, table)
+
+    @ajax_catch_error
+    def change_bkg_handler(self, obj_response, content):
+        profile = self.get_user_profile_edit()
+
+        profile.bkg_color = content['color'] if content['color'] else None
+        if profile.bkg_dropbox_path:
+            session['dropbox_paths_to_delete'].append(profile.bkg_dropbox_path)
+
+        self.save_user_profile_edit(profile)
+
+        element = profile.bkg_color
+        obj_response.css('body', 'background', element)
+        obj_response.css('body', 'background-size', 'cover')
+
+    @ajax_catch_error
+    def change_bkg_dropbox_handler(self, obj_response, content):
+        profile = self.get_user_profile_edit()
+
+        new_filename = content['files'][0]['path']
+        src = Path(private_path=new_filename)
+        dst = profile.dropbox_get_non_gallery_image_directory().join(new_filename)
+
+        if profile.bkg_dropbox_path:
+            session['dropbox_paths_to_delete'].append(profile.bkg_dropbox_path)
+
+        profile.bkg_dropbox_path = profile.dropbox_move_file(src, dst)
+        profile.bkg_dropbox_path.share()
+
+        if profile.bkg_color:
+            del profile.bkg_color
+
+        self.save_user_profile_edit(profile)
+
+        element = 'url(' + profile.get_background_url() + ') no-repeat center center fixed'
+
+        obj_response.css('body', 'background', element)
+        obj_response.css('body', 'background-size', 'cover')
+
+    @ajax_catch_error
     def change_color_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
         profile.colors[content['color']] = content['value']
@@ -366,6 +456,27 @@ class EditView(ProfileView):
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
 
+    @ajax_catch_error
+    def add_image_to_gallery_handler(self, obj_response, content):
+        idx = int(content['num'])
+        if idx < 0:
+            return
+
+        profile = self.get_user_profile_edit()
+        table = profile.gallery.get_tables()[idx]
+
+        if not table:
+            return
+
+        fdir = profile.dropbox_create_folder(table.name)
+        for f in content['files']:
+            src = Path(private_path=f['path'])
+            dst = fdir.join(f['path'])
+            profile.dropbox_move_file(src, dst)
+
+        self.save_user_profile_edit(profile)
+        self.gallery_links_html_update(obj_response, profile, table)
+
     def register_sijax(self):
         g.sijax.register_callback('save_profile', self.save_profile_handler)
         g.sijax.register_callback('discard_changes', self.discard_changes_handler)
@@ -375,10 +486,16 @@ class EditView(ProfileView):
         g.sijax.register_callback('del_imglink', self.del_imglink_handler)
         g.sijax.register_callback('add_desc_table', self.add_desc_content_handler)
         g.sijax.register_callback('del_desc_table', self.del_desc_content_handler)
+        g.sijax.register_callback('add_gallery', self.add_gallery_handler)
+        g.sijax.register_callback('del_gallery', self.del_gallery_handler)
         g.sijax.register_callback('update_avatar_url', self.update_avatar_url_handler)
+        g.sijax.register_callback('change_bkg', self.change_bkg_handler)
+        g.sijax.register_callback('change_bkg_dropbox', self.change_bkg_dropbox_handler)
         g.sijax.register_callback('change_color', self.change_color_handler)
         g.sijax.register_callback('change_font', self.change_font_handler)
         g.sijax.register_callback('add_image_to_description', self.add_image_to_description_handler)
+        g.sijax.register_callback('add_image_to_gallery', self.add_image_to_gallery_handler)
+        g.sijax.register_callback('gallery_del_image', self.gallery_del_image_handler)
 
 
 def format_input(string):

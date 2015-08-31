@@ -55,6 +55,7 @@ class ControlPanelView(TemplateView):
         profile = Profile.initialize_to_default(profile)
         profile.owner_email = user.email
         profile.save()
+        profile.dropbox_root().share()
 
         user.profiles.append(profile)
         user.save()

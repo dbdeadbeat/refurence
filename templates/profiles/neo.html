@@ -105,7 +105,9 @@
 								</div>
 								<div class="row">
 										<div class="col-xs-12">
-												{{ neo.render_gallery(profile.gallery) }}
+												{% for gallery in profile.get_galleries() %}
+														{{ neo.render_gallery(gallery) }}
+												{% endfor %}
 										</div>
 								</div>
 						</div> <!-- END container -->

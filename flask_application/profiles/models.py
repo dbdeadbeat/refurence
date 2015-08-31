@@ -2,7 +2,7 @@ from flask import url_for, current_app
 from flask_application.models import db, FlaskDocument
 from flask_application.profiles.constants import profile_constants as pc
 
-from flask_application.utils.imagehosting import get_hosted_image_urls
+from flask_application.utils.imagehosting import get_hosted_image_urls, get_hosted_dir_urls
 
 from flask_application import app
 
@@ -281,6 +281,7 @@ class Profile(FlaskDocument):
                                             });
     dropbox_profile_images_dirname = '_profile_images'
     bkg_dropbox_path = db.EmbeddedDocumentField('Path')
+    dropbox_root_public_path = db.StringField()
 
     def delete(self):
         app.dropbox.client.file_delete(self.dropbox_root().private_path)
@@ -304,6 +305,9 @@ class Profile(FlaskDocument):
 
     def dropbox_create_folder(self, path):
         root_path = self.dropbox_root()
+        root_path.share()
+        self.dropbox_root_public_path = root_path.public_path
+        self.save()
         paths = root_path.get_all_files_as_paths()
         for p in paths:
             if p.basename() == path and p.is_dir:
@@ -343,6 +347,41 @@ class Profile(FlaskDocument):
             return self.bkg_img
         
         return None
+
+    def get_galleries(self):
+        class MonkeyPatchTable():
+            def __init__(self, data):
+                self.data = data
+
+            def get_image_urls(self, debug=False):
+                return self.data
+
+            def get_image_style(self, url):
+                width = 200
+                height = 200
+                return 'max-width:' + str(width) + 'px; max-height:' + str(height) + 'px;'
+
+        class MonkeyPatchGallery():
+            def __init__(self, data):
+                self.data = data
+            def get_table_names(self):
+                return [self.data['name']]
+
+            def get_tables(self):
+                return [MonkeyPatchTable(self.data['imgs'])]
+
+            def is_renderable(self):
+                return True
+
+        dropbox_paths = get_hosted_dir_urls(self.dropbox_root_public_path)
+        out = []
+        for p in dropbox_paths:
+            p['imgs'] = get_hosted_image_urls(p['url'])
+            out.append(MonkeyPatchGallery(p))
+        for tbl in out:
+            for t in tbl.get_tables():
+                print 'urls', t.get_image_urls()
+        return out
 
     def _dropbox_delete_root_files(self):
         paths = Path(private_path='/').get_all_files_as_paths()
