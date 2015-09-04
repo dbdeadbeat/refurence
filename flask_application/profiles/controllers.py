@@ -101,14 +101,12 @@ class EditView(ProfileView):
 
     # common html update functions
     def sidebar_html_update(self, obj_response, profile):
-        print "PROFILE", profile
         sidebar_macro = get_template_attribute('profiles/_neo.html',
                                                'render_editable_imglinks')
         sidebar_html = sidebar_macro(profile.sidebar.img_links)
         obj_response.html("#imglink-container", sidebar_html)
-        print "HTML", sidebar_html
 
-        popover_macro = get_template_attribute('profiles/_content.html',
+        popover_macro = get_template_attribute('profiles/_neo.html',
                                                'render_popovers')
         popover_html = popover_macro(profile)
         obj_response.html("#popovers", popover_html)

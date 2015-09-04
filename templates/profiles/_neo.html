@@ -85,25 +85,125 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {% endfor %}
 {% endmacro %}
 
+{% macro imglink(link, number) %}
+<button type="button" id="imglink_{{number}}" class="btn btn-xs btn-danger
+		btn-editable-imglink" data-toggle="popover" data-placement="left">
+		<div class="dropzone imglink-drop" id="imglink-drop-{{number}}">
+				<p style="text-align: center">
+		<img class="centered imglink-img" src="{{ link.get_image_url() }}">
+				</p>
+		</div>
+</button>
+{% endmacro %}
+
 {% macro render_editable_imglinks(img_links) %}
 <ul class="nav nav-stacked" id="imglinks">
 		{% for i in range(0, img_links|length) %}
 		<div class="col-xs-12 hr fill-low-opacity"></div>
 		<div class="col-xs-12">
 				<li>
-						<a href="{{ img_links[i].link_url }}">
-								<img class="centered imglink-img" src="{{ img_links[i].get_image_url() }}">
-						</a>
+					{{ imglink(img_links[i], i) }}
 				</li>
 		</div>
 		{% endfor %}
-		<div class="col-xs-12 hr fill-low-opacity"></div>
-		<div class="col-xs-12">
-				<li style="text-align:center;">
-				<button id="btn_sidebar_add_link" class="btn btn-default">
-						<span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
-				</button>
-				</li>
-		</div>
 </ul>
+{% endmacro %}
+
+{% macro render_popovers(profile) %}
+{% for i in range(0, profile.sidebar.img_links|length) %}
+<div id="imglink-popover-content-{{i}}" style="display: none;">
+    <em>To Change Button Icon:</em></br></br>
+    <p> drag and drop file onto picture <span class="glyphicon glyphicon-arrow-right" aria=hidden="true"></span> </p>
+    <div class="col-xs-12 fill hr"></div>
+    <em>To Change Button URL:</em>
+    <div class="input-group">
+        <span class="input-group-addon">URL</span>
+        <input type="text" id="input-imglink-href-{{i}}"
+        class="form-control" placeholder="{%if
+        profile.sidebar.img_links[i].link_url %}{{ profile.sidebar.img_links[i].link_url }}{% else %}enter url here (optional){% endif %}">
+        </span>
+    </div>
+    <div class="col-xs-12 hr"></div>
+    <p style="text-align:center'">
+        <button id="btn_imglink_submit_{{number}}" class="btn btn-default
+            btn-imglink-submit" type="button"
+            onclick="Sijax.request('update_imglink', [{
+                'num': {{i}},
+                'href': $('#input-imglink-href-{{i}}').val()
+            }]);">submit</button>
+        <button id="btn-imglink-delete-{{i}}" class="btn btn-danger btn-imglink-delete" type="button" 
+            onclick="Sijax.request('del_imglink', [{ 'num': {{i}} }]);">delete</button>
+    </p>
+</div>
+
+<div id="imglink-popover-title-{{i}}" style="display: none;">
+    <h4>Edit ImageLink</h4>
+</div>
+
+<script type="text/javascript">
+$(function() {
+    $('#imglink_{{i}}').popover({
+        html : true, 
+        content: function() {
+            return $("#imglink-popover-content-{{i}}").html();
+        },
+        title: function() {
+            return $("#imglink-popover-title-{{i}}").html();
+        }
+    });
+
+    var myDropzone = new Dropzone('#imglink-drop-{{i}}', {
+        url: "/upload/",
+        method: "POST",
+        paramName: "file",
+        uploadMultiple: false,
+        addRemoveLinks: false,
+        createImageThumbnails: false,
+        maxThumbnailFilesize: 2,
+        maxFiles: 1,
+        acceptedFiles: "image/png, image/jpeg, image/gif",
+        autoProcessQueue: true,
+        forceFallback: false,
+        clickable: false,
+        dictDefaultMessage: '',
+        previewTemplate: '<div id="preview-template" style="display: none;"></div>'
+    });
+
+    myDropzone.on("success", function(file, response) {
+        Sijax.request('update_imglink_image', [{
+            'num' : {{i}},
+            'files': response['files']
+        }]);
+    });
+
+    myDropzone.on("complete", function(file) {
+        myDropzone.removeAllFiles();
+    });
+
+});
+</script>
+{% endfor %}
+{% endmacro %}
+
+{% macro render_description_content(description) %}
+{% for i in range(0, description.tables.keys()|length) %}
+<div id="description-{{i}}" class="description-panel {% if i != 0 %}hidden{% endif %}">
+		<div class="col-md-8 description-img-well">
+				{% if description.get_tables()[i].get_image_links()[0] %}
+				<div class="dropzone description-drop" id="description-drop-{{i}}" style="background: url({{description.get_tables()[i].get_image_links()[0]}}) 50% 50% / cover no-repeat; min-height: 500px;">
+				{% else %}
+				<div class="dropzone description-drop" id="description-drop-{{i}}">
+						<div class="dz-message">
+							<span class="glyphicon glyphicon-picture" aria=hidden="true"></span>
+							<em> Drop file to add image to Note</em>
+						</div>
+				</div>
+				{% endif %}
+		</div>
+		<div class="col-md-4 fill-low-opacity">
+				<h3>{{ profile.description.get_keys()[i] }}</h3>
+				<p class="text-editable">{{ profile.description.get_tables()[i].get_text() }}</p>
+		</div>
+</div>
+{% endfor %}
 {% endmacro %}

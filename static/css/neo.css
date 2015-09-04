@@ -185,3 +185,64 @@ background-color: inherit; }
 .imglink-img {
   width: 32px;
 }
+.popover-content {
+  width: 256px;
+}
+.popover-content > p {
+  color: black;
+}
+
+.dropzone {
+  background: rgba(66, 66, 66, 0.75);
+  border-radius: 15px;
+  border: 5px dashed rgba(0,0,0,0.3);
+  padding: 0px;
+}
+
+.imglink-drop {
+  min-height: 0px;
+}
+
+.imglink-drop > p {
+  margin: 0px;
+}
+
+.imglink-drop > p > .imglink-img {
+  max-width: 100%;
+}
+
+.sp-replacer {
+  padding: 0px;
+  border: 0px;
+  background: transparent;
+}
+
+.sp-preview {
+  min-width: 50px;
+  min-height: 50px;
+}
+
+.popover-content {
+  width: 256px;
+}
+
+.popover-content > p {
+  color: black;
+}
+
+.fs-results > li {
+  color: black;
+}
+
+.dz-message {
+  color: grey;
+  font-weight: bold;
+  padding: 20px;
+  font-family: "Cabin";
+  font-size: 14px;
+}
+
+.imglink-drop > .dz-message {
+  padding: 0px;
+  margin: 0px;
+}
