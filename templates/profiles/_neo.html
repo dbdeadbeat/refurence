@@ -185,10 +185,18 @@ $(function() {
 {% endfor %}
 {% endmacro %}
 
-{% macro render_description_tabs(description) %}
+{% macro render_description_tabs(description, editable) %}
 {% for i in range(0, description.tables.keys()|length) %}
 <a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}">
-		<h4>{{ description.get_keys()[i] }}</h4>
+		<h4>{{ description.get_keys()[i] }}
+		{% if editable %}
+		<button class="btn-xs btn-danger pull-right btn-delete-description"
+				id="btn-delete-description-{{i}}" type="button"
+				contenteditable="False">
+				<span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
+		</button>
+		{% endif %}
+		</h4>
 </a>
 {% endfor %}
 {% endmacro %}

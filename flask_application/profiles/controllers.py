@@ -119,7 +119,7 @@ class EditView(ProfileView):
 
         desc_tabs_macro = get_template_attribute('profiles/_neo.html',
                                             'render_description_tabs')
-        desc_tabs_html = desc_tabs_macro(profile.description)
+        desc_tabs_html = desc_tabs_macro(profile.description, True)
         obj_response.html('#left-sidebar-tabs', desc_tabs_html)
 
     def gallery_html_update(self, obj_response, profile):

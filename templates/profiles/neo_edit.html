@@ -99,8 +99,6 @@
 												<a class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
 														<span class="glyphicon glyphicon-edit" aria=hidden="true"></span> Edit Style
 												</a>
-										</div>
-										<div class="btn-group btn-group-lg">
 												<a id="btn_saveprofile" class="btn btn-dark" href="{{
 														url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-ok" aria=hidden="true"></span> Save</a>
 												<a id="btn_discard" class="btn btn-dark" href="{{ url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
@@ -113,10 +111,12 @@
 						<div id="left-sidebar-tabs">
 								{% if profile.description.tables.keys()|length > 0 %}
 								<div class="col-xs-12">
-										{{ neo.render_description_tabs(profile.description) }}
+										{{ neo.render_description_tabs(profile.description, True) }}
 								</div>
 								{% endif %}
 						</div>
+
+						<div class="col-xs-12 hr fill-low-opacity"></div>
 
 						<div class="col-xs-12" style="text-align:center;">
 						<button id="btn_desc_tbl_add" type="button" class="btn btn-default">
