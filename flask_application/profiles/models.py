@@ -283,6 +283,9 @@ class Profile(FlaskDocument):
     bkg_dropbox_path = db.EmbeddedDocumentField('Path')
     dropbox_root_public_path = db.StringField()
 
+    def save(self, *args, **kwargs):
+        super(Profile,self).save(*args,**kwargs)
+
     def delete(self):
         app.dropbox.client.file_delete(self.dropbox_root().private_path)
         super(Profile, self).delete()
@@ -307,7 +310,6 @@ class Profile(FlaskDocument):
         root_path = self.dropbox_root()
         root_path.share()
         self.dropbox_root_public_path = root_path.public_path
-        self.save()
         paths = root_path.get_all_files_as_paths()
         for p in paths:
             if p.basename() == path and p.is_dir:

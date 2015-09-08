@@ -127,6 +127,25 @@ $(function () {
             refreshDescriptionJS();
         });
 
+				$('.panel-heading').on('click', function() {
+						var toks = $(this).attr('id').split('-');
+						var id = parseInt(toks[toks.length-1]);
+
+						var panels = $('.description-panel');
+						for (var idx = 0; idx < panels.length; idx++) {
+							$(panels[idx]).addClass('hidden');
+							$(panels[idx]).removeClass('active');
+						}
+						$(panels[id]).removeClass('hidden');
+						$(panels[id]).addClass('active');
+
+						var buttons = $('.panel-heading');
+						for (var idx = 0; idx < buttons.length; idx++) {
+							$(buttons[idx]).removeClass('clicked');
+						}
+						$(this).toggleClass("clicked");
+				})
+
         refreshMasonry();
     }
 
@@ -418,7 +437,7 @@ $(function () {
         resizeMasonry();
     }).trigger('resize');
 
-    // refreshDescriptionJS();
+    refreshDescriptionJS();
     // refreshGalleryJS();
     // createAvatarDropZone('avatar-drop');
     // createBkgDropZone('bkg-drop');

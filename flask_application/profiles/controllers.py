@@ -112,10 +112,15 @@ class EditView(ProfileView):
         obj_response.html("#popovers", popover_html)
 
     def description_content_html_update(self, obj_response, profile):
-        desc_macro = get_template_attribute('profiles/_content.html',
+        desc_macro = get_template_attribute('profiles/_neo.html',
                                             'render_description_content')
-        desc_html = desc_macro(profile.description, True)
+        desc_html = desc_macro(profile.description)
         obj_response.html('#description-content', desc_html)
+
+        desc_tabs_macro = get_template_attribute('profiles/_neo.html',
+                                            'render_description_tabs')
+        desc_tabs_html = desc_tabs_macro(profile.description)
+        obj_response.html('#left-sidebar-tabs', desc_tabs_html)
 
     def gallery_html_update(self, obj_response, profile):
         navtabs_macro = get_template_attribute('profiles/_editable.html',
@@ -168,25 +173,6 @@ class EditView(ProfileView):
             if len(tbl_name) == 0:
                 obj_response.alert("ERROR: notes cannot have empty titles")
                 return
-
-
-        tabs = [format_input(x) for x in content[pc['GALLERY_TABS']]]
-        for idx, tab in enumerate(tabs):
-            if len(tab) == 0:
-                obj_response.alert("ERROR: gallerys cannot have empty titles")
-                return
-
-            table = profile.gallery.tables[idx]
-            if table.name != tab:
-                try:
-                    src = profile.dropbox_root().join(table.name)
-                    dst = profile.dropbox_root().join(tab)
-                    profile.dropbox_move_file(src, dst)
-                    table.dropbox_path = dst
-                except Exception as e:
-                    continue
-            table.name = tab
-            table.share()
 
         master_profile = Profile.objects.get(username=profile.username)
         profile.id = master_profile.id
@@ -291,7 +277,7 @@ class EditView(ProfileView):
 
         self.save_user_profile_edit(profile)
 
-        avtimg_macro = get_template_attribute('profiles/_content.html', 'render_avatarimg')
+        avtimg_macro = get_template_attribute('profiles/_neo.html', 'render_avatarimg')
         avt_html = avtimg_macro(profile.header)
         obj_response.html("#avatar", avt_html)
 
@@ -346,7 +332,7 @@ class EditView(ProfileView):
 
         profile = self.get_user_profile_edit()
         table = profile.description.get_tables()[idx]
-        
+
         if not table:
             return
 
@@ -360,6 +346,8 @@ class EditView(ProfileView):
             dst = fdir.join(f['path'])
             table.images.append(profile.dropbox_move_file(src, dst))
         table.share()
+
+        print 'gorb',profile, table, content
 
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)

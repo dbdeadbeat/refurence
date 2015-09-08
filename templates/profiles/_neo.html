@@ -185,6 +185,14 @@ $(function() {
 {% endfor %}
 {% endmacro %}
 
+{% macro render_description_tabs(description) %}
+{% for i in range(0, description.tables.keys()|length) %}
+<a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}">
+		<h4>{{ description.get_keys()[i] }}</h4>
+</a>
+{% endfor %}
+{% endmacro %}
+
 {% macro render_description_content(description) %}
 {% for i in range(0, description.tables.keys()|length) %}
 <div id="description-{{i}}" class="description-panel {% if i != 0 %}hidden{% endif %}">
@@ -193,16 +201,16 @@ $(function() {
 				<div class="dropzone description-drop" id="description-drop-{{i}}" style="background: url({{description.get_tables()[i].get_image_links()[0]}}) 50% 50% / cover no-repeat; min-height: 500px;">
 				{% else %}
 				<div class="dropzone description-drop" id="description-drop-{{i}}">
+				{% endif %}
 						<div class="dz-message">
 							<span class="glyphicon glyphicon-picture" aria=hidden="true"></span>
 							<em> Drop file to add image to Note</em>
 						</div>
 				</div>
-				{% endif %}
 		</div>
 		<div class="col-md-4 fill-low-opacity">
-				<h3>{{ profile.description.get_keys()[i] }}</h3>
-				<p class="text-editable">{{ profile.description.get_tables()[i].get_text() }}</p>
+				<h3 id="description-title-{{i}}" class="description-title">{{ description.get_keys()[i] }}</h3>
+				<p id="description-body-{{i}}" class="description-body text-editable">{{ description.get_tables()[i].get_text() }}</p>
 		</div>
 </div>
 {% endfor %}

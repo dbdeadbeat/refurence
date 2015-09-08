@@ -62,15 +62,14 @@
 
 						<div class="col-xs-12 hr fill-low-opacity"></div>
 
-						{% if profile.description.tables.keys()|length > 0 %}
-						<div class="col-xs-12">
-								{% for i in range(0, profile.description.tables.keys()|length) %}
-								<a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}">
-										<h4>{{ profile.description.get_keys()[i] }}</h4>
-								</a>
-								{% endfor %}
+						<div id="left-sidebar-tabs">
+								{% if profile.description.tables.keys()|length > 0 %}
+								<div class="col-xs-12">
+										{{ neo.render_description_tabs(profile.description) }}
+								</div>
+								{% endif %}
 						</div>
-						{% endif %}
+
 						</p>
 				</div>
 				<div class="col-md-10 col-md-offset-1 content">

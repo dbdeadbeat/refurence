@@ -110,15 +110,14 @@
 
 						<div class="col-xs-12 hr fill-low-opacity"></div>
 
-						{% if profile.description.tables.keys()|length > 0 %}
-						<div class="col-xs-12">
-								{% for i in range(0, profile.description.tables.keys()|length) %}
-								<a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}">
-										<h4>{{ profile.description.get_keys()[i] }}</h4>
-								</a>
-								{% endfor %}
+						<div id="left-sidebar-tabs">
+								{% if profile.description.tables.keys()|length > 0 %}
+								<div class="col-xs-12">
+										{{ neo.render_description_tabs(profile.description) }}
+								</div>
+								{% endif %}
 						</div>
-						{% endif %}
+
 						<div class="col-xs-12" style="text-align:center;">
 						<button id="btn_desc_tbl_add" type="button" class="btn btn-default">
 								<span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
@@ -219,27 +218,6 @@ families: [
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.7.0/spectrum.min.js"></script>
 
 <script>
-$(function() {
-				$('.panel-heading').on('click', function() {
-						var toks = $(this).attr('id').split('-');
-						var id = parseInt(toks[toks.length-1]);
-
-						var panels = $('.description-panel');
-						for (var idx = 0; idx < panels.length; idx++) {
-							$(panels[idx]).addClass('hidden');
-							$(panels[idx]).removeClass('active');
-						}
-						$(panels[id]).removeClass('hidden');
-						$(panels[id]).addClass('active');
-
-						var buttons = $('.panel-heading');
-						for (var idx = 0; idx < buttons.length; idx++) {
-							$(buttons[idx]).removeClass('clicked');
-						}
-						$(this).toggleClass("clicked");
-				})
-});
-
 $(function() {
     function set_color(id, color) {
       if (id == '{{ BKG_COLOR }}') {
