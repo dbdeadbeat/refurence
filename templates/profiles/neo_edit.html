@@ -87,7 +87,7 @@
 						<p style="text-align: center">
 						<div class="col-xs-12">
 								<div id="avatar">
-										<img id="{{AVATAR_IMG}}" class="img-responsive img-circle avatar-img centered" src="{{ profile.header.get_avatar_url() }}">
+										<img id="{{AVATAR_IMG}}" class="img-responsive img-circle neo-avatar-img centered" src="{{ profile.header.get_avatar_url() }}">
 								</div>
 						</div>
 
@@ -130,10 +130,8 @@
 						<div class="container" id="container-content">
 								<div class="row">
 										<div class="col-xs-12" id="header">
-												<h1 id="{{HEADER_TITLE}}" class="text-editable"
-														contenteditable="{{editable}}">{{ profile.header.title }}</h1>
-												<h4 id="{{HEADER_BODY}}" class="text-editable"
-														contenteditable="{{editable}}">{{ profile.header.body }}</h4>
+												<h1 id="{{HEADER_TITLE}}" class="text-editable" contenteditable="True">{{ profile.header.title }}</h1>
+												<h4 id="{{HEADER_BODY}}" class="text-editable" contenteditable="True">{{ profile.header.body }}</h4>
 										</div>
 								</div>
 								<div class="row">

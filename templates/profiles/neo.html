@@ -46,7 +46,7 @@
 						<p style="text-align: center">
 						<div class="col-xs-12">
 								<div id="avatar">
-										<img id="{{AVATAR_IMG}}" class="img-responsive img-circle avatar-img centered" src="{{ profile.header.get_avatar_url() }}">
+										<img id="{{AVATAR_IMG}}" class="img-responsive img-circle neo-avatar-img centered" src="{{ profile.header.get_avatar_url() }}">
 								</div>
 						</div>
 
@@ -72,14 +72,16 @@
 
 						</p>
 				</div>
+				{% if profile.sidebar.img_links|length > 0 %}
 				<div class="col-md-10 col-md-offset-1 content">
+				{% else %}
+				<div class="col-md-11 col-md-offset-1 content">
+				{% endif %}
 						<div class="container" id="container-content">
 								<div class="row">
 										<div class="col-xs-12" id="header">
-												<h1 id="{{HEADER_TITLE}}" class="text-editable"
-														contenteditable="{{editable}}">{{ profile.header.title }}</h1>
-												<h4 id="{{HEADER_BODY}}" class="text-editable"
-														contenteditable="{{editable}}">{{ profile.header.body }}</h4>
+												<h1 id="{{HEADER_TITLE}}" class="text-editable">{{ profile.header.title }}</h1>
+												<h4 id="{{HEADER_BODY}}" class="text-editable">{{ profile.header.body }}</h4>
 										</div>
 								</div>
 								<div class="row">
@@ -111,6 +113,7 @@
 								</div>
 						</div> <!-- END container -->
 				</div> <!-- END col-xs-11 -->
+				{% if profile.sidebar.img_links|length > 0 %}
 				<div class="col-xs-1" id="imglink_col">
 						<ul class="nav nav-stacked" id="imglinks">
 								{% for i in range(0, profile.sidebar.img_links|length) %}
@@ -125,6 +128,7 @@
 								{% endfor %}
 						</ul>
 				</div>
+				{% endif %}
 		</div> <!-- END row -->
 </div> <!-- END container -->
 
