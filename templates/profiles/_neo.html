@@ -64,7 +64,7 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {% endmacro %}
 
 {% macro render_avatarimg(header) %}
-<img id="{{AVATAR_IMG}}" class="img-responsive img-circle" src="{{ header.avatar_url }}">
+<img id="{{AVATAR_IMG}}" class="img-responsive img-circle neo-avatar-img centered" src="{{ header.get_avatar_url() }}">
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}

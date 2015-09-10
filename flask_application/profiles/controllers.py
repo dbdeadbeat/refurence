@@ -271,10 +271,6 @@ class EditView(ProfileView):
         profile.header.avatar_dropbox_path = profile.dropbox_move_file(src, dst)
         profile.header.avatar_dropbox_path.share()
 
-        dim_x, dim_y = new_file['dimensions']
-        if (dim_x > 0 and dim_y > 0):
-            ratio = float(dim_x)/float(dim_y)
-
         self.save_user_profile_edit(profile)
 
         avtimg_macro = get_template_attribute('profiles/_neo.html', 'render_avatarimg')

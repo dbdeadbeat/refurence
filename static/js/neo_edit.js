@@ -439,6 +439,6 @@ $(function () {
 
     refreshDescriptionJS();
     // refreshGalleryJS();
-    // createAvatarDropZone('avatar-drop');
+    createAvatarDropZone('avatar-drop');
     // createBkgDropZone('bkg-drop');
 });
