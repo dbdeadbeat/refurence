@@ -56,7 +56,7 @@
 				<div class="col-md-1 sidebar">
 						<p style="text-align: center">
             <div class="col-xs-12 dropzone avatar-drop" id="avatar-drop">
-								<div id="avatar">
+								<div class="centered" id="avatar">
 								{{ neo.render_avatarimg(profile.header) }}
 								</div>
                 <div class="dz-message">
@@ -67,17 +67,13 @@
 
 						<div class="col-xs-12 hr fill-low-opacity"></div>
 
-						<div class="col-xs-12">
-								<div class="btn-toolbar" role="toolbar" aria-label="...">
-										<div class="btn-group btn-group-lg">
-												<a class="btn btn-dark" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-														<span class="glyphicon glyphicon-edit" aria=hidden="true"></span> Edit Style
-												</a>
-												<a id="btn_saveprofile" class="btn btn-dark" href="{{
-														url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-ok" aria=hidden="true"></span> Save</a>
-												<a id="btn_discard" class="btn btn-dark" href="{{ url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
-										</div>
-								</div>
+						<div id="imglink-container">
+						{{ neo.render_editable_imglinks(profile.sidebar.img_links)}}
+						</div>
+						<div class="col-xs-12 centered">
+								<button id="btn_sidebar_add_link" class="btn btn-default">
+										<span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
+								</button>
 						</div>
 
 						<div class="col-xs-12 hr fill-low-opacity"></div>
@@ -100,7 +96,8 @@
 						</div>
 						</p>
 				</div>
-				<div class="col-md-10 col-md-offset-1 content">
+
+				<div class="col-md-11 col-md-offset-1 content">
 						<div class="container" id="container-content">
 
 								<div class="collapse" id="collapseExample">
@@ -128,6 +125,19 @@
 									</div>
 								</div>
 
+								<div class="col-xs-12">
+										<div class="btn-group btn-group-lg pull-right">
+												<a class="btn btn-dark" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+														<span class="glyphicon glyphicon-edit" aria=hidden="true"></span> Edit Style
+												</a>
+												<a id="btn_saveprofile" class="btn btn-dark" href="{{
+														url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-ok" aria=hidden="true"></span> Save</a>
+												<a id="btn_discard" class="btn btn-dark" href="{{ url_for('profiles.detail', slug=profile.username) }}"> <span class="glyphicon glyphicon-remove" aria=hidden="true"></span> Discard Changes</a>
+										</div>
+								</div>
+								<div class="col-xs-12 hr fill-low-opacity"></div>
+
+
 								<div class="row">
 										<div class="col-xs-12" id="header">
 												<h1 id="{{HEADER_TITLE}}" class="text-editable" contenteditable="True">{{ profile.header.title }}</h1>
@@ -151,18 +161,6 @@
 								</div>
 						</div> <!-- END container -->
 				</div> <!-- END col-xs-11 -->
-				<div class="col-xs-1" id="imglink_col">
-						<div id="imglink-container">
-						{{ neo.render_editable_imglinks(profile.sidebar.img_links)}}
-						</div>
-						<div class="col-xs-12">
-								<li style="text-align:center;">
-								<button id="btn_sidebar_add_link" class="btn btn-default">
-										<span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
-								</button>
-								</li>
-						</div>
-				</div>
 		</div> <!-- END row -->
 </div> <!-- END container -->
 
@@ -173,7 +171,7 @@
 
 {%- block popovers -%}
 <div id="popovers">
-{{ neo.render_popovers(profile) }}
+{{ neo.render_modals(profile) }}
 </div>
 {% endblock %}
 

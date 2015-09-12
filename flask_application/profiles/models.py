@@ -302,8 +302,8 @@ class Profile(FlaskDocument):
             return Path(private_path=app.dropbox.client.file_create_folder(refurence_name)['path'])
 
     def dropbox_cleanup(self):
-        self._dropbox_delete_root_files()
-        self._dropbox_delete_unused_folders()
+        #  self._dropbox_delete_root_files()
+        #  self._dropbox_delete_unused_folders()
         self._dropbox_delete_unused_images()
 
     def dropbox_create_folder(self, path):

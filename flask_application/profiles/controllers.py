@@ -106,10 +106,10 @@ class EditView(ProfileView):
         sidebar_html = sidebar_macro(profile.sidebar.img_links)
         obj_response.html("#imglink-container", sidebar_html)
 
-        popover_macro = get_template_attribute('profiles/_neo.html',
-                                               'render_popovers')
-        popover_html = popover_macro(profile)
-        obj_response.html("#popovers", popover_html)
+        modal_macro = get_template_attribute('profiles/_neo.html',
+                                               'render_modals')
+        modal_html = modal_macro(profile)
+        obj_response.html("#modals", modal_html)
 
     def description_content_html_update(self, obj_response, profile):
         desc_macro = get_template_attribute('profiles/_neo.html',
@@ -239,7 +239,7 @@ class EditView(ProfileView):
     def update_imglink_handler(self, obj_response, content):
         profile = self.get_user_profile_edit()
 
-        if not is_url(content['href']):
+        if content['href'] and not is_url(content['href']):
             obj_response.alert('NOT A URL')
             return
 
