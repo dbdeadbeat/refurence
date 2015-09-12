@@ -189,13 +189,6 @@ $(function() {
 {% for i in range(0, description.tables.keys()|length) %}
 <a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}">
 		<h4>{{ description.get_keys()[i] }}
-		{% if editable %}
-		<button class="btn-xs btn-danger pull-right btn-delete-description"
-				id="btn-delete-description-{{i}}" type="button"
-				contenteditable="False">
-				<span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
-		</button>
-		{% endif %}
 		</h4>
 </a>
 {% endfor %}
@@ -217,6 +210,13 @@ $(function() {
 				</div>
 		</div>
 		<div class="col-md-4 fill-low-opacity">
+
+				<button class="btn-xs btn-danger pull-right btn-delete-description"
+						id="btn-delete-description-{{i}}" type="button"
+						contenteditable="False">
+						Delete <span class="glyphicon glyphicon-remove" aria=hidden="true"></span>
+				</button>
+
 				<h3 id="description-title-{{i}}" class="description-title" contenteditable="True">{{ description.get_keys()[i] }}</h3>
 				<p id="description-body-{{i}}" class="description-body text-editable" contenteditable="True">{{ description.get_tables()[i].get_text() }}</p>
 		</div>

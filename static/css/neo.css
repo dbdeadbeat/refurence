@@ -100,8 +100,8 @@ background-color: inherit; }
 }
 
 .neo-avatar-img {
-		max-width: 125px;
-		max-height: 125px;
+		/* max-width: 125px; */
+		/* max-height: 125px; */
 }
 
 #header {
@@ -164,7 +164,7 @@ background-color: inherit; }
 #imglinks {
 		border-radius: 10px;
 		background-color: rgba(20,20,20,1.0);
-		margin-left: 40px;
+		margin-left: 0px;
 }
 
 #imglinks li a {
@@ -183,7 +183,7 @@ background-color: inherit; }
 }
 
 .imglink-img {
-  width: 32px;
+  width: 40px;
 }
 .popover-content {
   width: 256px;
