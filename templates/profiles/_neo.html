@@ -207,10 +207,8 @@ $(function() {
 
 					<div class="modal-body">
 							<em>To Change Button Icon:</em></br></br>
-							<p> drag and drop file onto picture <span class="glyphicon glyphicon-arrow-right" aria=hidden="true"></span> </p>
-							<div class="dropzone imglink-drop" id="imglink-drop-{{i}}">
-									<img class="centered imglink-img img-responsive" src="{{ profile.sidebar.img_links[i].get_image_url() }}">
-							</div>
+							<img class="centered imglink-img img-responsive" src="{{ profile.sidebar.img_links[i].get_image_url() }}">
+							<div class="dropzone imglink-drop" id="imglink-drop-{{i}}"> </div>
 							<div class="col-xs-12 fill hr"></div>
 							<em>To Change Button URL:</em>
 							<div class="input-group">
@@ -256,7 +254,7 @@ $(function() {
 						autoProcessQueue: true,
 						forceFallback: false,
 						clickable: true,
-						dictDefaultMessage: '',
+						dictDefaultMessage: 'Change image by clicking or drag-dropping here',
 				});
 
 				myDropzone.on("success", function(file, response) {
