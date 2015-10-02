@@ -211,7 +211,7 @@ class EditView(ProfileView):
 
         profile = self.get_user_profile_edit()
 
-        if len(profile.sidebar.img_links) > 8:
+        if len(profile.sidebar.img_links) > 2:
             return
 
         imglink = ImageLink(img_url=get_default_imglink_img(len(profile.sidebar.img_links)), link_url='')

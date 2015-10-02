@@ -269,12 +269,22 @@ background-color: inherit; }
 		height: 32px;
 }
 
-.btn-imglink .imglink-img {
-		width: 100%;
+.imglink-img {
+		max-width: 32px;
+		height: 32px;
+		padding: 3px;
 }
 
-.btn-editable-imglink {
+.btn-imglink .imglink-img {
+		width: 32px;
+		height: 32px;
+		padding: 3px;
+}
+
+.sidebar .btn-editable-imglink {
 		height: 100%;
+		padding: 0px;
+		box-shadow: inset 0px 0px 0px 0px rgba(0, 0, 0, 0.5), 0px 0px 0px 0px rgba(0, 0, 0, 0.5)
 }
 
 .sidebar .btn-imglink {
