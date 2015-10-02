@@ -186,10 +186,6 @@ background-color: inherit; }
 		height: 128px;
 }
 
-.modal-body .imglink-img {
-		height: 256px;
-}
-
 .affix {
 		margin-right: 40px;
 }
@@ -269,7 +265,7 @@ background-color: inherit; }
 		height: 32px;
 }
 
-.imglink-img {
+.btn-editable-imglink .imglink-img {
 		max-width: 32px;
 		height: 32px;
 		padding: 3px;
@@ -279,6 +275,10 @@ background-color: inherit; }
 		width: 32px;
 		height: 32px;
 		padding: 3px;
+}
+
+.modal-body .imglink-img {
+		max-height: 128px;
 }
 
 .sidebar .btn-editable-imglink {

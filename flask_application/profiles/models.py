@@ -387,6 +387,15 @@ class Profile(FlaskDocument):
                 print 'urls', t.get_image_urls()
         return out
 
+    def get_gallery_names(self):
+        dropbox_paths = get_hosted_dir_urls(self.dropbox_root_public_path)
+        out = []
+        for p in dropbox_paths:
+            if p['name'] == Profile.dropbox_profile_images_dirname:
+                continue
+            out.append(p['name'])
+        return out
+
     def _dropbox_delete_root_files(self):
         paths = Path(private_path='/').get_all_files_as_paths()
         for p in paths:
