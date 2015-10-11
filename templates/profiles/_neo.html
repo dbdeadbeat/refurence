@@ -274,7 +274,7 @@ $(function() {
 {% endmacro %}
 
 {% macro render_description_tabs(description, editable) %}
-<ul class="list-group">
+<ul class="list-group truncate">
 {% for i in range(0, description.tables.keys()|length) %}
 <!-- <a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}"> -->
 <li class="list-group-item">
