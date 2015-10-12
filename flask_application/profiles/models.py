@@ -11,9 +11,6 @@ import itertools
 import os
 import random
 import base64
-import requests
-import cStringIO
-from PIL import Image
 
 
 class Path(db.EmbeddedDocument):
@@ -359,22 +356,7 @@ class Profile(FlaskDocument):
                 self.data = data
 
             def get_image_urls(self, debug=False):
-                out = []
-                for url in self.data:
-                    print 'XXX', url
-                    response = requests.get(url)
-
-                    pic = cStringIO.StringIO()
-                    image_string = cStringIO.StringIO(response.content)
-                    image = Image.open(image_string)
-                    image.thumbnail((128, 128), Image.ANTIALIAS)
-                    image.save(pic, image.format, quality=100)
-                    pic.seek(0)
-
-                    uri = ("data:" + response.headers['Content-Type'] + ";" + "base64," + base64.b64encode(pic.getvalue()))
-                    out.append(uri)
-                #  return self.data
-                return out
+                return self.data
 
             def get_image_style(self, url):
                 width = 200
@@ -400,6 +382,9 @@ class Profile(FlaskDocument):
                 continue
             p['imgs'] = get_hosted_image_urls(p['url'])
             out.append(MonkeyPatchGallery(p))
+        for tbl in out:
+            for t in tbl.get_tables():
+                print 'urls', t.get_image_urls()
         return out
 
     def get_gallery_names(self):
