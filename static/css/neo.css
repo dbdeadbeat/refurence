@@ -311,3 +311,9 @@ background-color: inherit; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.gallery-links img {
+	max-height: 200px;
+	max-width: 200px;
+  margin: 3px;
+  overflow: hidden; }

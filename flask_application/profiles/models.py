@@ -359,8 +359,8 @@ class Profile(FlaskDocument):
                 return self.data
 
             def get_image_style(self, url):
-                width = 200
-                height = 200
+                width = 128
+                height = 128
                 return 'max-width:' + str(width) + 'px; max-height:' + str(height) + 'px;'
 
         class MonkeyPatchGallery():
@@ -382,9 +382,6 @@ class Profile(FlaskDocument):
                 continue
             p['imgs'] = get_hosted_image_urls(p['url'])
             out.append(MonkeyPatchGallery(p))
-        for tbl in out:
-            for t in tbl.get_tables():
-                print 'urls', t.get_image_urls()
         return out
 
     def get_gallery_names(self):

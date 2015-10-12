@@ -68,9 +68,9 @@ button > a  { color :  {{profile.colors[COLOR_HEADERS]}}; }
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
-{% for url in gallery.get_image_urls(debug=False)%}
+{% for url in gallery.get_image_urls(debug=True)%}
 		<a href="{{ url }}" title="{{ url }}" data-gallery>
-				<img class="post" src="{{ url }}" alt="" style="{{ gallery.get_image_style(url) }}">
+				<img class="post" src="{{ url }}" alt="">
 		</a>
 {% endfor %}
 {% endmacro %}
