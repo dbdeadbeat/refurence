@@ -18,6 +18,7 @@
 .panel-heading:hover {
   background-color : inherit;
 }
+</style>
 {{ neo.render_header_style(profile) }}
 {% endblock %}
 
@@ -121,18 +122,13 @@
 									<div class="container container-fluid">
 										<div class="jumbotron tool-panel">
 											<div class="row">
-												<div class="col-lg-4">
+												<div class="col-lg-6">
 														<h3>colors</h3>
 														<input type='text' class="basic" id="{{COLOR_MAIN}}"/>
-														<input type='text' class="basic" id="{{COLOR_INNER}}"/>
 														<input type='text' class="basic" id="{{COLOR_HEADERS}}"/>
 														<input type='text' class="basic" id="{{COLOR_TEXT}}"/>
 												</div>
-												<div class="col-lg-4">
-													<h3>background</h3>
-													<input type='text' class="basic" id="{{BKG_COLOR}}"/>
-												</div>
-												<div class="col-lg-4">
+												<div class="col-lg-6">
 													<h3>fonts</h3>
 													<input id="{{FONT_HEADERS}}" type="text" />
 													<input id="{{FONT_TEXT}}" type="text" />
@@ -239,9 +235,7 @@ $(function() {
         $('body').css("background", color);
 
       } else if (id == '{{ COLOR_MAIN }}') {
-        $('#sidebar_container').css("background-color", color);
-        $('#maincontainer').css("background-color", color);
-
+        $('a').css("color", color);
       } else if (id == '{{ COLOR_INNER }}') {
         $('.panel').css("background-color", color);
         $('.panel-heading').css("background-color", color);
@@ -254,35 +248,13 @@ $(function() {
         $("button > a").css("color", color);
         $(".col-xs-4 > a").css("color", color);
         $(".btn-group > a").css("color", color);
-
-      }
-      else if (id == '{{ COLOR_TEXT }}') {
+      } else if (id == '{{ COLOR_TEXT }}') {
         document.getElementById('text_style').innerHTML = "p, td, tr { color :" + color + "}";
         $('.list-group-item').css("color", color);
         $('.nav-pills>li').css("color", color);
         $('.nav-pills>li.active').css("color", color);
       }
     }
-
-    $('#{{ BKG_COLOR }}').spectrum({
-        change: function(color) {
-        this.changed = true;
-        Sijax.request('change_bkg', [ {
-          url : '',
-          color: color.toRgbString()
-          } ]);
-        },
-        color:'{{ profile.bkg_color }}',
-        move: function(color) {
-          set_color(this.id, color.toRgbString());
-        },
-        hide: function(color) {
-          if (!this.changed) {
-          this.color = '{{ profile.bkg_color }}';
-          set_color(this.id, this.color);
-        }
-      },
-    });
 
     {% for key in profile.colors.keys() %}
     $('#{{ key }}').spectrum({

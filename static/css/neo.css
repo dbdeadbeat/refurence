@@ -141,8 +141,8 @@ background-color: inherit; }
 }
 
 .clicked {
-		background-color: #c9302c;
-		border-color: #d43f3a;
+		color: #c9302c;
+		color: #d43f3a;
 }
 
 #container-content {
@@ -309,4 +309,13 @@ background-color: inherit; }
 
 #btn_sidebar_add_link {
 	margin-bottom: 10px;
+}
+
+#edit-profile-buttons {
+		margin-bottom: 20px;
+}
+
+.note-tab {
+		word-wrap: break-word;
+		overflow: auto;
 }

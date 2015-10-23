@@ -109,13 +109,12 @@
 				<div class="col-md-11 col-md-offset-1 content">
 						<div class="container" id="container-content">
 								{% if is_me %}
-								<div class="col-xs-12">
+								<div id="edit-profile-buttons" class="col-xs-12">
 										<a class="btn btn-dark btn-lg btn-sidebar pull-right" type="button" href="{{ url_for('profiles.edit', slug=profile.username) }}">
 												<span class="glyphicon glyphicon-edit" aria=hidden="true"></span>
 												Edit Profile
 										</a>
 								</div>
-								<div class="col-xs-12 hr fill-low-opacity"></div>
 								{% endif %}
 
 								<div class="row">
@@ -124,6 +123,9 @@
 												<h4 id="{{HEADER_BODY}}" class="text-editable">{{ profile.header.body }}</h4>
 										</div>
 								</div>
+
+								<div class="col-xs-12 hr fill-low-opacity"></div>
+								<div class="col-xs-12 hr"></div>
 
 								<div class="row">
 										{% for i in range(0, profile.description.tables.keys()|length) %}
