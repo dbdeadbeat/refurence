@@ -40,7 +40,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container container-fluid">
+<div id="top" class="container container-fluid">
 		<div class="row">
 				<div class="col-md-1 sidebar">
 						<p style="text-align: center">
@@ -80,10 +80,12 @@
 						<div class="col-xs-12 hr fill-low-opacity"></div>
 
 						<div id="left-sidebar-tabs">
+								{% if profile.description.tables.keys()|length > 0 %}
 								<div class="col-xs-12">
 										<h4>Notes</h4>
 										{{ neo.render_description_tabs(profile.description) }}
 								</div>
+								{% endif %}
 								<div class="col-xs-12">
 										<h4>Galleries</h4>
 

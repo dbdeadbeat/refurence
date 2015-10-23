@@ -156,13 +156,6 @@ class EditView(ProfileView):
             tbl.images = desc_images[tbl.order]
 
     @ajax_catch_error
-    def discard_changes_handler(self, obj_response, content):
-        username = current_app.dropbox.account_info['email']
-        profile = Profile.objects.get_or_404(owner_email=username)
-        profile.dropbox_cleanup()
-        obj_response.redirect(url_for('profiles.detail', slug=profile.username))
-
-    @ajax_catch_error
     def save_profile_handler(self, obj_response, content):
         profile                    = self.get_user_profile_edit()
         profile.header.title       = format_input(content[pc['HEADER_TITLE']])
@@ -198,6 +191,26 @@ class EditView(ProfileView):
 
         obj_response.redirect(url_for('profiles.detail',
                               slug=profile.username))
+
+    @ajax_catch_error
+    def discard_changes_handler(self, obj_response, content):
+        username = current_app.dropbox.account_info['email']
+        profile = Profile.objects.get_or_404(owner_email=username)
+        profile.dropbox_cleanup()
+        obj_response.redirect(url_for('profiles.detail', slug=profile.username))
+
+    def update_editable_text_handler(self, obj_response, content):
+        profile                    = self.get_user_profile_edit()
+        profile.header.title       = format_input(content[pc['HEADER_TITLE']])
+        profile.header.body        = format_input(content[pc['HEADER_BODY']])
+
+        self.update_description_content(profile, content[pc['DESC_TABLE']])
+        for tbl_name in profile.description.get_keys():
+            if len(tbl_name) == 0:
+                obj_response.alert("ERROR: notes cannot have empty titles")
+                return
+
+        self.save_user_profile_edit(profile)
 
     def add_imglink_handler(self, obj_response, content):
         def get_default_imglink_img(idx):
@@ -351,6 +364,7 @@ class EditView(ProfileView):
     def register_sijax(self):
         g.sijax.register_callback('save_profile', self.save_profile_handler)
         g.sijax.register_callback('discard_changes', self.discard_changes_handler)
+        g.sijax.register_callback('update_editable_text', self.update_editable_text_handler)
         g.sijax.register_callback('add_imglink', self.add_imglink_handler)
         g.sijax.register_callback('update_imglink', self.update_imglink_handler)
         g.sijax.register_callback('update_imglink_image', self.update_imglink_image_handler)

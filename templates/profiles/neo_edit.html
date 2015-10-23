@@ -56,10 +56,10 @@
 				<div class="col-md-1 sidebar">
 						<p style="text-align: center">
             <div class="col-xs-12 dropzone avatar-drop" id="avatar-drop">
-								<div class="centered" id="avatar">
-								{{ neo.render_avatarimg(profile.header) }}
-								</div>
                 <div class="dz-message">
+                    <div class="centered" id="avatar">
+                    {{ neo.render_avatarimg(profile.header) }}
+                    </div>
                   <span class="glyphicon glyphicon-picture" aria=hidden="true"></span>
                   <em> Drop file to change Avatar</em>
                 </div>
@@ -67,35 +67,35 @@
 
 						<div class="col-xs-12 hr fill-low-opacity"></div>
 
-						<div id="imglink-container">
-						{{ neo.render_editable_imglinks(profile.sidebar.img_links)}}
-						</div>
-            {% if profile.sidebar.img_links|length < 3 %}
-						<div class="col-xs-12 centered">
-								<button id="btn_sidebar_add_link" class="btn btn-dark">
-										<span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
-								</button>
-						</div>
-            {% endif %}
-
-
-						<div class="col-xs-12 hr fill-low-opacity"></div>
-
 						<div id="left-sidebar-tabs">
+                <div class="col-xs-12">
+                    <h4>Links
+                    <span id="btn_sidebar_add_link" class="btn badge">+</span>
+                    </h4>
+
+                    <div id="imglink-container">
+                    {{ neo.render_editable_imglinks(profile.sidebar.img_links)}}
+                    </div>
+                </div>
+
+                <div class="col-xs-12 hr fill-low-opacity"></div>
+
 								<div class="col-xs-12">
-										<h4>Notes</h4>
+                    <h4>Notes
+                        <span id="btn_desc_tbl_add" class="btn badge">+</span>
+                    </h4>
+
                     <div id="left-sidebar-desc">
 										{{ neo.render_description_tabs(profile.description) }}
                     </div>
-                    <div class="col-xs-12" style="text-align:center;">
-                    <button id="btn_desc_tbl_add" type="button" class="btn btn-dark btn-small">
-                        <span class="glyphicon glyphicon-plus" aria=hidden="true"></span>
-                        Add New Note
-                    </button>
-                    </div>
 								</div>
+
+                <div class="col-xs-12 hr fill-low-opacity"></div>
+
 								<div class="col-xs-12">
-										<h4>Galleries</h4>
+                    <h4>Galleries
+                    <span id="btn_sidebar_add_gallery" class="btn badge">?</span>
+                    </h4>
 
 										<ul class="list-group">
 										{% for name in profile.get_gallery_names() %}

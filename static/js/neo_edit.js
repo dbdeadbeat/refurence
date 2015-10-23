@@ -1,8 +1,19 @@
 $(function () {
 
+		var bTypedSomething = false;
+
     function br2nl(str) {
         return str.replace(/<br>/mg,"\n");
     }
+
+		function getEditableText() {
+				return {
+						'header_title': br2nl($('#header_title').html()),
+						'header_body' : br2nl($('#header_body').html()),
+						'desc_table'  : getDescriptionTable(),
+						'gallery_tabs': getGalleryTableTabs(),
+				};
+		}
 
     function getDescriptionTable() {
         var titles = $('.description-title');
@@ -146,6 +157,26 @@ $(function () {
 						$(this).toggleClass("clicked");
 				})
 
+
+				$('.note-tab').on('click', function() {
+						var toks = $(this).attr('id').split('-');
+						var id = parseInt(toks[toks.length-1]);
+
+						var panels = $('.description-panel');
+						for (var idx = 0; idx < panels.length; idx++) {
+								$(panels[idx]).addClass('hidden');
+								$(panels[idx]).removeClass('active');
+						}
+						$(panels[id]).removeClass('hidden');
+						$(panels[id]).addClass('active');
+
+						var buttons = $('.note-tab');
+						for (var idx = 0; idx < buttons.length; idx++) {
+								$(buttons[idx]).removeClass('clicked');
+						}
+						$(this).toggleClass("clicked");
+				})
+
         refreshMasonry();
     }
 
@@ -257,10 +288,10 @@ $(function () {
 
     }
 
-    $('button#btn_sidebar_add_link').on('click', function() {
+    $('#btn_sidebar_add_link').on('click', function() {
         Sijax.request('add_imglink', [ {} ]);
     });
-    $('button#btn_gallery_add').on('click', function() {
+    $('#btn_gallery_add').on('click', function() {
         $('#gallery-editable').block({ 
             message: '<h3>processing...</h3>', 
             css: { } 
@@ -273,7 +304,7 @@ $(function () {
                 }
             });
     });
-    $('button#btn_gallery_del').on('click', function() {
+    $('#btn_gallery_del').on('click', function() {
         $('#gallery-editable').block({ 
             message: '<h3>processing...</h3>', 
             css: { } 
@@ -315,6 +346,7 @@ $(function () {
     });
 
     $('body').on('keydown', '[contenteditable="True"]', function (e) {
+				bTypedSomething = true;
         var target = $(e.currentTarget);
         if (e.keyCode === 13) {
           if (target.attr('class') == 'panel-heading')
@@ -405,9 +437,17 @@ $(function () {
             $(this).popover('hide');
           }
         });
+
+				if (bTypedSomething) {
+						Sijax.request('update_editable_text', [
+								getEditableText()
+						]);
+				}
+
+				bTypedSomething = false;
     });
 
-    $('button#btn_desc_tbl_add').on('click', function() {
+    $('#btn_desc_tbl_add').on('click', function() {
         Sijax.request('add_desc_table', [ {
             'desc_table'  : getDescriptionTable(),
             }], {'async': false});
@@ -416,12 +456,7 @@ $(function () {
 
     $('#btn_saveprofile').bind('click', function() {
         Sijax.request('save_profile', [
-          {
-            'header_title': br2nl($('#header_title').html()),
-            'header_body' : br2nl($('#header_body').html()),
-            'desc_table'  : getDescriptionTable(),
-            'gallery_tabs': getGalleryTableTabs(),
-          }
+						getEditableText()
         ]);
         return false;
     });

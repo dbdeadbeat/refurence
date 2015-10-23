@@ -278,7 +278,7 @@ $(function() {
 {% for i in range(0, description.tables.keys()|length) %}
 <!-- <a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}"> -->
 <li class="list-group-item">
-<a class="note-tab {% if i == 0 %}clicked{% endif %}" id="heading-{{i}}">
+<a class="note-tab {% if i == 0 %}clicked{% endif %}" id="heading-{{i}}" href="#top">
 		<span class="glyphicon glyphicon-play" aria=hidden="true"></span>
 		{{ description.get_keys()[i] }}
 </a>
@@ -291,14 +291,19 @@ $(function() {
 {% for i in range(0, description.tables.keys()|length) %}
 <div id="description-{{i}}" class="description-panel {% if i != 0 %}hidden{% endif %}">
 		<div class="col-md-8 description-img-well">
-				{% if description.get_tables()[i].get_image_links()[0] %}
-				<div class="dropzone description-drop" id="description-drop-{{i}}" style="background: url({{description.get_tables()[i].get_image_links()[0]}}) 50% 50% / cover no-repeat; min-height: 500px;">
-				{% else %}
 				<div class="dropzone description-drop" id="description-drop-{{i}}">
-				{% endif %}
 						<div class="dz-message">
-							<span class="glyphicon glyphicon-picture" aria=hidden="true"></span>
-							<em> Drop file to add image to Note</em>
+
+								<div style="padding-bottom:50px">
+										{% if description.get_tables()[i].get_image_links()[0] %}
+										<img class="img-description img-description-edit img-responsive centered" src="{{description.get_tables()[i].get_image_links()[0]}}">
+										{% else %}
+										<img class="img-description img-description-edit img-responsive centered" src="{{url_for('static', filename='img/bkg.jpg')}}">
+										{% endif %}
+								</div>
+
+								<span class="glyphicon glyphicon-picture" aria=hidden="true"></span>
+								<em> Drop file to add image to Note</em>
 						</div>
 				</div>
 		</div>
