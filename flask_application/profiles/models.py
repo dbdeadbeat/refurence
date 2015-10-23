@@ -124,10 +124,10 @@ class ImageTable(db.EmbeddedDocument):
                 out.append('http://placehold.it/' + str(x) + 'x' + str(y))
             return out
         else:
-        # if app.dropbox.is_authenticated:
-            # return self.dropbox_path.get_all_files_as_media()
-        # else:
-            # return get_hosted_image_urls(self.dropbox_path.public_path)
+            if app.dropbox.is_authenticated:
+                return self.dropbox_path.get_all_files_as_media()
+            else:
+                return get_hosted_image_urls(self.dropbox_path.public_path)
             return self.dropbox_path.get_all_files_as_urls()
 
     def get_image_paths(self):

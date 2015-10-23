@@ -266,6 +266,10 @@ background-color: inherit; }
 		padding: 3px;
 }
 
+.modal-content {
+		background-color: rgba(25, 25, 25, 1.00);
+}
+
 .modal-body .imglink-img {
 		max-height: 128px;
 }

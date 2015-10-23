@@ -71,7 +71,7 @@ a {
 {% endmacro %}
 
 {% macro render_links_gallery(gallery) %}
-{% for url in gallery.get_image_urls(debug=True)%}
+{% for url in gallery.get_image_urls(debug=False)%}
 		<a href="{{ url }}" title="{{ url }}" data-gallery>
 				<img class="post" src="{{ url }}" alt="">
 		</a>
@@ -205,7 +205,7 @@ $(function() {
 
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title">Modal Header</h4>
+						<h4 class="modal-title">Edit Link</h4>
 					</div>
 
 					<div class="modal-body">
@@ -277,7 +277,7 @@ $(function() {
 {% endmacro %}
 
 {% macro render_description_tabs(description, editable) %}
-<ul class="list-group truncate">
+<ul class="list-group">
 {% for i in range(0, description.tables.keys()|length) %}
 <!-- <a class="btn btn-dark btn-lg panel-heading {% if i == 0 %}clicked{% endif %}" type="button" id="heading-{{i}}"> -->
 <li class="list-group-item">

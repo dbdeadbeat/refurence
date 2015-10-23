@@ -88,15 +88,7 @@ def _get_driver(url):
     else:
         return HostedImageDriver(url)
 
-import random
 def get_hosted_image_urls(dir_url):
-    if True:
-        out = []
-        for i in range(0, 10):
-            x = random.choice([200, 150, 100, 300])
-            y = random.choice([200, 150, 100, 300])
-            out.append('http://placehold.it/' + str(x) + 'x' + str(y))
-        return out
     driver = _get_driver(dir_url)
     return driver.get_image_urls()
 

@@ -76,10 +76,5 @@ class AboutView(TemplateView):
                     'consultant - caribou guru',
                     'http://www.furaffinity.net/user/ruxley'
                     ),
-                Contributor('seela', 
-                    url_for('static', filename='img/contributor-seela.png'),
-                    'emotional support technician - a wolf',
-                    'http://www.furaffinity.net/user/therion87'
-                    ),
                 ]
         return render_template('home/about.html', contributors=contributors)
