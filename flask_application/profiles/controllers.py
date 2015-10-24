@@ -108,8 +108,7 @@ class EditView(ProfileView):
         obj_response.html("#modals", modal_html)
 
     def description_content_html_update(self, obj_response, profile):
-        desc_macro = get_template_attribute('profiles/_neo.html',
-                                            'render_description_content')
+        desc_macro = get_template_attribute('profiles/_neo.html', 'render_description_content')
         desc_html = desc_macro(profile.description)
         obj_response.html('#description-content', desc_html)
 
@@ -118,19 +117,16 @@ class EditView(ProfileView):
         obj_response.html('#left-sidebar-desc', desc_tabs_html)
 
     def gallery_html_update(self, obj_response, profile):
-        navtabs_macro = get_template_attribute('profiles/_editable.html',
-                                               'render_navtabs_gallery')
+        navtabs_macro = get_template_attribute('profiles/_editable.html', 'render_navtabs_gallery')
         navtabs_html = navtabs_macro(profile.gallery)
         obj_response.html('#navtabs_gallery', navtabs_html)
 
-        desc_macro = get_template_attribute('profiles/_editable.html',
-                                            'render_table_gallery')
+        desc_macro = get_template_attribute('profiles/_editable.html', 'render_table_gallery')
         desc_html = desc_macro(profile.gallery)
         obj_response.html('#table_gallery', desc_html)
 
     def gallery_links_html_update(self, obj_response, profile, table):
-        links_macro = get_template_attribute('profiles/_editable.html',
-                                             'render_gallery_table_links')
+        links_macro = get_template_attribute('profiles/_editable.html', 'render_gallery_table_links')
         links_html = links_macro(table)
         element = '#links' + str(table.order)
         obj_response.html(element, links_html)

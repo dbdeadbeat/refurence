@@ -241,38 +241,6 @@ $(function() {
 
 			</div>
 		</div>
-
-		<script type="text/javascript">
-		$(function() {
-				var myDropzone = new Dropzone('#imglink-drop-{{i}}', {
-						url: "/upload/",
-						method: "POST",
-						paramName: "file",
-						uploadMultiple: false,
-						addRemoveLinks: false,
-						createImageThumbnails: false,
-						maxThumbnailFilesize: 2,
-						maxFiles: 1,
-						acceptedFiles: "image/png, image/jpeg, image/gif",
-						autoProcessQueue: true,
-						forceFallback: false,
-						clickable: true,
-						dictDefaultMessage: 'Change image by clicking or drag-dropping here',
-				});
-
-				myDropzone.on("success", function(file, response) {
-						Sijax.request('update_imglink_image', [{
-								'num' : {{i}},
-								'files': response['files']
-						}]);
-				});
-
-				myDropzone.on("complete", function(file) {
-						myDropzone.removeAllFiles();
-				});
-
-		});
-		</script>
 {% endfor %}
 {% endmacro %}
 

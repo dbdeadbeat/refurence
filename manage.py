@@ -8,7 +8,6 @@ from flask_application import app
 from flask_application.script import ResetDB, PopulateDB, UpdateDB, AddDefaultProfile
 from flask_application.tests.script import RunTests
 
-
 manager = Manager(app)
 manager.add_command("shell", Shell(use_ipython=True))
 manager.add_command("runserver", Server(use_reloader=True))
