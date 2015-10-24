@@ -4,8 +4,6 @@ from flask.views import MethodView, MethodViewType
 from flask import current_app, render_template, g
 from flask._compat import with_metaclass
 
-import flask_sijax
-
 
 class ViewMeta(MethodViewType):
     def __init__(cls, name, bases, dct):

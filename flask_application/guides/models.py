@@ -1,8 +1,10 @@
 from flask_application.models import db, FlaskDocument
 
+
 class Step(FlaskDocument):
     body = db.StringField()
     img = db.URLField()
+
 
 class Guide(FlaskDocument):
     title = db.StringField(required=True, max_length=512)

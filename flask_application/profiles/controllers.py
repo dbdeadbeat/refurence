@@ -5,7 +5,7 @@ from werkzeug import secure_filename
 from flask_application.controllers import TemplateView
 from flask_application.profiles.decorators import ajax_catch_error
 from flask_application.profiles.constants import profile_constants as pc
-from flask_application.profiles.models import *
+from flask_application.profiles.models import Profile, EditableImageTable, ImageLink, Path
 from flask_application.utils.html import convert_html_entities, sanitize_html
 from flask_application import app
 
@@ -14,11 +14,12 @@ from flask.ext.mobility.decorators import mobilized
 import os.path
 from copy import deepcopy
 from random import randint
+import urlparse
+from PIL import Image
+import StringIO
 
 
 profiles = Blueprint('profiles', __name__)
-
-import urlparse
 
 
 def is_url(url):
@@ -45,13 +46,9 @@ class ProfileView(TemplateView):
 class ListView(TemplateView):
     def get(self, slug):
         if slug == 'all':
-            return render_template('profiles/list.html',
-                                    profiles=Profile.objects.all(),
-                                    title='profiles')
+            return render_template('profiles/list.html', profiles=Profile.objects.all(), title='profiles')
         elif slug == 'examples':
-            return render_template('profiles/list.html',
-                                   profiles=Profile.objects(is_example=True),
-                                   title='example profiles')
+            return render_template('profiles/list.html', profiles=Profile.objects(is_example=True), title='example profiles')
         else:
             return redirect('404')
 
@@ -106,8 +103,7 @@ class EditView(ProfileView):
         sidebar_html = sidebar_macro(profile.sidebar.img_links)
         obj_response.html("#imglink-container", sidebar_html)
 
-        modal_macro = get_template_attribute('profiles/_neo.html',
-                                               'render_modals')
+        modal_macro = get_template_attribute('profiles/_neo.html', 'render_modals')
         modal_html = modal_macro(profile)
         obj_response.html("#modals", modal_html)
 
@@ -117,8 +113,7 @@ class EditView(ProfileView):
         desc_html = desc_macro(profile.description)
         obj_response.html('#description-content', desc_html)
 
-        desc_tabs_macro = get_template_attribute('profiles/_neo.html',
-                                            'render_description_tabs')
+        desc_tabs_macro = get_template_attribute('profiles/_neo.html', 'render_description_tabs')
         desc_tabs_html = desc_tabs_macro(profile.description, True)
         obj_response.html('#left-sidebar-desc', desc_tabs_html)
 
@@ -133,7 +128,7 @@ class EditView(ProfileView):
         desc_html = desc_macro(profile.gallery)
         obj_response.html('#table_gallery', desc_html)
 
-    def gallery_links_html_update(self,  obj_response, profile, table):
+    def gallery_links_html_update(self, obj_response, profile, table):
         links_macro = get_template_attribute('profiles/_editable.html',
                                              'render_gallery_table_links')
         links_html = links_macro(table)
@@ -157,9 +152,9 @@ class EditView(ProfileView):
 
     @ajax_catch_error
     def save_profile_handler(self, obj_response, content):
-        profile                    = self.get_user_profile_edit()
-        profile.header.title       = format_input(content[pc['HEADER_TITLE']])
-        profile.header.body        = format_input(content[pc['HEADER_BODY']])
+        profile = self.get_user_profile_edit()
+        profile.header.title = format_input(content[pc['HEADER_TITLE']])
+        profile.header.body = format_input(content[pc['HEADER_BODY']])
 
         self.update_description_content(profile, content[pc['DESC_TABLE']])
         for tbl_name in profile.description.get_keys():
@@ -200,9 +195,9 @@ class EditView(ProfileView):
         obj_response.redirect(url_for('profiles.detail', slug=profile.username))
 
     def update_editable_text_handler(self, obj_response, content):
-        profile                    = self.get_user_profile_edit()
-        profile.header.title       = format_input(content[pc['HEADER_TITLE']])
-        profile.header.body        = format_input(content[pc['HEADER_BODY']])
+        profile = self.get_user_profile_edit()
+        profile.header.title = format_input(content[pc['HEADER_TITLE']])
+        profile.header.body = format_input(content[pc['HEADER_BODY']])
 
         self.update_description_content(profile, content[pc['DESC_TABLE']])
         for tbl_name in profile.description.get_keys():
@@ -356,8 +351,6 @@ class EditView(ProfileView):
             table.images.append(profile.dropbox_move_file(src, dst))
         table.share()
 
-        print 'gorb',profile, table, content
-
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
 
@@ -393,8 +386,6 @@ profiles.add_url_rule('/<slug>/edit', view_func=EditView.as_view('edit'), method
 profiles.add_url_rule('/site/profiles/<slug>', view_func=ListView.as_view('list'))
 
 
-from PIL import Image
-import StringIO
 @app.route('/upload/', methods=('GET', 'POST'))
 def upload():
     if not app.dropbox.is_authenticated:
@@ -442,7 +433,7 @@ def upload():
                     ext = 'jpeg'
 
                     thumb_io = StringIO.StringIO()
-                    img.save(thumb_io,  ext.upper())
+                    img.save(thumb_io, ext.upper())
                     metadata = client.put_file('/' + filename, thumb_io.getvalue(), overwrite=True)
                     metadata['dimensions'] = (img.size[0], img.size[1])
                     out.append(metadata)

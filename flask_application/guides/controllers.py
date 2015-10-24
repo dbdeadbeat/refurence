@@ -1,6 +1,4 @@
-import datetime
-
-from flask import Blueprint, current_app, render_template
+from flask import Blueprint, render_template
 
 from flask_application.controllers import TemplateView
 from flask_application.guides.models import Guide
@@ -27,6 +25,7 @@ class ListView(TemplateView):
     @mobilized(get)
     def get(self):
         return render_template('mobile/guides/list.html', guides=Guide.objects)
+
 
 class DetailView(TemplateView):
     blueprint = guides
