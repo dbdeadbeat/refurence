@@ -49,8 +49,9 @@ font-size: 24px; }
 
 body {
   font-size: 14px;
-  font-family: "Marmelad", "Merriweather", sans-serif;
-  background: url("../img/bkg.jpg") no-repeat center center fixed;
+  /* font-family: "Marmelad", "Merriweather", sans-serif; */
+  font-family: "Orbitron", sans-serif;
+  background: url("../img/bkg.gif") no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -59,6 +60,8 @@ body {
   padding-bottom: 30px; }
 
 h1, h2, h3, h4, h5, h6 {
+  /* font-family: "Bitter"; */
+  font-family: "Orbitron", sans-serif;
   font-family: "Bitter";
   color: #FFF; }
 
@@ -72,10 +75,11 @@ label {
 
 .content-box {
   margin-top: 30px;
-  background-color: rgba(68, 68, 78, 0.95);
+	padding: 40px;
+  background-color: rgba(68, 68, 78, 0.10);
   border-radius: 3px;
   color: #FFF;
-  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.1);
   font-weight: normal; }
 
 .popover {
@@ -84,6 +88,15 @@ label {
 
 .content-box-2 {
   margin-top: 30px;
+	padding: 40px;
+  background-color: rgba(68, 68, 78, 1.00);
+  border-radius: 3px;
+  color: #FFF;
+  box-shadow: inset 0px 0px 10px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.1);
+  font-weight: normal; }
+
+.popover {
+  box-shadow: inset 0px 0px 20px 0px rgba(0, 0, 0, 0.5), 1px 1px 5px 0px rgba(0, 0, 0, 0.5);
 }
 
 .form h1 {
@@ -291,7 +304,7 @@ input, textarea {
   padding-bottom: 30px;
   padding-left: 30px;
   padding-right: 30px;
-  margin: 0px 10px 0px 10px;
+  margin: 30px 10px 0px 10px;
 }
 
 .list-group-item-theme {
