@@ -140,11 +140,22 @@ class EditView(ProfileView):
             out[tab_name] = table
         return out
 
-    def update_description_content(self, profile, tables):
+    def update_description_content(self, obj_response, profile, tables):
         desc_images = [tbl.images for tbl in profile.description.get_tables()]
         profile.description.tables = self.extract_desc_content(tables)
-        for tbl in profile.description.get_tables():
+        for k, tbl in profile.description.tables.iteritems():
             tbl.images = desc_images[tbl.order]
+
+            size_limit = 4000
+            if len(tbl.get_text()) > size_limit:
+                obj_response.alert("ERROR: text must have < %d characters" % size_limit)
+                return False
+
+            if len(k) == 0:
+                obj_response.alert("ERROR: notes cannot have empty titles")
+                return False
+
+        return True
 
     @ajax_catch_error
     def save_profile_handler(self, obj_response, content):
@@ -152,11 +163,8 @@ class EditView(ProfileView):
         profile.header.title = format_input(content[pc['HEADER_TITLE']])
         profile.header.body = format_input(content[pc['HEADER_BODY']])
 
-        self.update_description_content(profile, content[pc['DESC_TABLE']])
-        for tbl_name in profile.description.get_keys():
-            if len(tbl_name) == 0:
-                obj_response.alert("ERROR: notes cannot have empty titles")
-                return
+        if not self.update_description_content(obj_response, profile, content[pc['DESC_TABLE']]):
+            return
 
         master_profile = Profile.objects.get(username=profile.username)
         profile.id = master_profile.id
@@ -195,11 +203,8 @@ class EditView(ProfileView):
         profile.header.title = format_input(content[pc['HEADER_TITLE']])
         profile.header.body = format_input(content[pc['HEADER_BODY']])
 
-        self.update_description_content(profile, content[pc['DESC_TABLE']])
-        for tbl_name in profile.description.get_keys():
-            if len(tbl_name) == 0:
-                obj_response.alert("ERROR: notes cannot have empty titles")
-                return
+        if not self.update_description_content(obj_response, profile, content[pc['DESC_TABLE']]):
+            return
 
         self.save_user_profile_edit(profile)
 
@@ -296,7 +301,10 @@ class EditView(ProfileView):
             num_tabls += 1
             name = 'Note' + str(num_tabls)
         attr_tabl.order = num_tabls
-        self.update_description_content(profile, content[pc['DESC_TABLE']])
+
+        if not self.update_description_content(obj_response, profile, content[pc['DESC_TABLE']]):
+            return
+
         profile.description.add_table(name, attr_tabl)
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)
@@ -307,7 +315,10 @@ class EditView(ProfileView):
         if idx < 0:
             return
         profile = self.get_user_profile_edit()
-        self.update_description_content(profile, content[pc['DESC_TABLE']])
+
+        if not self.update_description_content(obj_response, profile, content[pc['DESC_TABLE']]):
+            return False
+
         profile.description.delete_table_by_order(idx)
         self.save_user_profile_edit(profile)
         self.description_content_html_update(obj_response, profile)

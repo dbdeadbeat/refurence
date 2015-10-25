@@ -51,29 +51,12 @@
 						</div>
 
 						<div class="col-xs-12 hr fill-low-opacity"></div>
-						{% for i in range(0, profile.sidebar.img_links|length, 3) %}
-						<div class="col-xs-12 centered">
-								<div class="col-xs-4 imglink-container">
-										{% if i < profile.sidebar.img_links|length %}
-												<a type="button" class="btn btn-imglink" href="{{ profile.sidebar.img_links[i].link_url }}">
-														<img class="centered imglink-img img-responsive" src="{{ profile.sidebar.img_links[i].get_image_url() }}">
-												</a>
-										{% endif %}
-								</div>
-								<div class="col-xs-4 imglink-container">
-										{% if i+1 < profile.sidebar.img_links|length %}
-												<a type="button" class="btn btn-imglink" href="{{ profile.sidebar.img_links[i+1].link_url }}">
-														<img class="centered imglink-img img-responsive" src="{{ profile.sidebar.img_links[i+1].get_image_url() }}">
-												</a>
-										{% endif %}
-								</div>
-								<div class="col-xs-4 imglink-container">
-										{% if i+2 < profile.sidebar.img_links|length %}
-												<a type="button" class="btn btn-imglink" href="{{ profile.sidebar.img_links[i+2].link_url }}">
-														<img class="centered imglink-img img-responsive" src="{{ profile.sidebar.img_links[i+2].get_image_url() }}">
-												</a>
-										{% endif %}
-								</div>
+
+						{% for i in range(0, profile.sidebar.img_links|length) %}
+						<div class="col-xs-12 centered imglink-container">
+								<a type="button" class="btn btn-imglink" href="{{ profile.sidebar.img_links[i].link_url }}">
+										<img class="centered imglink-img img-responsive" src="{{ profile.sidebar.img_links[i].get_image_url() }}">
+								</a>
 						</div>
 						{% endfor %}
 

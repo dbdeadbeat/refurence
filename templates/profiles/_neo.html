@@ -100,25 +100,12 @@ a {
 {% endmacro %}
 
 {% macro render_editable_imglinks(img_links) %}
-{% for i in range(0, img_links|length, 3) %}
-		<div class="col-xs-12 centered">
-				<div class="col-xs-4 imglink-container">
-						{% if i < img_links|length %}
-								{{ imglink(img_links[i], i) }}
-						{% endif %}
-				</div>
-				<div class="col-xs-4 imglink-container">
-						{% if i+1 < img_links|length %}
-								{{ imglink(img_links[i+1], i+1) }}
-						{% endif %}
-				</div>
-				<div class="col-xs-4 imglink-container">
-						{% if i+2 < img_links|length %}
-								{{ imglink(img_links[i+2], i+2) }}
-						{% endif %}
-				</div>
-		</div>
+{% for i in range(0, img_links|length) %}
+<div class="col-xs-12 centered imglink-container">
+				{{ imglink(img_links[i], i) }}
+</div>
 {% endfor %}
+
 {% endmacro %}
 
 {% macro render_popovers(profile) %}
