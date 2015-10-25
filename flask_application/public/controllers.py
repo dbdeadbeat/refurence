@@ -63,7 +63,7 @@ class AboutView(TemplateView):
         contributors = [
                 Contributor('deadbeat', 
                     url_for('static', filename='img/contributor-db.png'),
-                    'programmer - school boy bitch',
+                    'programmer - emo bitch',
                     'http://www.furaffinity.net/user/deadbeathyena/'
                     ),
                 Contributor('vixe', 

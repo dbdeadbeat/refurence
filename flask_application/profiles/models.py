@@ -470,7 +470,7 @@ class Profile(FlaskDocument):
 
         profile.header.title = profile.username + " refurence"
         profile.header.body = "name: " + profile.username +\
-            "\nspecies: animal\n\npress the 'Edit Profile' to create your refurence!!\n"
+            "\nspecies: animal\n\npress the 'Edit' button to create your refurence!!\n"
 
         profile.header.avatar_url = url_for('static', filename='img/avatar.png', _external=True)
 
@@ -485,20 +485,39 @@ class Profile(FlaskDocument):
         attr_tabl = EditableImageTable()
         attr_tabl.order = count
         count+=1
-        attr_tabl.text = "Editing Galleries"
-        profile.description.tables['Editing Galleries'] = attr_tabl
+        attr_tabl.text = """
+this section here in the center of the page, with the image on the left and textbox on the right, is a NOTE\n
+these are intended to be used for showing off one specific image that you want to write a note to the artist about\n
+an example:\n
+- IMAGE = a head shot of your character
+- TITLE = best haircut
+- TEXT = this is the best rendering of my character's hair, please use this as the main reference for the hair style\
+
+you can add more notes when Editing, by pressing '+' next to Notes in the sidebar
+        """
+        profile.description.tables['Tutorial: Notes'] = attr_tabl
 
         attr_tabl = EditableImageTable()
         attr_tabl.order = count
         count+=1
-        attr_tabl.text = "Editing Image Links"
-        profile.description.tables['Editing ImageLinks'] = attr_tabl
+        attr_tabl.text = """
+Links are in the sidebar\n
+you can assign them a url, this is useful for linking an artist to your FA, Email, or Twitter account\n
+you can add a LINK when Editing, by pressing '+' next to Links in the sidebar\n
+        """
+        profile.description.tables['Tutorial: Links'] = attr_tabl
 
         attr_tabl = EditableImageTable()
         attr_tabl.order = count
         count+=1
-        attr_tabl.text = "Editing Background"
-        profile.description.tables['Editing Background/Colors/Fonts'] = attr_tabl
+        attr_tabl.text = """
+Galleries are the images displayed below\n
+each gallery corresponds to a folder in you Dropbox for this refurence\n
+add a new gallery by creating a folder in you Dropbox for this refurence, ie under "Apps -> refurence -> refurence_?"\n
+upload images to this folder, refresh the page, and you will see them displayed in a new gallery\n
+for more information, click the '?' button next to Galleries in the sidebar while Editing\n
+        """
+        profile.description.tables['Tutorial: Galleries'] = attr_tabl
 
         img_tabl = ImageTable()
         img_tabl.img_dir = ''
