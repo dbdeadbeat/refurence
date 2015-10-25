@@ -441,6 +441,8 @@ class Profile(FlaskDocument):
         profile.header.body = "name: " + profile.username +\
             "\nspecies: animal\n\npress the 'Edit' button to create your refurence!!\n"
 
+        profile.header.avatar_url = url_for('static', filename='img/avatar.png', _external=True)
+
         example_files = glob.glob('static/img/examples/*')
         for table in profile.gallery.get_tables():
             table.dropbox_path = profile.dropbox_create_folder(table.name)
