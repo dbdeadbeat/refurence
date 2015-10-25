@@ -80,6 +80,10 @@ class EditView(ProfileView):
 
     def get_user_profile_edit(self):
         if 'temp_profile' in session:
+
+            if '_id' in session['temp_profile']:
+                del session['temp_profile']['_id']
+
             return Profile(**session['temp_profile'])
         username = ''
         if current_app.dropbox.is_authenticated:
