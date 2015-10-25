@@ -35,7 +35,27 @@
         <div class="col-lg-2"></div>
         <div class="col-lg-8">
             <button class="btn btn-danger" type="button"
-                onclick="Sijax.request('delete_refurence', [{'name': '{{profile.username}}' }])">Delete</button>
+								onclick="
+									$.blockUI({ 
+											message: '<h1>deleting...</h1>',
+											css: { 
+													border: 'none', 
+													padding: '15px', 
+													backgroundColor: '#000', 
+													'-webkit-border-radius': '10px', 
+													'-moz-border-radius': '10px', 
+													opacity: .5, 
+													color: '#fff' 
+											}
+									});
+								Sijax.request('delete_refurence', [{'name': '{{profile.username}}' }],
+														{
+																'complete': function() {
+																		$.unblockUI();
+																}
+														}
+									);
+							">Delete</button>
         </div>
         <div class="col-lg-2"></div>
     </div>
