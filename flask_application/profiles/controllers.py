@@ -170,7 +170,13 @@ class EditView(ProfileView):
         if not self.update_description_content(obj_response, profile, content[pc['DESC_TABLE']]):
             return
 
-        master_profile = Profile.objects.get(username=profile.username)
+        try:
+            master_profile = Profile.objects.get(username=profile.username)
+        except Exception as e:
+            obj_response.alert('profile not found')
+            obj_response.redirect(url_for('users.controlpanel'))
+            return
+
         profile.id = master_profile.id
         try:
             profile.save()
@@ -198,7 +204,14 @@ class EditView(ProfileView):
     @ajax_catch_error
     def discard_changes_handler(self, obj_response, content):
         username = current_app.dropbox.account_info['email']
-        profile = Profile.objects.get_or_404(owner_email=username)
+
+        try:
+            profile = Profile.objects.get_or_404(owner_email=username)
+        except Exception:
+            obj_response.alert('profile not found')
+            obj_response.redirect(url_for('users.controlpanel'))
+            return
+
         profile.dropbox_cleanup()
         obj_response.redirect(url_for('profiles.detail', slug=profile.username))
 

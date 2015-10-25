@@ -35,7 +35,7 @@ class ControlPanelView(TemplateView):
         if len(user.profiles) >= User.maximum_profiles:
             err_html = err_macro('cannot create more refurences: maximum reached')
             obj_response.html('#error-msg', err_html)
-            return 
+            return
 
         try:
             ControlPanelView.validate_refurence_name(profile_name)
@@ -49,7 +49,7 @@ class ControlPanelView(TemplateView):
         if not Profile.is_name_valid(profile_name):
             err_html = err_macro('name: "' + profile_name + '" already taken')
             obj_response.html('#error-msg', err_html)
-            return 
+            return
 
         profile = Profile(username=profile_name)
         profile = Profile.initialize_to_default(profile)
@@ -86,7 +86,7 @@ class ControlPanelView(TemplateView):
 
         for idx in range(0, len(user.profiles)):
             p = user.profiles[idx]
-            if p == profile:
+            if p.username == profile.username:
                 del user.profiles[idx]
                 break
 
