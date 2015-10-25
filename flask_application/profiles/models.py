@@ -10,7 +10,9 @@ import copy
 import itertools
 import os
 import random
-import base64
+import StringIO
+import glob
+from PIL import Image
 
 
 class Path(db.EmbeddedDocument):
@@ -38,7 +40,7 @@ class Path(db.EmbeddedDocument):
         return [Path(private_path=p['path'], is_dir=p['is_dir']) for p in dropbox_paths]
 
     def join(self, path):
-        return Path(private_path=self.private_path+'/'+path)
+        return Path(private_path=self.private_path + '/' + path)
 
     def basename(self):
         return self.private_path.split('/')[-1]
@@ -48,13 +50,6 @@ class Path(db.EmbeddedDocument):
         if '?' in self.public_path:
             self.public_path = self.public_path[0:self.public_path.index('?')]
         self.public_urls = []
-        # paths = self.get_all_files_as_paths()
-        # for path in paths:
-            # dropbox_url = str(app.dropbox.client.share(path.private_path,
-                                                       # short_url=False)['url'])
-            # dropbox_url = dropbox_url[:-1]
-            # dropbox_url += '1'
-            # self.public_urls.append(dropbox_url)
 
     @staticmethod
     def _get_all_dropbox_paths(path):
@@ -140,7 +135,6 @@ class ImageTable(db.EmbeddedDocument):
             # self.image_urls += p.get_all_files_as_urls()
         self.dropbox_path.share()
 
-
     def get_image_style(self, url):
         width = 200
         height = 200
@@ -161,8 +155,8 @@ class SideBarContent(StylableContent):
 
 
 class HeaderContent(StylableContent):
-    title      = db.StringField(required=True, max_length=256, default='blarg!!')
-    body       = db.StringField(max_length=16384, default="Add Text Here!")
+    title = db.StringField(required=True, max_length=256, default='blarg!!')
+    body = db.StringField(max_length=16384, default="Add Text Here!")
     avatar_url = db.URLField(max_length=16384)
     avatar_dropbox_path = db.EmbeddedDocumentField('Path')
 
@@ -255,36 +249,36 @@ class Profile(FlaskDocument):
     }
 
     owner_email = db.StringField()
-    username    = db.StringField(required=True)
-    bkg_img     = db.URLField(max_length=16384)
-    bkg_color   = db.StringField(max_length=256, default=None)
-    is_example  = db.BooleanField(default=False)
-    is_default  = db.BooleanField(default=False)
+    username = db.StringField(required=True)
+    bkg_img = db.URLField(max_length=16384)
+    bkg_color = db.StringField(max_length=256, default=None)
+    is_example = db.BooleanField(default=False)
+    is_default = db.BooleanField(default=False)
 
-    sidebar     = db.EmbeddedDocumentField('SideBarContent', default=SideBarContent())
-    header      = db.EmbeddedDocumentField('HeaderContent', default=HeaderContent())
-    notes       = db.EmbeddedDocumentField('NotesContent', default=NotesContent())
+    sidebar = db.EmbeddedDocumentField('SideBarContent', default=SideBarContent())
+    header = db.EmbeddedDocumentField('HeaderContent', default=HeaderContent())
+    notes = db.EmbeddedDocumentField('NotesContent', default=NotesContent())
     description = db.EmbeddedDocumentField('DescriptionContent', default=DescriptionContent())
-    gallery     = db.EmbeddedDocumentField('GalleryContent', default=GalleryContent())
-    colors      = db.MapField(db.StringField(max_length=32), default= {
-                                            pc['COLOR_MAIN'] : 'rgba(68,68,78,0.85)',
-                                            pc['COLOR_INNER'] : 'rgba(48,48,68,1.0)',
-                                            pc['COLOR_HEADERS'] :  'lightblue',
-                                            pc['COLOR_LINKS'] :    '#2a6496',
-                                            pc['COLOR_TEXT'] :     'cadetblue',
-                                            pc['COLOR_TABS'] :     '#34495e'
-                                            });
-    fonts       = db.MapField(db.StringField(max_length=256), default= {
-                                            pc['FONT_HEADERS'] :     '',
-                                            pc['FONT_LINKS'] :     '',
-                                            pc['FONT_TEXT'] :     '',
-                                            });
+    gallery = db.EmbeddedDocumentField('GalleryContent', default=GalleryContent())
+    colors = db.MapField(db.StringField(max_length=32),
+                         default={
+                             pc['COLOR_MAIN']: 'rgba(68,68,78,0.85)',
+                             pc['COLOR_INNER']: 'rgba(48,48,68,1.0)',
+                             pc['COLOR_HEADERS']: 'lightblue',
+                             pc['COLOR_LINKS']: '#2a6496',
+                             pc['COLOR_TEXT']: 'cadetblue',
+                             pc['COLOR_TABS']: '#34495e'})
+    fonts = db.MapField(db.StringField(max_length=256),
+                        default={
+                            pc['FONT_HEADERS']: '',
+                            pc['FONT_LINKS']: '',
+                            pc['FONT_TEXT']: ''})
     dropbox_profile_images_dirname = '_profile_images_DO_NOT_MODIFY'
     bkg_dropbox_path = db.EmbeddedDocumentField('Path')
     dropbox_root_public_path = db.StringField()
 
     def save(self, *args, **kwargs):
-        super(Profile,self).save(*args,**kwargs)
+        super(Profile, self).save(*args, **kwargs)
 
     def delete(self):
         app.dropbox.client.file_delete(self.dropbox_root().private_path)
@@ -347,7 +341,6 @@ class Profile(FlaskDocument):
 
         if self.bkg_img:
             return self.bkg_img
-        
         return None
 
     def get_galleries(self):
@@ -366,6 +359,7 @@ class Profile(FlaskDocument):
         class MonkeyPatchGallery():
             def __init__(self, data):
                 self.data = data
+
             def get_table_names(self):
                 return [self.data['name']]
 
@@ -426,8 +420,10 @@ class Profile(FlaskDocument):
 
     @staticmethod
     def initialize_to_default(profile):
-        default_profile = Profile.objects(is_default=True)
+        if not app.dropbox.is_authenticated:
+            return None
 
+        default_profile = Profile.objects(is_default=True)
         if not default_profile:
             default_profile = Profile.create_default_profile()
         else:
@@ -445,11 +441,26 @@ class Profile(FlaskDocument):
         profile.header.body = "name: " + profile.username +\
             "\nspecies: animal\n\npress the 'Edit Profile' to create your refurence!!\n"
 
+        example_files = glob.glob('static/img/examples/*')
         for table in profile.gallery.get_tables():
             table.dropbox_path = profile.dropbox_create_folder(table.name)
 
-        return profile
+            for filename in example_files:
+                fname, ext = os.path.splitext(filename)
+                basename = os.path.basename(filename)
+                ext = ext[1:]
+                if ext == 'jpg':
+                    ext = 'jpeg'
 
+                client = app.dropbox.client
+                img = Image.open(filename)
+                thumb_io = StringIO.StringIO()
+                img.save(thumb_io, 'JPEG')
+                upload_path = '/' + basename
+                client.put_file(upload_path, thumb_io.getvalue(), overwrite=True)
+                profile.dropbox_move_file(Path(private_path=upload_path), table.dropbox_path.join(upload_path))
+
+        return profile
 
     @staticmethod
     def create_default_profile():
@@ -465,24 +476,27 @@ class Profile(FlaskDocument):
 
         profile.notes.title = "Important Notes"
         profile.notes.body = \
-        "Add important notes, details, info, and other stuff for the artist to see here\n\
-        * please send an email to me@me.com\n\
-        * the best color reference is the 'color_reference.png' file in the gallery\n\
-        * etc.."
+            "Add important notes, details, info, and other stuff for the artist to see here\n\
+            * please send an email to me@me.com\n\
+            * the best color reference is the 'color_reference.png' file in the gallery\n\
+            * etc.."
 
         count = 0
         attr_tabl = EditableImageTable()
-        attr_tabl.order = count; count+=1
+        attr_tabl.order = count
+        count+=1
         attr_tabl.text = "Editing Galleries"
         profile.description.tables['Editing Galleries'] = attr_tabl
 
         attr_tabl = EditableImageTable()
-        attr_tabl.order = count; count+=1
+        attr_tabl.order = count
+        count+=1
         attr_tabl.text = "Editing Image Links"
         profile.description.tables['Editing ImageLinks'] = attr_tabl
 
         attr_tabl = EditableImageTable()
-        attr_tabl.order = count; count+=1
+        attr_tabl.order = count
+        count+=1
         attr_tabl.text = "Editing Background"
         profile.description.tables['Editing Background/Colors/Fonts'] = attr_tabl
 
@@ -505,7 +519,7 @@ class Profile(FlaskDocument):
             if p:
                 return True
             return False
-        except Exception as e:
+        except Exception:
             return False
 
     @staticmethod

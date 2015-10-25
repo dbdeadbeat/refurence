@@ -336,7 +336,26 @@ $(function () {
     });
 
     $('#btn_discard').bind('click', function() {
-        Sijax.request('discard_changes', [ { } ]);
+				$.blockUI({ 
+						message: '<h1>discarding changes...</h1>',
+						css: { 
+								border: 'none', 
+								padding: '15px', 
+								backgroundColor: '#000', 
+								'-webkit-border-radius': '10px', 
+								'-moz-border-radius': '10px', 
+								opacity: .5, 
+								color: '#fff' 
+						}
+				});
+
+				Sijax.request('discard_changes', [ { } ],
+											{
+													'complete': function() {
+															$.unblockUI();
+													}
+											}
+										 );
         return false;
     });
 
@@ -455,9 +474,27 @@ $(function () {
     });
 
     $('#btn_saveprofile').bind('click', function() {
-        Sijax.request('save_profile', [
-						getEditableText()
-        ]);
+
+				$.blockUI({ 
+						message: '<h1>saving your refurence...</h1>',
+						css: { 
+								border: 'none', 
+								padding: '15px', 
+								backgroundColor: '#000', 
+								'-webkit-border-radius': '10px', 
+								'-moz-border-radius': '10px', 
+								opacity: .5, 
+								color: '#fff' 
+						}
+				});
+
+				Sijax.request('save_profile', [ getEditableText() ],
+											{
+													'complete': function() {
+															$.unblockUI();
+													}
+											}
+										 );
         return false;
     });
 

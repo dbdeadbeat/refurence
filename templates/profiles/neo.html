@@ -117,7 +117,7 @@
 														{% if profile.description.get_tables()[i].get_image_links()[0] %}
 														<img class="img-description img-responsive centered" src="{{profile.description.get_tables()[i].get_image_links()[0]}}">
 														{% else %}
-														<img class="img-description img-responsive centered" src="{{url_for('static', filename='img/bkg.jpg')}}">
+														<img class="img-responsive centered" src="{{url_for('static', filename='img/nothing.jpg')}}">
 														{% endif %}
 												</div>
 												<div class="col-md-4 fill-low-opacity">

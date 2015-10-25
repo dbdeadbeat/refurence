@@ -8,7 +8,7 @@ refurence
 {% block js_header %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" src={{url_for('static', filename="js/sijax/sijax.js") }}></script>
+<script type="text/javascript" src="{{url_for('static', filename="js/sijax/sijax.js") }}"></script>
 <script type="text/javascript"> {{ g.sijax.get_js()|safe }} </script>
 {% endblock %}
 
@@ -25,48 +25,73 @@ refurence
       </div>
       <div class="col-xs-12 fill hr"></div>
 
-      <div class="col-xs-12" id="profile-list">
-        {{ macros.render_profile_list(profiles, maximum_profiles) }}
-      </div>
+			<!-- <img class="centered" src="{{ url_for('static', filename='img/busy.gif') }}" /> -->
 
-      <div class="col-xs-12 fill hr"></div>
+			<div class="col-xs-12" id="profile-list">
+					{{ macros.render_profile_list(profiles, maximum_profiles) }}
+			</div>
 
-      <div class="row">
-        <div class="col-lg-2"></div>
-        <div class="col-lg-8">
-          <div class="input-group">
-            <input id="input-create-refurence" type="text" class="form-control" placeholder="Enter name of new refurence...">
-            <span class="input-group-btn">
-              <button id="btn-create-refurence" class="btn btn-default" type="button">Create!</button>
-            </span>
-          </div>
-          <div class="col-lg-2"></div>
-        </div>
-      </div>
-    {% endblock %}
+			<div class="col-xs-12 fill hr"></div>
 
-    {%- block modals -%}
-    {% endblock %}
+			<div class="row">
+					<div class="col-lg-2"></div>
+					<div class="col-lg-8">
+							<div class="input-group">
+									<input id="input-create-refurence" type="text" class="form-control" placeholder="Enter name of new refurence...">
+									<span class="input-group-btn">
+											<button id="btn-create-refurence" class="btn btn-default" type="button">Create!</button>
+									</span>
+							</div>
+							<div class="col-lg-2"></div>
+					</div>
+			</div>
+			{% endblock %}
 
-  </div>
-  {%- block footer-%}
-  {% endblock %}
-{% endblock %}
+			{%- block modals -%}
+			{% endblock %}
 
-{% block scripts %}
-{{ super() }}
-<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
-<script type=text/javascript>
-function loadJS() {
-    $('button#btn-create-refurence').on('click', function() {
-        var profile_input = $('#input-create-refurence');
-        Sijax.request('create_new_refurence', [ {'name': profile_input.val()} ]);
-        profile_input.val('');
-        return false;
-    });
-}
-$(function() {
-  loadJS();
-});
-</script>
-{% endblock %}
+	</div>
+	{%- block footer-%}
+	{% endblock %}
+	{% endblock %}
+
+	<div id="displayBox">
+	</div>
+
+	{% block scripts %}
+	{{ super() }}
+	<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.6/webfont.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.66.0-2013.10.09/jquery.blockUI.js"></script> 
+	<script type=text/javascript>
+			function loadJS() {
+					$('button#btn-create-refurence').on('click', function() {
+
+							$.blockUI({ 
+									message: '<h1>creating your refurence...</h1>',
+									css: { 
+											border: 'none', 
+											padding: '15px', 
+											backgroundColor: '#000', 
+											'-webkit-border-radius': '10px', 
+											'-moz-border-radius': '10px', 
+											opacity: .5, 
+											color: '#fff' 
+									}
+							});
+							var profile_input = $('#input-create-refurence');
+							Sijax.request('create_new_refurence', [ {'name': profile_input.val()} ],
+														{
+																'complete': function() {
+																		$.unblockUI();
+																}
+														}
+													 );
+													 profile_input.val('');
+													 return false;
+					});
+			}
+			$(function() {
+					loadJS();
+			});
+	</script>
+	{% endblock %}
