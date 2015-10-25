@@ -439,7 +439,7 @@ class Profile(FlaskDocument):
         profile.is_default = False
         profile.header.title = profile.username + " refurence"
         profile.header.body = "name: " + profile.username +\
-            "\nspecies: animal\n\npress the 'Edit Profile' to create your refurence!!\n"
+            "\nspecies: animal\n\npress the 'Edit' button to create your refurence!!\n"
 
         example_files = glob.glob('static/img/examples/*')
         for table in profile.gallery.get_tables():
@@ -488,11 +488,10 @@ class Profile(FlaskDocument):
         attr_tabl.text = """
 this section here in the center of the page, with the image on the left and textbox on the right, is a NOTE\n
 these are intended to be used for showing off one specific image that you want to write a note to the artist about\n
-an example:\n
+example:\n
 - IMAGE = a head shot of your character
 - TITLE = best haircut
-- TEXT = this is the best rendering of my character's hair, please use this as the main reference for the hair style\
-
+- TEXT = this is the best rendering of my character's hair, please use this as the main reference for the hair style\n 
 you can add more notes when Editing, by pressing '+' next to Notes in the sidebar
         """
         profile.description.tables['Tutorial: Notes'] = attr_tabl
