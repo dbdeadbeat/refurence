@@ -4,7 +4,7 @@ from flask import Blueprint, current_app, render_template, url_for
 
 from flask_application.controllers import TemplateView
 
-from flask.ext.mobility.decorators import mobilized
+#  from flask.ext.mobility.decorators import mobilized
 
 public = Blueprint('public', __name__)
 
@@ -26,9 +26,9 @@ class IndexView(TemplateView):
         return self.process(*args, **kwargs)
 
 
-    @mobilized(get)
-    def get(self):
-        return render_template('mobile/home/index.html')
+    #  @mobilized(get)
+    #  def get(self):
+        #  return render_template('mobile/home/index.html')
 
 # class ThankYouView(TemplateView):
     # blueprint = public

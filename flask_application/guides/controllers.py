@@ -3,7 +3,7 @@ from flask import Blueprint, render_template
 from flask_application.controllers import TemplateView
 from flask_application.guides.models import Guide
 
-from flask.ext.mobility.decorators import mobilized
+#  from flask.ext.mobility.decorators import mobilized
 
 guides = Blueprint('guides', __name__)
 
@@ -22,9 +22,9 @@ class ListView(TemplateView):
     def get(self):
         return render_template('guides/list.html', guides=Guide.objects)
 
-    @mobilized(get)
-    def get(self):
-        return render_template('mobile/guides/list.html', guides=Guide.objects)
+    #  @mobilized(get)
+    #  def get(self):
+        #  return render_template('mobile/guides/list.html', guides=Guide.objects)
 
 
 class DetailView(TemplateView):
@@ -42,7 +42,7 @@ class DetailView(TemplateView):
         guide = Guide.objects.get_or_404(slug=slug)
         return render_template('guides/detail.html', guide=guide)
 
-    @mobilized(get)
-    def get(self, slug):
-        guide = Guide.objects.get_or_404(slug=slug)
-        return render_template('mobile/guides/detail.html', guide=guide)
+    #  @mobilized(get)
+    #  def get(self, slug):
+        #  guide = Guide.objects.get_or_404(slug=slug)
+        #  return render_template('mobile/guides/detail.html', guide=guide)

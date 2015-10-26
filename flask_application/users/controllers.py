@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, current_app, redirect, g, get_temp
 from flask_application.controllers import TemplateView
 from flask_application.profiles.models import Profile
 from flask_application.users.models import User
-from flask.ext.mobility.decorators import mobilized
+#  from flask.ext.mobility.decorators import mobilized
 
 import re
 
@@ -20,12 +20,12 @@ class ControlPanelView(TemplateView):
         return render_template('users/controlpanel.html', user=user,
                 profiles=profiles, maximum_profiles=User.maximum_profiles)
 
-    @mobilized(get)
-    def get(self):
-        user = self._get_current_user()
-        profiles = user.profiles
-        return render_template('mobile/users/controlpanel.html', user=user,
-                profiles=profiles, maximum_profiles=User.maximum_profiles)
+    #  @mobilized(get)
+    #  def get(self):
+        #  user = self._get_current_user()
+        #  profiles = user.profiles
+        #  return render_template('mobile/users/controlpanel.html', user=user,
+                #  profiles=profiles, maximum_profiles=User.maximum_profiles)
 
     def create_new_refurence_handler(self, obj_response, content):
         profile_name = content['name']

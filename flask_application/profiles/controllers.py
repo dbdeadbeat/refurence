@@ -9,7 +9,7 @@ from flask_application.profiles.models import Profile, EditableImageTable, Image
 from flask_application.utils.html import convert_html_entities, sanitize_html
 from flask_application import app
 
-from flask.ext.mobility.decorators import mobilized
+#  from flask.ext.mobility.decorators import mobilized
 
 import os.path
 from copy import deepcopy
@@ -37,10 +37,10 @@ class ProfileView(TemplateView):
             #  return render_template('profiles/detail.html', profile=profile)
             return render_template('profiles/neo.html', profile=profile)
 
-    @mobilized(get)
-    def get(self, slug):
-        profile = Profile.objects.get_or_404(username=slug)
-        return render_template('mobile/profiles/detail.html', profile=profile)
+    #  @mobilized(get)
+    #  def get(self, slug):
+        #  profile = Profile.objects.get_or_404(username=slug)
+        #  return render_template('mobile/profiles/detail.html', profile=profile)
 
 
 class ListView(TemplateView):
@@ -52,18 +52,18 @@ class ListView(TemplateView):
         else:
             return redirect('404')
 
-    @mobilized(get)
-    def get(self, slug):
-        if slug == 'all':
-            return render_template('mobile/profiles/list.html',
-                                   profiles=Profile.objects.all(),
-                                   title='profiles')
-        elif slug == 'examples':
-            return render_template('mobile/profiles/list.html',
-                                   profiles=Profile.objects(is_example=True),
-                                   title='example profiles')
-        else:
-            return redirect('404')
+    #  @mobilized(get)
+    #  def get(self, slug):
+        #  if slug == 'all':
+            #  return render_template('mobile/profiles/list.html',
+                                   #  profiles=Profile.objects.all(),
+                                   #  title='profiles')
+        #  elif slug == 'examples':
+            #  return render_template('mobile/profiles/list.html',
+                                   #  profiles=Profile.objects(is_example=True),
+                                   #  title='example profiles')
+        #  else:
+            #  return redirect('404')
 
 
 class EditView(ProfileView):
