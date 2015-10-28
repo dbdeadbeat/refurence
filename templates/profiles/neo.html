@@ -26,6 +26,7 @@
 				<!-- Nav links -->
 				<div class="collapse navbar-collapse" id="neonavbar">
 						<ul class="nav navbar-nav navbar-right">
+								<li> <a href="{{ url_for('index') }}">home</a> </li>
 								{% if not dropbox.is_authenticated %}
 								<li> <a href="{{dropbox.login_url}}">login with dropbox</a> </li>
 								{% else %}
