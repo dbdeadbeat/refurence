@@ -27,7 +27,7 @@
             </div>
             <div class="media-body">
                 <h4 class="media-heading">{{ profile.username }}</h4>
-                {{ profile.header.body }}
+                {{ profile.header.body|truncate(256) }}
             </div>
         </div>
     </div>

@@ -16,9 +16,8 @@ class ControlPanelView(TemplateView):
     def get(self):
         user = self._get_current_user()
         self.make_dropbox_coherent(user)
-        profiles = user.profiles
         return render_template('users/controlpanel.html', user=user,
-                profiles=profiles, maximum_profiles=User.maximum_profiles)
+                profiles=user.profiles, maximum_profiles=User.maximum_profiles)
 
     #  @mobilized(get)
     #  def get(self):
@@ -57,13 +56,13 @@ class ControlPanelView(TemplateView):
         profile.save()
         profile.dropbox_root().share()
 
+        #  profiles = user.profiles
         user.profiles.append(profile)
         user.save()
 
-        profiles = user.profiles
         profile_macro = get_template_attribute('users/_macros.html', 'render_profile_list')
         obj_response.html('#error-msg', '')
-        obj_response.html('#profile-list', profile_macro(profiles,
+        obj_response.html('#profile-list', profile_macro(user.profiles,
             User.maximum_profiles))
 
     def delete_refurence_handler(self, obj_response, content):
@@ -83,21 +82,14 @@ class ControlPanelView(TemplateView):
             return
 
         user = self._get_current_user()
-
-        for idx in range(0, len(user.profiles)):
-            p = user.profiles[idx]
-            if p.username == profile.username:
-                del user.profiles[idx]
-                break
-
-        user.save()
         profile.delete()
         profile.save()
+        user.save()
 
-        profiles = user.profiles
+        user = self._get_current_user()
         profile_macro = get_template_attribute('users/_macros.html', 'render_profile_list')
         obj_response.html('#error-msg', '')
-        obj_response.html('#profile-list', profile_macro(profiles,
+        obj_response.html('#profile-list', profile_macro(user.profiles,
             User.maximum_profiles))
 
     def make_dropbox_coherent(self, user):
@@ -123,6 +115,7 @@ class ControlPanelView(TemplateView):
         except Exception:
             user = User(email=dropbox_email, username=dropbox_email)
             user.save()
+        user.profiles = Profile.objects(owner_email=user.username)
         return user
 
     @staticmethod
