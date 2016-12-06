@@ -46,7 +46,7 @@ class DropbBoxDriver(HostedImageDriver):
         imgs = {}
         #  for link in BeautifulSoup(doc.content, parse_only=SoupStrainer('a', href=True)):
         soup = BeautifulSoup(doc.content)
-        for link in soup.findAll('a', {'class' : 'thumb-link'}):
+        for link in soup.findAll('a', {'class' : 'sl-file-link'}):
             if link['href'].endswith('dl=0') and not self._is_link_a_dir(link):
                 imgs[link['href']] = True
         out = []
@@ -62,7 +62,7 @@ class DropbBoxDriver(HostedImageDriver):
 
         dirs = []
         soup = BeautifulSoup(doc.content)
-        for link in soup.findAll('a', {'class' : 'thumb-link'}):
+        for link in soup.findAll('a', {'class' : 'sl-file-link'}):
             if self._is_link_a_dir(link):
                 dirs.append(link)
 
