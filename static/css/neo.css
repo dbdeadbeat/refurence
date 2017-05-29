@@ -305,6 +305,10 @@ background-color: inherit; }
   margin: 3px;
   overflow: hidden; }
 
+a.gallery-nav {
+		color: lightblue;
+}
+
 #btn_sidebar_add_link {
 	margin-bottom: 10px;
 }

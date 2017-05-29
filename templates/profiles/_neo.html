@@ -80,7 +80,7 @@ a {
 
 {% macro render_gallery(gallery) %}
 		{% for i in range(0, gallery.get_tables()|length) %}
-		<a class="gallery-nav" data-toggle="tab">{{ gallery.get_table_names()[i] }}</a>
+		<h3><a class="gallery-nav" data-toggle="tab">{{ gallery.get_table_names()[i] }}</a></h3>
 		<div class="row gallery-links posts">
 				{{ render_links_gallery(gallery.get_tables()[i]) }}
 		</div>
