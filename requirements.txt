@@ -12,7 +12,7 @@ Flask-Security==1.7.3
 Flask-Sijax==0.3.3
 Flask-Testing==0.4.2
 Flask-WTF==0.9.5
-Jinja2==2.7.3
+Jinja2==2.11.3
 MarkupSafe==0.23
 Pillow==2.8.1
 Sijax==0.2.7
